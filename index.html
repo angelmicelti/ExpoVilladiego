@@ -355,6 +355,11 @@
                                         <span id="orden-clase"></span>
                                     </div>
                                 </th>
+                                <th scope="col" class="py-4 px-4 w-36">
+                                    <div class="flex items-center gap-1.5">
+                                        URL Evidencia
+                                    </div>
+                                </th>
                                 <th scope="col" class="py-4 px-5 text-right font-medium w-24">Acciones</th>
                             </tr>
                         </thead>
@@ -378,7 +383,7 @@
         <!-- VISTA 2: PANEL DE INFORMES -->
         <div id="vista-informes" class="hidden space-y-6">
             <div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-1.5 bg-slate-100 p-1.5 rounded-xl w-full lg:w-auto">
+                <div class="grid grid-cols-2 lg:grid-cols-5 gap-1.5 bg-slate-100 p-1.5 rounded-xl w-full lg:w-auto">
                     <button onclick="cambiarReporteActivo('reporte-tipos')" id="btn-reporte-tipos" class="reporte-tab-btn py-2.5 px-4 rounded-lg font-bold text-xs sm:text-sm text-center transition bg-white text-indigo-700 shadow-sm flex items-center justify-center gap-2">
                         <i data-lucide="shapes" class="h-4 w-4"></i>
                         Proyectos por Tipo
@@ -394,6 +399,11 @@
                     <button onclick="cambiarReporteActivo('reporte-alumnos')" id="btn-reporte-alumnos" class="reporte-tab-btn py-2.5 px-4 rounded-lg font-bold text-xs sm:text-sm text-center text-slate-600 hover:text-indigo-700 transition flex items-center justify-center gap-2">
                         <i data-lucide="graduation-cap" class="h-4 w-4"></i>
                         Alumnado y Duplicados
+                    </button>
+                    <button onclick="cambiarReporteActivo('reporte-evidencia')" id="btn-reporte-evidencia" class="reporte-tab-btn py-2.5 px-4 rounded-lg font-bold text-xs sm:text-sm text-center text-slate-600 hover:text-indigo-700 transition flex items-center justify-center gap-2">
+                        <i data-lucide="link" class="h-4 w-4"></i>
+                        Evidencias
+                        <span class="bg-teal-100 text-teal-800 text-xs px-2 py-0.5 rounded-full font-bold">Nuevo</span>
                     </button>
                 </div>
                 
@@ -465,6 +475,44 @@
                     </div>
                 </div>
                 <div id="cont-reporte-alumnos" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+            </div>
+
+            <!-- INFORME DE EVIDENCIAS (LISTADO CON URL) -->
+            <div id="reporte-evidencia" class="reporte-seccion bg-white rounded-2xl border border-slate-100 p-6 space-y-6 hidden">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                            <i data-lucide="link" class="text-teal-600"></i>
+                            Listado de Evidencias por Proyecto
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-1">Vista consolidada de todos los proyectos con enlace a su evidencia/documentación</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="exportarCSVEvidencia()" class="bg-teal-600 hover:bg-teal-700 active:scale-95 transition-all text-white font-semibold px-4 py-2 rounded-xl shadow-md shadow-teal-600/20 flex items-center gap-2 text-sm">
+                            <i data-lucide="file-spreadsheet" class="h-4 w-4"></i>
+                            Exportar CSV
+                        </button>
+                        <button onclick="exportarPDFEvidencia()" class="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 active:scale-95 transition-all text-white font-semibold px-4 py-2 rounded-xl shadow-md shadow-indigo-600/20 flex items-center gap-2 text-sm">
+                            <i data-lucide="file-down" class="h-4 w-4"></i>
+                            Exportar PDF
+                        </button>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-3">
+                    <div class="text-xs font-semibold text-slate-700 bg-indigo-50 p-3 rounded-lg border border-indigo-200 flex items-center gap-2">
+                        <i data-lucide="file-text" class="h-4 w-4 text-indigo-600"></i>
+                        Total proyectos: <strong id="evidencia-total-proyectos">0</strong>
+                    </div>
+                    <div class="text-xs font-semibold text-teal-700 bg-teal-50 p-3 rounded-lg border border-teal-200 flex items-center gap-2">
+                        <i data-lucide="check-circle" class="h-4 w-4 text-teal-600"></i>
+                        Con evidencia: <strong id="evidencia-con-url">0</strong>
+                    </div>
+                    <div class="text-xs font-semibold text-amber-700 bg-amber-50 p-3 rounded-lg border border-amber-200 flex items-center gap-2">
+                        <i data-lucide="alert-circle" class="h-4 w-4 text-amber-600"></i>
+                        Sin evidencia: <strong id="evidencia-sin-url">0</strong>
+                    </div>
+                </div>
+                <div id="cont-reporte-evidencia" class="overflow-x-auto"></div>
             </div>
         </div>
     </main>
@@ -751,6 +799,10 @@
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Espacio de Exposición</label>
                         <input type="text" id="form-espacioExposicion" placeholder="Aula TEC..." class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:border-indigo-500 outline-none">
                     </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">URL de la Evidencia</label>
+                    <input type="url" id="form-urlEvidencia" placeholder="https://drive.google.com/..." class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:border-indigo-500 outline-none">
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -1595,7 +1647,7 @@
         }
 
         function actualizarIndicadoresOrden() {
-            const columnas = ['nombre', 'tipo', 'materia', 'profesor', 'espacioNecesario', 'espacioExposicion', 'clase'];
+            const columnas = ['nombre', 'tipo', 'materia', 'profesor', 'espacioNecesario', 'espacioExposicion', 'clase', 'urlEvidencia'];
             columnas.forEach(col => {
                 const span = document.getElementById(`orden-${col}`);
                 if (span) span.innerHTML = '';
@@ -1651,6 +1703,7 @@
                         <td class="py-4 px-4 text-slate-500 font-medium text-xs">${p.espacioNecesario || 'N/A'}</td>
                         <td class="py-4 px-4"><span class="inline-flex items-center gap-1 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 px-2 py-1 rounded-lg"><i data-lucide="map-pin" class="h-3.5 w-3.5"></i> ${p.espacioExposicion || 'Por asignar'}</span></td>
                         <td class="py-4 px-4"><div class="text-slate-900 font-bold text-xs">${p.clase || 'N/A'}</div>${badgeAlumnado}</td>
+                        <td class="py-4 px-4 text-xs">${p.urlEvidencia ? `<a href="${p.urlEvidencia}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800 font-medium hover:underline transition"><i data-lucide="external-link" class="h-3.5 w-3.5 shrink-0"></i><span class="truncate max-w-[120px]">${p.urlEvidencia}</span></a>` : '<span class="text-slate-400">—</span>'}</td>
                         <td class="py-4 px-5 text-right whitespace-nowrap">
                             <div class="flex items-center justify-end gap-1.5 opacity-80 group-hover:opacity-100 transition">
                                 <button onclick="editarProducto(${p.id})" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Editar"><i data-lucide="edit-3" class="h-4 w-4"></i></button>
@@ -2156,6 +2209,7 @@
             document.getElementById('form-profesor').value = p.profesor;
             document.getElementById('form-espacioNecesario').value = p.espacioNecesario;
             document.getElementById('form-espacioExposicion').value = p.espacioExposicion;
+            document.getElementById('form-urlEvidencia').value = p.urlEvidencia || '';
             document.getElementById('form-alumnado').value = p.alumnado;
             document.getElementById('form-clase').value = p.clase;
             document.getElementById('btn-guardar').disabled = false;
@@ -2180,6 +2234,7 @@
                 profesor: profesorValor,
                 espacioNecesario: document.getElementById('form-espacioNecesario').value || "N/A",
                 espacioExposicion: document.getElementById('form-espacioExposicion').value || "Por asignar",
+                urlEvidencia: document.getElementById('form-urlEvidencia').value || "",
                 alumnado: document.getElementById('form-alumnado').value,
                 clase: document.getElementById('form-clase').value || "N/A"
             };
@@ -2215,9 +2270,9 @@
 
         function exportarCSV() {
             const database = getDatabase();
-            let csvContent = "data:text/csv;charset=utf-8,Nombre,Tipo,Materia(s),Profesorado,Espacio Necesario,Espacio Exposicion,Alumnado,Clase\n";
+            let csvContent = "data:text/csv;charset=utf-8,Nombre,Tipo,Materia(s),Profesorado,Espacio Necesario,Espacio Exposicion,Alumnado,Clase,URL Evidencia\n";
             database.forEach(p => {
-                csvContent += `"${(p.nombre || '').replace(/"/g, '""')}","${(p.tipo || '').replace(/"/g, '""')}","${(p.materia || '').replace(/"/g, '""')}","${(p.profesor || '').replace(/"/g, '""')}","${(p.espacioNecesario || '').replace(/"/g, '""')}","${(p.espacioExposicion || '').replace(/"/g, '""')}","${(p.alumnado || '').replace(/"/g, '""')}","${(p.clase || '').replace(/"/g, '""')}"\n`;
+                csvContent += `"${(p.nombre || '').replace(/"/g, '""')}","${(p.tipo || '').replace(/"/g, '""')}","${(p.materia || '').replace(/"/g, '""')}","${(p.profesor || '').replace(/"/g, '""')}","${(p.espacioNecesario || '').replace(/"/g, '""')}","${(p.espacioExposicion || '').replace(/"/g, '""')}","${(p.alumnado || '').replace(/"/g, '""')}","${(p.clase || '').replace(/"/g, '""')}","${(p.urlEvidencia || '').replace(/"/g, '""')}"\n`;
             });
             const link = document.createElement("a");
             link.setAttribute("href", encodeURI(csvContent));
@@ -2267,7 +2322,7 @@
 
                     // Cabecera esperada: Nombre,Tipo,Materia(s),Profesorado,Espacio Necesario,Espacio Exposicion,Alumnado,Clase
                     var cabecera = filas[0].toLowerCase();
-                    var camposEsperados = ['nombre', 'tipo', 'materia', 'profesor', 'espacio necesario', 'espacio exposicion', 'alumnado', 'clase'];
+                    var camposEsperados = ['nombre', 'tipo', 'materia', 'profesor', 'espacio necesario', 'espacio exposicion', 'alumnado', 'clase', 'url evidencia', 'evidencia'];
 
                     var csvTieneCabecera = true;
                     camposEsperados.forEach(function(campo) {
@@ -2300,7 +2355,8 @@
                             espacioNecesario: (campos[4] || 'N/A').trim(),
                             espacioExposicion: (campos[5] || 'Por asignar').trim(),
                             alumnado: (campos[6] || '').trim(),
-                            clase: (campos[7] || 'N/A').trim()
+                            clase: (campos[7] || 'N/A').trim(),
+                            urlEvidencia: (campos[8] || '').trim()
                         };
 
                         // Solo importar si tiene nombre
@@ -2420,7 +2476,7 @@
 
         // GENERACIÓN DE REPORTES EN LA APP
         function generarTodosLosInformes() {
-            generarReporteTipos(); generarReporteProfesores(); generarReporteEspacios(); generarReporteAlumnado(); renderLucideIcons();
+            generarReporteTipos(); generarReporteProfesores(); generarReporteEspacios(); generarReporteAlumnado(); generarReporteEvidencia(); renderLucideIcons();
         }
 
         function generarReporteTipos() {
@@ -2503,6 +2559,121 @@
             contenedor.innerHTML = html;
             const badge = document.getElementById('contador-duplicados');
             if (badge) badge.innerText = `${duplicadosCount} solapes/duplicados detectados`;
+        }
+
+        // ==========================================
+        // INFORME DE EVIDENCIAS
+        // ==========================================
+        function generarReporteEvidencia() {
+            const contenedor = document.getElementById('cont-reporte-evidencia');
+            if (!contenedor) return;
+            contenedor.innerHTML = '';
+            const db = getDatabase();
+            const totalProyectos = db.length;
+            const conUrl = db.filter(p => p.urlEvidencia && p.urlEvidencia.trim().length > 0).length;
+            const sinUrl = totalProyectos - conUrl;
+
+            document.getElementById('evidencia-total-proyectos').innerText = totalProyectos;
+            document.getElementById('evidencia-con-url').innerText = conUrl;
+            document.getElementById('evidencia-sin-url').innerText = sinUrl;
+
+            if (totalProyectos === 0) {
+                contenedor.innerHTML = '<div class="py-12 text-center text-sm text-slate-400"><i data-lucide="inbox" class="h-8 w-8 mx-auto mb-2 text-slate-300"></i><p>No hay proyectos registrados.</p></div>';
+                renderLucideIcons();
+                return;
+            }
+
+            let html = `<table class="w-full text-left text-sm border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 border-b-2 border-slate-200 text-xs font-bold uppercase tracking-wider text-slate-600">
+                        <th class="py-3 px-4">Proyecto</th>
+                        <th class="py-3 px-4">Tipo</th>
+                        <th class="py-3 px-4">Profesorado</th>
+                        <th class="py-3 px-4">Materia</th>
+                        <th class="py-3 px-4">Clase</th>
+                        <th class="py-3 px-4">URL de la Evidencia</th>
+                        <th class="py-3 px-4 text-center">Estado</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">`;
+
+            db.forEach(p => {
+                const tieneUrl = p.urlEvidencia && p.urlEvidencia.trim().length > 0;
+                const estadoBadge = tieneUrl
+                    ? '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200"><i data-lucide="check" class="h-3 w-3"></i> Con evidencia</span>'
+                    : '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200"><i data-lucide="alert-circle" class="h-3 w-3"></i> Pendiente</span>';
+
+                html += `<tr class="hover:bg-slate-50 transition-colors">
+                    <td class="py-3 px-4"><span class="font-bold text-slate-900">${p.nombre || ''}</span></td>
+                    <td class="py-3 px-4 text-xs text-slate-600">${p.tipo || ''}</td>
+                    <td class="py-3 px-4 text-xs text-slate-600">${p.profesor || ''}</td>
+                    <td class="py-3 px-4 text-xs text-slate-600">${p.materia || ''}</td>
+                    <td class="py-3 px-4 text-xs text-slate-600">${p.clase || ''}</td>
+                    <td class="py-3 px-4 text-xs">${tieneUrl ? `<a href="${p.urlEvidencia}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800 font-medium hover:underline transition"><i data-lucide="external-link" class="h-3.5 w-3.5 shrink-0"></i><span class="truncate max-w-[180px]">${p.urlEvidencia}</span></a>` : '<span class="text-slate-400 italic">No asignada</span>'}</td>
+                    <td class="py-3 px-4 text-center">${estadoBadge}</td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            contenedor.innerHTML = html;
+            renderLucideIcons();
+        }
+
+        function exportarCSVEvidencia() {
+            const db = getDatabase();
+            let csvContent = "data:text/csv;charset=utf-8,Nombre del Proyecto,Tipo,Profesorado,Materia,Clase,URL de la Evidencia,Estado\n";
+            db.forEach(p => {
+                const tieneUrl = p.urlEvidencia && p.urlEvidencia.trim().length > 0;
+                const estado = tieneUrl ? 'Con evidencia' : 'Pendiente';
+                csvContent += `"${(p.nombre || '').replace(/"/g, '""')}","${(p.tipo || '').replace(/"/g, '""')}","${(p.profesor || '').replace(/"/g, '""')}","${(p.materia || '').replace(/"/g, '""')}","${(p.clase || '').replace(/"/g, '""')}","${(p.urlEvidencia || '').replace(/"/g, '""')}","${estado}"\n`;
+            });
+            const link = document.createElement("a");
+            link.setAttribute("href", encodeURI(csvContent));
+            var añoFin = (datosGlobales.añoActivo || '2025-2026').split('-')[1] || datosGlobales.añoActivo;
+            var ahora = new Date();
+            var dd = String(ahora.getDate()).padStart(2, '0');
+            var mm = String(ahora.getMonth() + 1).padStart(2, '0');
+            var yy = String(ahora.getFullYear()).slice(-2);
+            var hh = String(ahora.getHours()).padStart(2, '0');
+            var mi = String(ahora.getMinutes()).padStart(2, '0');
+            var ss = String(ahora.getSeconds()).padStart(2, '0');
+            var fechaHora = dd + '-' + mm + '-' + yy + '_' + hh + '-' + mi + '-' + ss;
+            link.setAttribute("download", "Evidencias_ExpoVilladiego_" + añoFin + "_" + fechaHora + ".csv");
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        }
+
+        function exportarPDFEvidencia() {
+            const db = getDatabase();
+            const conUrl = db.filter(p => p.urlEvidencia && p.urlEvidencia.trim().length > 0).length;
+            const sinUrl = db.length - conUrl;
+            const printContainer = document.getElementById('print-section');
+            const añoFin = (datosGlobales.añoActivo || '2025-2026').split('-')[1] || datosGlobales.añoActivo;
+            const añoCurso = datosGlobales.añoActivo || '2025-2026';
+
+            let html = `<div class="border-b-2 border-slate-800 pb-4 mb-6">
+                <h1 class="text-2xl font-black text-slate-900 uppercase tracking-tight">EXPOVILLADIEGO ${añoFin}</h1>
+                <p class="text-sm font-bold text-slate-600 uppercase tracking-wider">Curso escolar ${añoCurso} · IES Peñaflor, Sevilla</p>
+                <p class="text-xs text-slate-400 mt-0.5">Listado de Evidencias por Proyecto</p>
+                <p class="text-xs text-slate-400 mt-1">Generado el: <strong>${new Date().toLocaleDateString('es-ES')}</strong></p>
+            </div>`;
+
+            html += `<div class="grid grid-cols-3 gap-4 mb-6 print-card p-4 rounded-xl border border-slate-200 bg-slate-50/50">
+                <div class="text-center"><span class="block text-xs font-bold text-slate-400 uppercase">Total Proyectos</span><span class="text-xl font-extrabold text-indigo-700">${db.length}</span></div>
+                <div class="text-center border-l border-slate-200"><span class="block text-xs font-bold text-slate-400 uppercase">Con Evidencia</span><span class="text-xl font-extrabold text-emerald-700">${conUrl}</span></div>
+                <div class="text-center border-l border-slate-200"><span class="block text-xs font-bold text-slate-400 uppercase">Sin Evidencia</span><span class="text-xl font-extrabold text-amber-700">${sinUrl}</span></div>
+            </div>`;
+
+            html += '<table class="w-full text-left text-xs border-collapse border-t-2 border-slate-300"><thead><tr class="bg-slate-100 text-slate-600 font-bold uppercase text-[10px]"><th class="py-2 px-3 border-b border-slate-200">Proyecto</th><th class="py-2 px-3 border-b border-slate-200">Tipo</th><th class="py-2 px-3 border-b border-slate-200">Profesorado</th><th class="py-2 px-3 border-b border-slate-200">Clase</th><th class="py-2 px-3 border-b border-slate-200">URL Evidencia</th><th class="py-2 px-3 border-b border-slate-200">Estado</th></tr></thead><tbody class="divide-y divide-slate-100">';
+
+            db.forEach(p => {
+                const tieneUrl = p.urlEvidencia && p.urlEvidencia.trim().length > 0;
+                const estado = tieneUrl ? '<span style="color:#059669;font-weight:bold;">OK</span>' : '<span style="color:#d97706;font-weight:bold;">Pendiente</span>';
+                html += `<tr class="print-card"><td class="py-2 px-3 font-bold text-slate-800">${p.nombre || ''}</td><td class="py-2 px-3 text-slate-600">${p.tipo || ''}</td><td class="py-2 px-3 text-slate-600">${p.profesor || ''}</td><td class="py-2 px-3 text-slate-600">${p.clase || ''}</td><td class="py-2 px-3 text-indigo-600 break-all" style="max-width:200px;word-break:break-all;">${p.urlEvidencia || '—'}</td><td class="py-2 px-3 text-center">${estado}</td></tr>`;
+            });
+
+            html += '</tbody></table>';
+            printContainer.innerHTML = html;
+            setTimeout(() => window.print(), 300);
         }
 
         // EXPORTACIÓN A PDF / IMPRESIÓN
