@@ -261,7 +261,7 @@
 
         <!-- SELECTOR DE VISTA PRINCIPAL -->
         <div class="flex border-b border-slate-200 tabs-scroll overflow-x-auto">
-            <button id="tab-tabla" onclick="cambiarVistaPrincipal('tabla')" class="px-4 sm:px-6 py-3 font-bold text-sm border-b-2 border-indigo-600 text-indigo-600 transition flex items-center gap-2 whitespace-nowrap">
+            <button id="tab-tabla" onclick="cambiarVistaPrincipal('tabla')" class="px-4 sm:px-6 py-3 font-bold text-sm border-b-2 border-indigo-600 bg-indigo-50 text-indigo-700 transition flex items-center gap-2 whitespace-nowrap">
                 <i data-lucide="table-properties" class="h-4 w-4"></i>
                 Base de Datos y Registro
             </button>
@@ -2225,8 +2225,8 @@
             vistaActual = vista;
             const tabTabla = document.getElementById('tab-tabla'), tabInformes = document.getElementById('tab-informes'), tabCuadrante = document.getElementById('tab-cuadrante');
             const vistaTabla = document.getElementById('vista-tabla'), vistaInformes = document.getElementById('vista-informes'), vistaCuadrante = document.getElementById('vista-cuadrante');
-            const activeClass = "px-4 sm:px-6 py-3 font-bold text-sm border-b-2 border-indigo-600 text-indigo-600 transition flex items-center gap-2 whitespace-nowrap";
-            const inactiveClass = "px-4 sm:px-6 py-3 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-indigo-600 hover:border-slate-300 transition flex items-center gap-2 whitespace-nowrap";
+            const activeClass = "px-4 sm:px-6 py-3 font-bold text-sm border-b-2 border-indigo-600 bg-indigo-50 text-indigo-700 transition flex items-center gap-2 whitespace-nowrap";
+            const inactiveClass = "px-4 sm:px-6 py-3 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-indigo-600 hover:bg-slate-50 transition flex items-center gap-2 whitespace-nowrap";
 
             tabTabla.className = inactiveClass;
             tabInformes.className = inactiveClass;
