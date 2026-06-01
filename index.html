@@ -3366,8 +3366,9 @@
         function getProyectosDisponiblesCuadrante() {
             const db = getDatabase();
             const cuadrante = getCuadrante();
-            const usados = new Set(cuadrante.map(f => f.proyectoId));
-            return db.filter(p => !usados.has(p.id)).sort((a, b) => (a.nombre || '').localeCompare(b.nombre || '', 'es', { sensitivity: 'base' }));
+            // Usar String() para comparación flexible (proyectoId puede ser string o number tras JSON)
+            const usados = new Set(cuadrante.map(f => String(f.proyectoId)));
+            return db.filter(p => !usados.has(String(p.id))).sort((a, b) => (a.nombre || '').localeCompare(b.nombre || '', 'es', { sensitivity: 'base' }));
         }
 
         // Añade una nueva fila al cuadrante
@@ -3540,7 +3541,9 @@
             if (msgVacio) msgVacio.classList.add('hidden');
 
             // Construir mapa de IDs de proyectos ya en el cuadrante (para ocultarlos del dropdown)
-            const usadosIds = new Set(cuadrante.map(f => f.proyectoId));
+            const usadosIds = new Set(cuadrante.map(f => String(f.proyectoId)));
+            // Función auxiliar para comparar IDs flexibles (string vs number tras JSON)
+            const mismoId = (a, b) => String(a) === String(b);
 
             // Construir mapas: qué alumnos están ya usados en cada franja (para deshabilitarlos en los selects)
             const usadosPorFranja = {};
@@ -3556,22 +3559,22 @@
             let html = '';
             // Ordenar filas del cuadrante alfabéticamente por nombre del proyecto
             const cuadranteOrdenado = [...cuadrante].sort((a, b) => {
-                const pa = db.find(p => p.id === a.proyectoId);
-                const pb = db.find(p => p.id === b.proyectoId);
+                const pa = db.find(p => mismoId(p.id, a.proyectoId));
+                const pb = db.find(p => mismoId(p.id, b.proyectoId));
                 return (pa ? pa.nombre : '').localeCompare(pb ? pb.nombre : '', 'es', { sensitivity: 'base' });
             });
             cuadranteOrdenado.forEach((fila, filaIdx) => {
                 // Obtener el índice real en el cuadrante original para las operaciones (añadir/eliminar)
                 const idxReal = cuadrante.indexOf(fila);
-                const proyecto = db.find(p => p.id === fila.proyectoId);
+                const proyecto = db.find(p => mismoId(p.id, fila.proyectoId));
                 const nombreProyecto = proyecto ? proyecto.nombre : '(proyecto eliminado)';
 
                 // Select de proyecto (ordenado alfabéticamente, solo candidatos no usados)
                 const dbOrdenado = [...db].sort((a, b) => (a.nombre || '').localeCompare(b.nombre || '', 'es', { sensitivity: 'base' }));
                 let opcionesProyecto = '';
                 dbOrdenado.forEach(p => {
-                    if (usadosIds.has(p.id) && p.id !== fila.proyectoId) return; // ocultar proyectos ya usados
-                    const selected = p.id === fila.proyectoId ? 'selected' : '';
+                    if (usadosIds.has(String(p.id)) && !mismoId(p.id, fila.proyectoId)) return; // ocultar proyectos ya usados
+                    const selected = mismoId(p.id, fila.proyectoId) ? 'selected' : '';
                     opcionesProyecto += `<option value="${p.id}" ${selected}>${p.nombre || 'Sin nombre'}</option>`;
                 });
 
@@ -3631,7 +3634,7 @@
             let csvContent = "data:text/csv;charset=utf-8," + headers.map(h => `"${h}"`).join(',') + "\n";
 
             cuadrante.forEach(fila => {
-                const proyecto = db.find(p => p.id === fila.proyectoId);
+                const proyecto = db.find(p => mismoId(p.id, fila.proyectoId));
                 const nombre = proyecto ? (proyecto.nombre || '').replace(/"/g, '""') : '(proyecto eliminado)';
                 const valores = FRANJAS_HORARIAS.map(f => {
                     const al = fila.asignaciones && fila.asignaciones[f] ? fila.asignaciones[f].replace(/"/g, '""') : '';
@@ -3835,7 +3838,7 @@
             html += '</tr></thead><tbody class="divide-y divide-slate-100">';
 
             cuadrante.forEach(fila => {
-                const proyecto = db.find(p => p.id === fila.proyectoId);
+                const proyecto = db.find(p => String(p.id) === String(fila.proyectoId));
                 const nombre = proyecto ? proyecto.nombre : '(proyecto eliminado)';
                 html += '<tr class="print-card"><td class="py-2 px-3 font-bold text-slate-800">' + (nombre || '') + '</td>';
                 FRANJAS_HORARIAS.forEach(f => {
