@@ -283,7 +283,7 @@
                 <div class="flex flex-col md:flex-row gap-3">
                     <div class="relative flex-grow">
                         <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400"></i>
-                        <input type="text" id="input-buscar" oninput="aplicarFiltros()" placeholder="Buscar por título, materia, profesor, alumnos o aula..." 
+                        <input type="text" id="input-buscar" oninput="aplicarFiltros()" autocomplete="off" placeholder="Buscar por título, materia, profesor, alumnos o aula..." 
                             class="w-full pl-11 pr-4 py-2.5 bg-slate-50 hover:bg-slate-100/70 focus:bg-white border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all rounded-xl text-sm outline-none">
                     </div>
                     <div class="w-full md:w-48">
@@ -3983,6 +3983,16 @@
                         });
                         registration.addEventListener('updatefound', () => {
                             console.log('[PWA] Nueva versión del SW detectada');
+                            // El nuevo SW instaló pero espera — forzar recarga para activarlo
+                            var newSW = registration.installing;
+                            if (newSW) {
+                                newSW.addEventListener('statechange', function() {
+                                    if (newSW.state === 'activated') {
+                                        console.log('[PWA] Nuevo SW activado — recargando para aplicar cambios');
+                                        window.location.reload();
+                                    }
+                                });
+                            }
                         });
                     })
                     .catch((error) => {
