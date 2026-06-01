@@ -3943,22 +3943,24 @@
         }
 
         function registrarServiceWorker() {
-            // Leer la versión del service worker y mostrarla en el header
-            fetch('./sw.js', { cache: 'no-store' })
-                .then(function(r) { return r.text(); })
-                .then(function(text) {
-                    var match = text.match(/const\s+APP_VERSION\s*=\s*['"]([^'"]+)['"]/);
-                    if (match) {
-                        var badge = document.getElementById('app-version-badge');
-                        if (badge) badge.textContent = 'v' + match[1];
-                    }
-                })
-                .catch(function() { /* silencioso */ });
-
+            // Leer la versión del service worker vía postMessage (no fetch, que el SW intercepta)
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('./sw.js')
-                    .then((registration) => {
+                    .then(function(registration) {
                         console.log('[PWA] Service Worker registrado. Scope:', registration.scope);
+                        // Pedir la versión al service worker activo
+                        if (navigator.serviceWorker.controller) {
+                            var channel = new MessageChannel();
+                            channel.port1.onmessage = function(event) {
+                                var badge = document.getElementById('app-version-badge');
+                                if (badge && event.data && event.data.version) {
+                                    badge.textContent = 'v' + event.data.version;
+                                }
+                            };
+                            navigator.serviceWorker.controller.postMessage(
+                                { type: 'GET_VERSION' }, [channel.port2]
+                            );
+                        }
                         registration.addEventListener('updatefound', () => {
                             console.log('[PWA] Nueva versión del SW detectada');
                         });
