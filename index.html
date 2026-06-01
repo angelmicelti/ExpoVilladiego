@@ -155,7 +155,7 @@
                     <!-- Selector de Año Escolar -->
                     <div class="flex items-center gap-2 bg-slate-100 border border-slate-200 px-3 py-2 rounded-xl">
                         <i data-lucide="calendar" class="h-4 w-4 text-indigo-500"></i>
-                        <select id="selector-año" onchange="cambiarAño(this.value)" class="bg-transparent text-slate-800 font-bold text-sm outline-none cursor-pointer"></select>
+                        <select id="selector-año" onchange="_cambiarAñoSelector(this)" class="bg-transparent text-slate-800 font-bold text-sm outline-none cursor-pointer"></select>
                         <button onclick="abrirModalGestionAños()" class="text-slate-400 hover:text-indigo-600 transition" title="Gestionar años escolares">
                             <i data-lucide="settings-2" class="h-4 w-4"></i>
                         </button>
@@ -786,6 +786,35 @@
         </div>
     </div>
 
+    <!-- MODAL DE CLAVE ADMIN -->
+    <div id="modal-clave-admin" class="fixed inset-0 bg-slate-900/40 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div class="bg-gradient-to-r from-amber-600 to-orange-600 text-white px-6 py-4 flex justify-between items-center">
+                <h2 class="text-lg font-bold flex items-center gap-2">
+                    <i data-lucide="shield" class="h-5 w-5"></i> Acceso restringido
+                </h2>
+                <button onclick="cerrarModalClaveAdmin()" class="text-white/80 hover:text-white hover:bg-white/10 p-1.5 rounded-lg transition"><i data-lucide="x" class="h-5 w-5"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-sm text-slate-600 leading-relaxed">Introduce la clave de administrador para gestionar los años escolares.</p>
+                <div class="relative">
+                    <input type="password" id="input-clave-admin" placeholder="Clave de acceso" class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all" onkeydown="if(event.key==='Enter') verificarClaveAdmin()">
+                    <i data-lucide="lock" class="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400"></i>
+                </div>
+                <div id="clave-admin-error" class="hidden text-red-600 text-xs font-semibold flex items-center gap-1.5">
+                    <i data-lucide="alert-circle" class="h-3.5 w-3.5"></i>
+                    <span>Clave incorrecta. Inténtalo de nuevo.</span>
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button onclick="cerrarModalClaveAdmin()" class="flex-grow px-4 py-2.5 text-slate-600 hover:bg-slate-100 rounded-xl text-sm font-semibold transition">Cancelar</button>
+                    <button onclick="verificarClaveAdmin()" class="flex-grow px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold transition shadow-md shadow-indigo-600/20 flex items-center justify-center gap-2">
+                        <i data-lucide="log-in" class="h-4 w-4"></i> Acceder
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL DE GESTIÓN DE AÑOS ESCOLARES -->
     <div id="modal-años" class="fixed inset-0 bg-slate-900/40 z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
@@ -1028,6 +1057,23 @@
         }
 
         // =========================================
+        // PRESERVAR CAMPOS NUEVOS AL RECIBIR DATOS REMOTOS
+        // =========================================
+        function _preservarCuadrantesLocales(remotos) {
+            try {
+                if (!datosGlobales || !datosGlobales.años) return;
+                Object.keys(datosGlobales.años).forEach(function(año) {
+                    var localCuad = datosGlobales.años[año] && datosGlobales.años[año].cuadrante;
+                    if (localCuad && localCuad.length > 0) {
+                        if (!remotos.años[año]) remotos.años[año] = {};
+                        // Siempre preservar cuadrante local (local gana para el cuadrante)
+                        remotos.años[año].cuadrante = localCuad;
+                    }
+                });
+            } catch (e) { console.warn('[PWA] Error al preservar cuadrantes:', e); }
+        }
+
+        // =========================================
         // LISTENER FIRESTORE (conectar / reconectar)
         // =========================================
         function conectarListenerFirestore() {
@@ -1077,6 +1123,8 @@
                     // Primera carga: los datos de Firestore siempre ganan
                     _firebaseListenerListo = true;
                     _jsonDatosEscritos = null;
+                    // Preservar cuadrantes locales si no existen en remoto
+                    _preservarCuadrantesLocales(remotos);
                     datosGlobales = remotos;
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(datosGlobales));
                     productos = [...getDatabase()];
@@ -1123,6 +1171,8 @@
 
                 // Datos realmente cambiaron desde otro dispositivo/sesión
                 console.log('[Firestore] Datos actualizados desde otro dispositivo');
+                // Preservar cuadrantes locales si no existen en remoto
+                _preservarCuadrantesLocales(remotos);
                 datosGlobales = remotos;
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(datosGlobales));
                 productos = [...getDatabase()];
@@ -1310,6 +1360,8 @@
         let ordenAscendente = true;
         let vistaActual = 'tabla';
         let reporteActivo = 'reporte-tipos';
+        let _adminAutenticado = false; // Sesión de admin para gestión de años
+        let _añoPendiente = null; // Año pendiente de cambio (cuando se pide clave desde el selector)
 
         function getDatabase() {
             return datosGlobales.años[datosGlobales.añoActivo]?.proyectos || [];
@@ -1398,11 +1450,40 @@
             });
         }
 
-        function cambiarAño(nuevoAño) {
+        // Cambio de año desde el selector desplegable (requiere clave admin)
+        function _cambiarAñoSelector(select) {
+            const nuevoAño = select.value;
+            if (datosGlobales.añoActivo === nuevoAño || !datosGlobales.años[nuevoAño]) return;
+            // Si ya autenticado, cambiar directamente
+            if (_adminAutenticado) {
+                _ejecutarCambioAño(nuevoAño);
+                return;
+            }
+            // Pedir clave: guardar valor pendiente y mostrar modal
+            _añoPendiente = nuevoAño;
+            const modalClave = document.getElementById('modal-clave-admin');
+            const inputClave = document.getElementById('input-clave-admin');
+            const errorMsg = document.getElementById('clave-admin-error');
+            if (modalClave && inputClave) {
+                inputClave.value = '';
+                if (errorMsg) errorMsg.classList.add('hidden');
+                modalClave.classList.remove('hidden');
+                renderLucideIcons();
+                setTimeout(() => inputClave.focus(), 100);
+            }
+        }
+
+        // Ejecuta el cambio de año (compartido: selector y modal de gestión)
+        function _ejecutarCambioAño(nuevoAño) {
             if (datosGlobales.añoActivo === nuevoAño || !datosGlobales.años[nuevoAño]) return;
             datosGlobales.añoActivo = nuevoAño;
             guardarDatosEnStorage();
             actualizarTodo();
+        }
+
+        // Cambio de año desde el modal de gestión (ya autenticado)
+        function cambiarAño(nuevoAño) {
+            _ejecutarCambioAño(nuevoAño);
         }
 
         function actualizarTodo() {
@@ -1414,6 +1495,7 @@
             aplicarFiltros();
             actualizarEstadisticas();
             if (vistaActual === 'informes') generarTodosLosInformes();
+            if (vistaActual === 'cuadrante') renderizarCuadrante();
             renderLucideIcons();
         }
 
@@ -1471,17 +1553,85 @@
         }
 
         function abrirModalGestionAños() {
+            // Si ya se verificó la clave en esta sesión, abrir directamente
+            if (_adminAutenticado) {
+                _mostrarModalAños();
+                return;
+            }
+            // Mostrar modal de clave
+            const modalClave = document.getElementById('modal-clave-admin');
+            const inputClave = document.getElementById('input-clave-admin');
+            const errorMsg = document.getElementById('clave-admin-error');
+            if (modalClave && inputClave) {
+                inputClave.value = '';
+                if (errorMsg) errorMsg.classList.add('hidden');
+                modalClave.classList.remove('hidden');
+                renderLucideIcons();
+                setTimeout(() => inputClave.focus(), 100);
+            }
+        }
+
+        function cerrarModalClaveAdmin() {
+            document.getElementById('modal-clave-admin').classList.add('hidden');
+            // Si se canceló y había un cambio pendiente, restaurar el selector al año activo
+            if (_añoPendiente) {
+                const select = document.getElementById('selector-año');
+                if (select) select.value = datosGlobales.añoActivo;
+                _añoPendiente = null;
+            }
+        }
+
+        function verificarClaveAdmin() {
+            const inputClave = document.getElementById('input-clave-admin');
+            const errorMsg = document.getElementById('clave-admin-error');
+            const clave = inputClave ? inputClave.value.trim() : '';
+            if (clave === 'admin') {
+                _adminAutenticado = true;
+                // Capturar _añoPendiente ANTES de cerrar el modal (cerrarModalClaveAdmin lo pone a null)
+                const pendiente = _añoPendiente;
+                cerrarModalClaveAdmin();
+                if (pendiente) {
+                    _ejecutarCambioAño(pendiente);
+                } else {
+                    _mostrarModalAños();
+                }
+            } else {
+                if (errorMsg) errorMsg.classList.remove('hidden');
+                if (inputClave) {
+                    inputClave.value = '';
+                    inputClave.classList.add('border-red-400', 'bg-red-50');
+                    setTimeout(() => inputClave.classList.remove('border-red-400', 'bg-red-50'), 1500);
+                    inputClave.focus();
+                }
+                renderLucideIcons();
+            }
+        }
+
+        // Determina si un año escolar está en curso o ya fue pasado (protegido contra borrado)
+        function _esAñoProtegido(año) {
+            const inicio = parseInt(año.split('-')[0]);
+            const hoy = new Date();
+            const añoActual = hoy.getFullYear();
+            const mesActual = hoy.getMonth() + 1;
+            // El curso escolar empieza en septiembre de 'inicio'; está protegido si ya empezó
+            return (añoActual > inicio) || (añoActual === inicio && mesActual >= 9);
+        }
+
+        function _mostrarModalAños() {
             const modal = document.getElementById('modal-años');
             const lista = document.getElementById('lista-años');
             if (!modal || !lista) return;
             lista.innerHTML = '';
             Object.keys(datosGlobales.años).sort().reverse().forEach(año => {
                 const esActivo = año === datosGlobales.añoActivo;
+                const protegido = _esAñoProtegido(año);
                 const numProy = (datosGlobales.años[año]?.proyectos || []).length;
                 const totalAños = Object.keys(datosGlobales.años).length;
                 const div = document.createElement('div');
                 div.className = 'flex items-center justify-between p-3 rounded-xl border ' + (esActivo ? 'bg-indigo-50 border-indigo-200' : 'bg-slate-50 border-slate-100');
-                div.innerHTML = '<div class="flex items-center gap-3"><div class="' + (esActivo ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600') + ' w-8 h-8 rounded-full flex items-center justify-center"><i data-lucide="calendar" class="h-4 w-4"></i></div><div><span class="font-bold text-sm ' + (esActivo ? 'text-indigo-900' : 'text-slate-700') + '">Curso ' + año + '</span>' + (esActivo ? ' <span class="ml-2 bg-indigo-100 text-indigo-700 text-[10px] font-bold px-2 py-0.5 rounded-full">ACTIVO</span>' : '') + '<span class="block text-[11px] text-slate-400">' + numProy + ' proyectos</span></div></div><div class="flex items-center gap-1">' + (!esActivo ? '<button onclick="cambiarAño(\'' + año + '\'); cerrarModalAños();" class="p-1.5 text-indigo-600 hover:bg-indigo-100 rounded-lg transition" title="Activar"><i data-lucide="check-circle" class="h-4 w-4"></i></button>' : '') + '<button onclick="renombrarAño(\'' + año + '\')" class="p-1.5 text-slate-500 hover:bg-slate-200 rounded-lg transition" title="Renombrar"><i data-lucide="edit-3" class="h-4 w-4"></i></button>' + (totalAños > 1 ? '<button onclick="eliminarAño(\'' + año + '\')" class="p-1.5 text-rose-500 hover:bg-rose-100 rounded-lg transition" title="Eliminar"><i data-lucide="trash-2" class="h-4 w-4"></i></button>' : '') + '</div>';
+                // Botón de eliminar: solo si no es el último Y no está protegido
+                const btnEliminar = (totalAños > 1 && !protegido) ? '<button onclick="eliminarAño(\'' + año + '\')" class="p-1.5 text-rose-500 hover:bg-rose-100 rounded-lg transition" title="Eliminar"><i data-lucide="trash-2" class="h-4 w-4"></i></button>' : (protegido ? '<span class="p-1.5 text-slate-300 rounded-lg" title="Curso en curso o pasado: no se puede eliminar"><i data-lucide="lock" class="h-4 w-4"></i></span>' : '');
+                div.innerHTML = '<div class="flex items-center gap-3"><div class="' + (esActivo ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600') + ' w-8 h-8 rounded-full flex items-center justify-center"><i data-lucide="calendar" class="h-4 w-4"></i></div><div><span class="font-bold text-sm ' + (esActivo ? 'text-indigo-900' : 'text-slate-700') + '">Curso ' + año + '</span>' + (esActivo ? ' <span class="ml-2 bg-indigo-100 text-indigo-700 text-[10px] font-bold px-2 py-0.5 rounded-full">ACTIVO</span>' : '') + '<span class="block text-[11px] text-slate-400">' + numProy + ' proyectos</span></div></div><div class="flex items-center gap-1">' + (!esActivo ? '<button onclick="cambiarAño(\'' + año + '\'); cerrarModalAños();" class="p-1.5 text-indigo-600 hover:bg-indigo-100 rounded-lg transition" title="Activar"><i data-lucide="check-circle" class="h-4 w-4"></i></button>' : '') + '<button onclick="renombrarAño(\'' + año + '\')" class="p-1.5 text-slate-500 hover:bg-slate-200 rounded-lg transition" title="Renombrar"><i data-lucide="edit-3" class="h-4 w-4"></i></button>' + btnEliminar + '</div>';
                 lista.appendChild(div);
             });
             modal.classList.remove('hidden');
@@ -1501,7 +1651,7 @@
             }
             if (!/^\d{4}-\d{4}$/.test(nombre)) { alert('Formato: YYYY-YYYY (ej: 2026-2027)'); return; }
             if (datosGlobales.años[nombre]) { alert('El curso ' + nombre + ' ya existe.'); return; }
-            datosGlobales.años[nombre] = { proyectos: [] };
+            datosGlobales.años[nombre] = { proyectos: [], cuadrante: [] };
             datosGlobales.añoActivo = nombre;
             guardarDatosEnStorage();
             input.value = '';
@@ -1523,6 +1673,7 @@
         }
 
         function eliminarAño(año) {
+            if (_esAñoProtegido(año)) { alert('No se puede eliminar un curso escolar en curso o ya finalizado.'); return; }
             const numProy = (datosGlobales.años[año]?.proyectos || []).length;
             if (!confirm('¿Eliminar el curso ' + año + '?\n\nSe borrarán ' + numProy + ' proyectos permanentemente.')) return;
             delete datosGlobales.años[año];
@@ -2908,11 +3059,37 @@
         // ==========================================
         const FRANJAS_HORARIAS = ['M3', 'X1', 'X2', 'X3', 'X4', 'X5', 'X6', 'XT1', 'XT2', 'XT3'];
 
+        // Guarda el cuadrante en una clave separada de localStorage como respaldo
+        function _guardarBackupCuadrante() {
+            try {
+                const año = datosGlobales.añoActivo;
+                const cuadrante = datosGlobales.años[año] && datosGlobales.años[año].cuadrante;
+                if (cuadrante && cuadrante.length > 0) {
+                    localStorage.setItem('expovilladiego_cuadrante_' + año, JSON.stringify(cuadrante));
+                } else {
+                    localStorage.removeItem('expovilladiego_cuadrante_' + año);
+                }
+            } catch (e) { /* ignorar */ }
+        }
+
         // Lee el cuadrante guardado en datosGlobales
         function getCuadrante() {
             const año = datosGlobales.añoActivo;
             if (!datosGlobales.años[año]) datosGlobales.años[año] = { proyectos: [], cuadrante: [] };
             if (!datosGlobales.años[año].cuadrante) datosGlobales.años[año].cuadrante = [];
+            // Respaldo: si el cuadrante está vacío, intentar restaurar desde backup
+            if (datosGlobales.años[año].cuadrante.length === 0) {
+                try {
+                    const backup = localStorage.getItem('expovilladiego_cuadrante_' + año);
+                    if (backup) {
+                        const parsed = JSON.parse(backup);
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                            datosGlobales.años[año].cuadrante = parsed;
+                            console.log('[PWA] Cuadrante restaurado desde backup (' + parsed.length + ' filas)');
+                        }
+                    }
+                } catch (e) { /* ignorar */ }
+            }
             return datosGlobales.años[año].cuadrante;
         }
 
@@ -2945,6 +3122,7 @@
             }
             const cuadrante = getCuadrante();
             cuadrante.push({ proyectoId: disponibles[0].id, asignaciones: {} });
+            _guardarBackupCuadrante();
             guardarDatosEnStorage();
             renderizarCuadrante();
         }
@@ -2954,6 +3132,7 @@
             if (!confirm('¿Eliminar este proyecto del cuadrante?')) return;
             const cuadrante = getCuadrante();
             cuadrante.splice(index, 1);
+            _guardarBackupCuadrante();
             guardarDatosEnStorage();
             renderizarCuadrante();
         }
@@ -2964,6 +3143,7 @@
             cuadrante[index].proyectoId = parseInt(nuevoId);
             // Limpiar asignaciones que tengan conflicto
             verificarConflictosCuadrante();
+            _guardarBackupCuadrante();
             guardarDatosEnStorage();
             renderizarCuadrante();
         }
@@ -2999,6 +3179,7 @@
 
                 cuadrante[filaIndex].asignaciones[franja] = alumnoNombre.trim();
             }
+            _guardarBackupCuadrante();
             guardarDatosEnStorage();
             renderizarCuadrante();
         }
@@ -3025,6 +3206,7 @@
 
         // Guarda el cuadrante (ya se guarda en cada operación, pero botón explícito)
         function guardarCuadrante() {
+            _guardarBackupCuadrante();
             guardarDatosEnStorage();
             // Feedback visual
             const btn = document.querySelector('[onclick="guardarCuadrante()"]');
@@ -3061,6 +3243,9 @@
             }
             if (msgVacio) msgVacio.classList.add('hidden');
 
+            // Construir mapa de IDs de proyectos ya en el cuadrante (para ocultarlos del dropdown)
+            const usadosIds = new Set(cuadrante.map(f => f.proyectoId));
+
             // Construir mapas: qué alumnos están ya usados en cada franja (para deshabilitarlos en los selects)
             const usadosPorFranja = {};
             FRANJAS_HORARIAS.forEach(f => { usadosPorFranja[f] = new Set(); });
@@ -3073,18 +3258,25 @@
             });
 
             let html = '';
-            cuadrante.forEach((fila, filaIdx) => {
+            // Ordenar filas del cuadrante alfabéticamente por nombre del proyecto
+            const cuadranteOrdenado = [...cuadrante].sort((a, b) => {
+                const pa = db.find(p => p.id === a.proyectoId);
+                const pb = db.find(p => p.id === b.proyectoId);
+                return (pa ? pa.nombre : '').localeCompare(pb ? pb.nombre : '', 'es', { sensitivity: 'base' });
+            });
+            cuadranteOrdenado.forEach((fila, filaIdx) => {
+                // Obtener el índice real en el cuadrante original para las operaciones (añadir/eliminar)
+                const idxReal = cuadrante.indexOf(fila);
                 const proyecto = db.find(p => p.id === fila.proyectoId);
                 const nombreProyecto = proyecto ? proyecto.nombre : '(proyecto eliminado)';
 
-                // Select de proyecto (ordenado alfabéticamente)
-                const usadosIds = new Set(cuadrante.map(f => f.proyectoId));
+                // Select de proyecto (ordenado alfabéticamente, solo candidatos no usados)
                 const dbOrdenado = [...db].sort((a, b) => (a.nombre || '').localeCompare(b.nombre || '', 'es', { sensitivity: 'base' }));
                 let opcionesProyecto = '';
                 dbOrdenado.forEach(p => {
+                    if (usadosIds.has(p.id) && p.id !== fila.proyectoId) return; // ocultar proyectos ya usados
                     const selected = p.id === fila.proyectoId ? 'selected' : '';
-                    const disabled = (usadosIds.has(p.id) && p.id !== fila.proyectoId) ? 'disabled' : '';
-                    opcionesProyecto += `<option value="${p.id}" ${selected} ${disabled}>${p.nombre || 'Sin nombre'}</option>`;
+                    opcionesProyecto += `<option value="${p.id}" ${selected}>${p.nombre || 'Sin nombre'}</option>`;
                 });
 
                 // Celdas de franjas horarias
@@ -3105,7 +3297,7 @@
                     const bgCell = tieneAlumno ? 'bg-indigo-50' : '';
 
                     celdasHtml += `<td class="py-2 px-1 text-center ${bgCell} transition-colors">
-                        <select onchange="asignarAlumnoCuadrante(${filaIdx}, '${franja}', this.value)"
+                        <select onchange="asignarAlumnoCuadrante(${idxReal}, '${franja}', this.value)"
                             class="w-full text-xs px-1.5 py-1.5 border border-slate-200 rounded-lg bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-200 outline-none transition-all ${tieneAlumno ? 'font-semibold text-indigo-700 border-indigo-300' : 'text-slate-500'}">
                             ${optsAlumno}
                         </select>
@@ -3113,13 +3305,13 @@
                 });
 
                 // Botón eliminar
-                const btnEliminar = `<button onclick="eliminarFilaCuadrante(${filaIdx})" class="text-red-400 hover:text-red-600 hover:bg-red-50 p-1.5 rounded-lg transition" title="Eliminar fila">
+                const btnEliminar = `<button onclick="eliminarFilaCuadrante(${idxReal})" class="text-red-400 hover:text-red-600 hover:bg-red-50 p-1.5 rounded-lg transition" title="Eliminar fila">
                     <i data-lucide="trash-2" class="h-4 w-4"></i>
                 </button>`;
 
                 html += `<tr class="hover:bg-slate-50/50 transition-colors group">
                     <td class="py-2 px-3 sticky left-0 bg-white z-10 group-hover:bg-slate-50/50 transition-colors">
-                        <select onchange="cambiarProyectoCuadrante(${filaIdx}, this.value)"
+                        <select onchange="cambiarProyectoCuadrante(${idxReal}, this.value)"
                             class="w-full text-xs font-semibold px-2 py-2 border border-slate-200 rounded-lg bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-200 outline-none transition-all text-slate-800">
                             ${opcionesProyecto}
                         </select>
