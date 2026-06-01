@@ -593,16 +593,16 @@
                         <thead>
                             <tr class="bg-gradient-to-r from-slate-100 to-slate-50">
                                 <th class="py-3 px-4 text-left text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200 sticky left-0 bg-gradient-to-r from-slate-100 to-slate-50 z-10 min-w-[200px]">Proyecto</th>
-                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">M3</th>
-                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">X1</th>
-                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">X2</th>
-                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">X3</th>
-                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">X4</th>
-                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">X5</th>
-                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">X6</th>
-                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">XT1</th>
-                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">XT2</th>
-                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">XT3</th>
+                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">M3ª</th>
+                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">X1ª</th>
+                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">X2ª</th>
+                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">X3ª</th>
+                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">X4ª</th>
+                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">X5ª</th>
+                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">X6ª</th>
+                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">XT1ª</th>
+                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">XT2ª</th>
+                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">XT3ª</th>
                                 <th class="py-3 px-3 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200 min-w-[50px]"></th>
                             </tr>
                         </thead>
@@ -3084,12 +3084,13 @@
                 FRANJAS_HORARIAS.forEach(franja => {
                     const alumnoActual = fila.asignaciones && fila.asignaciones[franja] ? fila.asignaciones[franja] : '';
 
-                    // Opciones del select: opción vacía + todos los alumnos
+                    // Opciones del select: opción vacía + solo alumnos NO usados en esta franja en otras filas
                     let optsAlumno = '<option value="">—</option>';
                     todosAlumnos.forEach(al => {
-                        const selected = al.toLowerCase() === alumnoActual.toLowerCase() ? 'selected' : '';
-                        const disabled = (usadosPorFranja[franja].has(al.toLowerCase()) && al.toLowerCase() !== alumnoActual.toLowerCase()) ? 'disabled' : '';
-                        optsAlumno += `<option value="${al}" ${selected} ${disabled}>${al}</option>`;
+                        const alKey = al.toLowerCase();
+                        if (usadosPorFranja[franja].has(alKey) && alKey !== alumnoActual.toLowerCase()) return; // omitir, no mostrar
+                        const selected = alKey === alumnoActual.toLowerCase() ? 'selected' : '';
+                        optsAlumno += `<option value="${al}" ${selected}>${al}</option>`;
                     });
 
                     const tieneAlumno = alumnoActual.length > 0;
