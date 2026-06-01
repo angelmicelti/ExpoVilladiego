@@ -1064,9 +1064,12 @@
                 if (!datosGlobales || !datosGlobales.años) return;
                 Object.keys(datosGlobales.años).forEach(function(año) {
                     var localCuad = datosGlobales.años[año] && datosGlobales.años[año].cuadrante;
-                    if (localCuad && localCuad.length > 0) {
+                    var remoteCuad = remotos.años[año] && remotos.años[año].cuadrante;
+                    // Solo preservar cuadrante local si el remoto está vacío
+                    // (caso offline: el usuario trabajó sin conexión y no había nada en la nube).
+                    // Si el remoto tiene datos, prevalecen (cambios de otros usuarios).
+                    if (localCuad && localCuad.length > 0 && (!remoteCuad || remoteCuad.length === 0)) {
                         if (!remotos.años[año]) remotos.años[año] = {};
-                        // Siempre preservar cuadrante local (local gana para el cuadrante)
                         remotos.años[año].cuadrante = localCuad;
                     }
                 });
