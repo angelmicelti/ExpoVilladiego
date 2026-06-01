@@ -268,7 +268,7 @@
             <button id="tab-informes" onclick="cambiarVistaPrincipal('informes')" class="px-4 sm:px-6 py-3 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-indigo-600 hover:border-slate-300 transition flex items-center gap-2 whitespace-nowrap">
                 <i data-lucide="bar-chart-3" class="h-4 w-4"></i>
                 Informes Dinámicos
-                <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-0.5 rounded-full font-bold">Nuevo</span>
+                
             </button>
         </div>
 
@@ -403,7 +403,7 @@
                     <button onclick="cambiarReporteActivo('reporte-evidencia')" id="btn-reporte-evidencia" class="reporte-tab-btn py-2.5 px-4 rounded-lg font-bold text-xs sm:text-sm text-center text-slate-600 hover:text-indigo-700 transition flex items-center justify-center gap-2">
                         <i data-lucide="link" class="h-4 w-4"></i>
                         Evidencias
-                        <span class="bg-teal-100 text-teal-800 text-xs px-2 py-0.5 rounded-full font-bold">Nuevo</span>
+                        
                     </button>
                 </div>
                 
@@ -496,6 +496,47 @@
                             <i data-lucide="file-down" class="h-4 w-4"></i>
                             Exportar PDF
                         </button>
+                    </div>
+                </div>
+                <!-- Selector de campos a exportar/mostrar -->
+                <div class="bg-gradient-to-br from-slate-50 to-indigo-50/40 rounded-xl border border-slate-200 p-4">
+                    <div class="flex items-center justify-between mb-3 cursor-pointer select-none" onclick="toggleSelectorCamposEvidencia()">
+                        <span class="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-2">
+                            <i data-lucide="settings-2" class="h-4 w-4 text-indigo-500"></i>
+                            Campos a mostrar / exportar
+                        </span>
+                        <span id="evidencia-campos-toggle-icon" class="text-slate-400 transition-transform duration-200"><i data-lucide="chevron-up" class="h-4 w-4"></i></span>
+                    </div>
+                    <div id="evidencia-campos-selector" class="flex flex-wrap gap-2">
+                        <label class="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-indigo-50 hover:border-indigo-300 cursor-pointer transition-all shadow-sm">
+                            <input type="checkbox" class="evidencia-campo-check accent-indigo-600 w-3.5 h-3.5" value="nombre" checked onchange="generarReporteEvidencia()"> Proyecto
+                        </label>
+                        <label class="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-indigo-50 hover:border-indigo-300 cursor-pointer transition-all shadow-sm">
+                            <input type="checkbox" class="evidencia-campo-check accent-indigo-600 w-3.5 h-3.5" value="tipo" checked onchange="generarReporteEvidencia()"> Tipo
+                        </label>
+                        <label class="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-indigo-50 hover:border-indigo-300 cursor-pointer transition-all shadow-sm">
+                            <input type="checkbox" class="evidencia-campo-check accent-indigo-600 w-3.5 h-3.5" value="profesor" checked onchange="generarReporteEvidencia()"> Profesorado
+                        </label>
+                        <label class="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-indigo-50 hover:border-indigo-300 cursor-pointer transition-all shadow-sm">
+                            <input type="checkbox" class="evidencia-campo-check accent-indigo-600 w-3.5 h-3.5" value="materia" checked onchange="generarReporteEvidencia()"> Materia
+                        </label>
+                        <label class="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-indigo-50 hover:border-indigo-300 cursor-pointer transition-all shadow-sm">
+                            <input type="checkbox" class="evidencia-campo-check accent-indigo-600 w-3.5 h-3.5" value="clase" checked onchange="generarReporteEvidencia()"> Clase
+                        </label>
+                        <label class="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-indigo-50 hover:border-indigo-300 cursor-pointer transition-all shadow-sm">
+                            <input type="checkbox" class="evidencia-campo-check accent-indigo-600 w-3.5 h-3.5" value="alumnado" onchange="generarReporteEvidencia()"> Alumnado
+                        </label>
+                        <label class="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-indigo-50 hover:border-indigo-300 cursor-pointer transition-all shadow-sm">
+                            <input type="checkbox" class="evidencia-campo-check accent-indigo-600 w-3.5 h-3.5" value="espacioExposicion" onchange="generarReporteEvidencia()"> Espacio exposición
+                        </label>
+                        <label class="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-indigo-50 hover:border-indigo-300 cursor-pointer transition-all shadow-sm">
+                            <input type="checkbox" class="evidencia-campo-check accent-indigo-600 w-3.5 h-3.5" value="urlEvidencia" checked onchange="generarReporteEvidencia()"> URL Evidencia
+                        </label>
+                        <label class="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-indigo-50 hover:border-indigo-300 cursor-pointer transition-all shadow-sm">
+                            <input type="checkbox" class="evidencia-campo-check accent-indigo-600 w-3.5 h-3.5" value="estado" checked onchange="generarReporteEvidencia()"> Estado
+                        </label>
+                        <button onclick="seleccionarTodosCamposEvidencia(true)" class="inline-flex items-center gap-1 bg-indigo-100 border border-indigo-300 rounded-lg px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-200 cursor-pointer transition-all">Todo</button>
+                        <button onclick="seleccionarTodosCamposEvidencia(false)" class="inline-flex items-center gap-1 bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-xs font-bold text-slate-500 hover:bg-slate-200 cursor-pointer transition-all">Nada</button>
                     </div>
                 </div>
                 <div class="flex flex-wrap gap-3">
@@ -2562,13 +2603,102 @@
         }
 
         // ==========================================
-        // INFORME DE EVIDENCIAS
+        // INFORME DE EVIDENCIAS (con selector de campos)
         // ==========================================
+
+        // Definición de campos disponibles para el informe de evidencias
+        const CAMPOS_EVIDENCIA = [
+            { key: 'nombre',           label: 'Proyecto',        csvHeader: 'Nombre del Proyecto', pdfHeader: 'Proyecto' },
+            { key: 'tipo',             label: 'Tipo',            csvHeader: 'Tipo',                pdfHeader: 'Tipo' },
+            { key: 'profesor',         label: 'Profesorado',     csvHeader: 'Profesorado',         pdfHeader: 'Profesorado' },
+            { key: 'materia',          label: 'Materia',         csvHeader: 'Materia',             pdfHeader: 'Materia' },
+            { key: 'clase',            label: 'Clase',           csvHeader: 'Clase',               pdfHeader: 'Clase' },
+            { key: 'alumnado',         label: 'Alumnado',        csvHeader: 'Alumnado',            pdfHeader: 'Alumnado' },
+            { key: 'espacioExposicion',label: 'Espacio exposición', csvHeader: 'Espacio exposición', pdfHeader: 'Esp. Exposición' },
+            { key: 'urlEvidencia',     label: 'URL Evidencia',   csvHeader: 'URL de la Evidencia',  pdfHeader: 'URL Evidencia' },
+            { key: 'estado',           label: 'Estado',          csvHeader: 'Estado',               pdfHeader: 'Estado' },
+        ];
+
+        // Devuelve array con los keys de los campos seleccionados (orden del checkbox)
+        function getCamposSeleccionadosEvidencia() {
+            const checks = document.querySelectorAll('.evidencia-campo-check');
+            const seleccionados = [];
+            checks.forEach(c => { if (c.checked) seleccionados.push(c.value); });
+            return seleccionados;
+        }
+
+        // Devuelve la definición completa de campo por su key
+        function getDefCampoEvidencia(key) {
+            return CAMPOS_EVIDENCIA.find(c => c.key === key);
+        }
+
+        // Extrae el valor de un campo para un producto dado
+        function getValorCampoEvidencia(p, key) {
+            if (key === 'estado') {
+                return (p.urlEvidencia && p.urlEvidencia.trim().length > 0) ? 'Con evidencia' : 'Pendiente';
+            }
+            return p[key] || '';
+        }
+
+        // Genera la celda HTML para un campo concreto en la tabla visual
+        function generarCeldaCampoEvidencia(p, key) {
+            if (key === 'estado') {
+                const tieneUrl = p.urlEvidencia && p.urlEvidencia.trim().length > 0;
+                return tieneUrl
+                    ? '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200"><i data-lucide="check" class="h-3 w-3"></i> Con evidencia</span>'
+                    : '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200"><i data-lucide="alert-circle" class="h-3 w-3"></i> Pendiente</span>';
+            }
+            if (key === 'urlEvidencia') {
+                const tieneUrl = p.urlEvidencia && p.urlEvidencia.trim().length > 0;
+                return tieneUrl
+                    ? `<a href="${p.urlEvidencia}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800 font-medium hover:underline transition"><i data-lucide="external-link" class="h-3.5 w-3.5 shrink-0"></i><span class="truncate max-w-[180px]">${p.urlEvidencia}</span></a>`
+                    : '<span class="text-slate-400 italic">No asignada</span>';
+            }
+            if (key === 'nombre') {
+                return `<span class="font-bold text-slate-900">${p.nombre || ''}</span>`;
+            }
+            return `<span class="text-xs text-slate-600">${p[key] || ''}</span>`;
+        }
+
+        // Genera la celda HTML para PDF/imprimir de un campo concreto
+        function generarCeldaPDFEvidencia(p, key) {
+            if (key === 'estado') {
+                const tieneUrl = p.urlEvidencia && p.urlEvidencia.trim().length > 0;
+                return tieneUrl
+                    ? '<span style="color:#059669;font-weight:bold;">OK</span>'
+                    : '<span style="color:#d97706;font-weight:bold;">Pendiente</span>';
+            }
+            if (key === 'nombre') {
+                return `<span style="font-weight:bold;color:#1e293b;">${p.nombre || ''}</span>`;
+            }
+            if (key === 'urlEvidencia') {
+                return `<span style="color:#4f46e5;word-break:break-all;">${p.urlEvidencia || '—'}</span>`;
+            }
+            return `<span style="color:#475569;">${p[key] || ''}</span>`;
+        }
+
+        // Colapsar/expandir el selector de campos
+        function toggleSelectorCamposEvidencia() {
+            const sel = document.getElementById('evidencia-campos-selector');
+            const icon = document.getElementById('evidencia-campos-toggle-icon');
+            if (!sel) return;
+            const isHidden = sel.style.display === 'none';
+            sel.style.display = isHidden ? 'flex' : 'none';
+            if (icon) icon.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(180deg)';
+        }
+
+        // Seleccionar / deseleccionar todos los campos
+        function seleccionarTodosCamposEvidencia(marcar) {
+            document.querySelectorAll('.evidencia-campo-check').forEach(c => { c.checked = marcar; });
+            generarReporteEvidencia();
+        }
+
         function generarReporteEvidencia() {
             const contenedor = document.getElementById('cont-reporte-evidencia');
             if (!contenedor) return;
             contenedor.innerHTML = '';
             const db = getDatabase();
+            const campos = getCamposSeleccionadosEvidencia();
             const totalProyectos = db.length;
             const conUrl = db.filter(p => p.urlEvidencia && p.urlEvidencia.trim().length > 0).length;
             const sinUrl = totalProyectos - conUrl;
@@ -2583,35 +2713,29 @@
                 return;
             }
 
+            // Construir cabecera dinámica
+            let headerHtml = '';
+            campos.forEach(key => {
+                const def = getDefCampoEvidencia(key);
+                const align = key === 'estado' ? 'text-center' : '';
+                headerHtml += `<th class="py-3 px-4 ${align}">${def.label}</th>`;
+            });
+
             let html = `<table class="w-full text-left text-sm border-collapse">
                 <thead>
                     <tr class="bg-slate-50 border-b-2 border-slate-200 text-xs font-bold uppercase tracking-wider text-slate-600">
-                        <th class="py-3 px-4">Proyecto</th>
-                        <th class="py-3 px-4">Tipo</th>
-                        <th class="py-3 px-4">Profesorado</th>
-                        <th class="py-3 px-4">Materia</th>
-                        <th class="py-3 px-4">Clase</th>
-                        <th class="py-3 px-4">URL de la Evidencia</th>
-                        <th class="py-3 px-4 text-center">Estado</th>
+                        ${headerHtml}
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">`;
 
             db.forEach(p => {
-                const tieneUrl = p.urlEvidencia && p.urlEvidencia.trim().length > 0;
-                const estadoBadge = tieneUrl
-                    ? '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200"><i data-lucide="check" class="h-3 w-3"></i> Con evidencia</span>'
-                    : '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200"><i data-lucide="alert-circle" class="h-3 w-3"></i> Pendiente</span>';
-
-                html += `<tr class="hover:bg-slate-50 transition-colors">
-                    <td class="py-3 px-4"><span class="font-bold text-slate-900">${p.nombre || ''}</span></td>
-                    <td class="py-3 px-4 text-xs text-slate-600">${p.tipo || ''}</td>
-                    <td class="py-3 px-4 text-xs text-slate-600">${p.profesor || ''}</td>
-                    <td class="py-3 px-4 text-xs text-slate-600">${p.materia || ''}</td>
-                    <td class="py-3 px-4 text-xs text-slate-600">${p.clase || ''}</td>
-                    <td class="py-3 px-4 text-xs">${tieneUrl ? `<a href="${p.urlEvidencia}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800 font-medium hover:underline transition"><i data-lucide="external-link" class="h-3.5 w-3.5 shrink-0"></i><span class="truncate max-w-[180px]">${p.urlEvidencia}</span></a>` : '<span class="text-slate-400 italic">No asignada</span>'}</td>
-                    <td class="py-3 px-4 text-center">${estadoBadge}</td>
-                </tr>`;
+                let rowHtml = '';
+                campos.forEach(key => {
+                    const align = key === 'estado' ? 'text-center' : '';
+                    rowHtml += `<td class="py-3 px-4 ${align}">${generarCeldaCampoEvidencia(p, key)}</td>`;
+                });
+                html += `<tr class="hover:bg-slate-50 transition-colors">${rowHtml}</tr>`;
             });
 
             html += '</tbody></table>';
@@ -2621,12 +2745,18 @@
 
         function exportarCSVEvidencia() {
             const db = getDatabase();
-            let csvContent = "data:text/csv;charset=utf-8,Nombre del Proyecto,Tipo,Profesorado,Materia,Clase,URL de la Evidencia,Estado\n";
+            const campos = getCamposSeleccionadosEvidencia();
+            if (campos.length === 0) { alert('Selecciona al menos un campo para exportar.'); return; }
+
+            // Cabecera CSV
+            const headersCSV = campos.map(key => getDefCampoEvidencia(key).csvHeader);
+            let csvContent = "data:text/csv;charset=utf-8," + headersCSV.map(h => `"${h}"`).join(',') + "\n";
+
             db.forEach(p => {
-                const tieneUrl = p.urlEvidencia && p.urlEvidencia.trim().length > 0;
-                const estado = tieneUrl ? 'Con evidencia' : 'Pendiente';
-                csvContent += `"${(p.nombre || '').replace(/"/g, '""')}","${(p.tipo || '').replace(/"/g, '""')}","${(p.profesor || '').replace(/"/g, '""')}","${(p.materia || '').replace(/"/g, '""')}","${(p.clase || '').replace(/"/g, '""')}","${(p.urlEvidencia || '').replace(/"/g, '""')}","${estado}"\n`;
+                const fila = campos.map(key => `"${getValorCampoEvidencia(p, key).replace(/"/g, '""')}"`);
+                csvContent += fila.join(',') + "\n";
             });
+
             const link = document.createElement("a");
             link.setAttribute("href", encodeURI(csvContent));
             var añoFin = (datosGlobales.añoActivo || '2025-2026').split('-')[1] || datosGlobales.añoActivo;
@@ -2644,6 +2774,9 @@
 
         function exportarPDFEvidencia() {
             const db = getDatabase();
+            const campos = getCamposSeleccionadosEvidencia();
+            if (campos.length === 0) { alert('Selecciona al menos un campo para exportar.'); return; }
+
             const conUrl = db.filter(p => p.urlEvidencia && p.urlEvidencia.trim().length > 0).length;
             const sinUrl = db.length - conUrl;
             const printContainer = document.getElementById('print-section');
@@ -2663,12 +2796,24 @@
                 <div class="text-center border-l border-slate-200"><span class="block text-xs font-bold text-slate-400 uppercase">Sin Evidencia</span><span class="text-xl font-extrabold text-amber-700">${sinUrl}</span></div>
             </div>`;
 
-            html += '<table class="w-full text-left text-xs border-collapse border-t-2 border-slate-300"><thead><tr class="bg-slate-100 text-slate-600 font-bold uppercase text-[10px]"><th class="py-2 px-3 border-b border-slate-200">Proyecto</th><th class="py-2 px-3 border-b border-slate-200">Tipo</th><th class="py-2 px-3 border-b border-slate-200">Profesorado</th><th class="py-2 px-3 border-b border-slate-200">Clase</th><th class="py-2 px-3 border-b border-slate-200">URL Evidencia</th><th class="py-2 px-3 border-b border-slate-200">Estado</th></tr></thead><tbody class="divide-y divide-slate-100">';
+            // Cabecera de tabla dinámica
+            const headersPDF = campos.map(key => {
+                const def = getDefCampoEvidencia(key);
+                const align = key === 'estado' ? 'text-center' : '';
+                return `<th class="py-2 px-3 border-b border-slate-200 ${align}">${def.pdfHeader}</th>`;
+            }).join('');
+
+            html += `<table class="w-full text-left text-xs border-collapse border-t-2 border-slate-300">
+                <thead><tr class="bg-slate-100 text-slate-600 font-bold uppercase text-[10px]">${headersPDF}</tr></thead>
+                <tbody class="divide-y divide-slate-100">`;
 
             db.forEach(p => {
-                const tieneUrl = p.urlEvidencia && p.urlEvidencia.trim().length > 0;
-                const estado = tieneUrl ? '<span style="color:#059669;font-weight:bold;">OK</span>' : '<span style="color:#d97706;font-weight:bold;">Pendiente</span>';
-                html += `<tr class="print-card"><td class="py-2 px-3 font-bold text-slate-800">${p.nombre || ''}</td><td class="py-2 px-3 text-slate-600">${p.tipo || ''}</td><td class="py-2 px-3 text-slate-600">${p.profesor || ''}</td><td class="py-2 px-3 text-slate-600">${p.clase || ''}</td><td class="py-2 px-3 text-indigo-600 break-all" style="max-width:200px;word-break:break-all;">${p.urlEvidencia || '—'}</td><td class="py-2 px-3 text-center">${estado}</td></tr>`;
+                let fila = '';
+                campos.forEach(key => {
+                    const align = key === 'estado' ? 'text-center' : '';
+                    fila += `<td class="py-2 px-3 ${align}">${generarCeldaPDFEvidencia(p, key)}</td>`;
+                });
+                html += `<tr class="print-card">${fila}</tr>`;
             });
 
             html += '</tbody></table>';
