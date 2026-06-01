@@ -585,6 +585,10 @@
                             <i data-lucide="file-spreadsheet" class="h-4 w-4"></i>
                             Exportar CSV
                         </button>
+                        <button onclick="importarCSVCuadrante()" class="bg-orange-500 hover:bg-orange-600 active:scale-95 transition-all text-white font-semibold px-4 py-2 rounded-xl shadow-md shadow-orange-500/20 flex items-center gap-2 text-sm">
+                            <i data-lucide="file-up" class="h-4 w-4"></i>
+                            Importar CSV
+                        </button>
                         <button onclick="exportarPDFCuadrante()" class="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 active:scale-95 transition-all text-white font-semibold px-4 py-2 rounded-xl shadow-md shadow-indigo-600/20 flex items-center gap-2 text-sm">
                             <i data-lucide="file-down" class="h-4 w-4"></i>
                             Exportar PDF
@@ -1057,23 +1061,125 @@
         }
 
         // =========================================
-        // PRESERVAR CAMPOS NUEVOS AL RECIBIR DATOS REMOTOS
+        // FUSIÓN INTELIGENTE DE DATOS LOCALES Y REMOTOS
         // =========================================
-        function _preservarCuadrantesLocales(remotos) {
+        // Cuando varias sesiones están abiertas, cada una puede haber modificado partes distintas
+        // (proyectos, cuadrante). Esta función fusiona ambas versiones: para cada año, toma los
+        // proyectos del lado que tenga más, y mezcla las asignaciones del cuadrante de ambos lados.
+        function _fusionarDatosLocalesConRemotos(remotos) {
             try {
-                if (!datosGlobales || !datosGlobales.años) return;
+                if (!datosGlobales || !datosGlobales.años || !remotos || !remotos.años) return;
+
+                // ── Paso 0: Preservar años que solo existen en local ──
                 Object.keys(datosGlobales.años).forEach(function(año) {
-                    var localCuad = datosGlobales.años[año] && datosGlobales.años[año].cuadrante;
-                    var remoteCuad = remotos.años[año] && remotos.años[año].cuadrante;
-                    // Solo preservar cuadrante local si el remoto está vacío
-                    // (caso offline: el usuario trabajó sin conexión y no había nada en la nube).
-                    // Si el remoto tiene datos, prevalecen (cambios de otros usuarios).
-                    if (localCuad && localCuad.length > 0 && (!remoteCuad || remoteCuad.length === 0)) {
-                        if (!remotos.años[año]) remotos.años[año] = {};
-                        remotos.años[año].cuadrante = localCuad;
+                    if (!remotos.años[año]) {
+                        remotos.años[año] = JSON.parse(JSON.stringify(datosGlobales.años[año]));
+                        console.log('[Fusión] Año local preservado en remotos:', año);
                     }
                 });
-            } catch (e) { console.warn('[PWA] Error al preservar cuadrantes:', e); }
+
+                // ── Paso 1: Preservar años que solo existen en remoto (ya están en remotos, pero aseguramos) ──
+                Object.keys(remotos.años).forEach(function(año) {
+                    if (!datosGlobales.años[año]) {
+                        datosGlobales.años[año] = JSON.parse(JSON.stringify(remotos.años[año]));
+                        console.log('[Fusión] Año remoto incorporado al local:', año);
+                    }
+                });
+
+                // Fusionar cada año que exista en ambos
+                Object.keys(datosGlobales.años).forEach(function(año) {
+                    var local = datosGlobales.años[año];
+                    var remote = remotos.años[año];
+                    if (!remote || !local) return;
+
+                    // ── Fusionar proyectos (por ID, no por índice) ──
+                    var localProys = local.proyectos || [];
+                    var remoteProys = remote.proyectos || [];
+
+                    // Construir mapas por ID
+                    var mapLocal = {};
+                    localProys.forEach(function(p) { mapLocal[p.id] = p; });
+                    var mapRemote = {};
+                    remoteProys.forEach(function(p) { mapRemote[p.id] = p; });
+
+                    // Recolectar todos los IDs únicos
+                    var todosIds = new Set(Object.keys(mapLocal).concat(Object.keys(mapRemote)));
+                    var merged = [];
+                    var camposProy = ['nombre','tipo','materia','profesor','espacioNecesario',
+                                     'espacioExposicion','clase','alumnado','urlEvidencia','observaciones'];
+
+                    todosIds.forEach(function(id) {
+                        var lp = mapLocal[id];
+                        var rp = mapRemote[id];
+                        if (lp && rp) {
+                            // Existe en ambos → fusionar campo por campo
+                            var m = Object.assign({}, rp);
+                            camposProy.forEach(function(campo) {
+                                // Si el local tiene un valor no vacío distinto del remoto, usar el local
+                                // (el usuario local puede haber editado recientemente)
+                                if (lp[campo] !== undefined && lp[campo] !== '' && lp[campo] !== rp[campo]) {
+                                    m[campo] = lp[campo];
+                                }
+                            });
+                            merged.push(m);
+                        } else if (lp) {
+                            merged.push(Object.assign({}, lp));
+                        } else {
+                            merged.push(Object.assign({}, rp));
+                        }
+                    });
+                    remote.proyectos = merged;
+
+                    // ── Fusionar cuadrante temporal ──
+                    var localCuad = local.cuadrante || [];
+                    var remoteCuad = remote.cuadrante || [];
+
+                    if (localCuad.length === 0 && remoteCuad.length > 0) {
+                        // Local vacío, remoto tiene datos → usar remoto (cambios de otros)
+                    } else if (localCuad.length > 0 && remoteCuad.length === 0) {
+                        // Remoto vacío, local tiene datos → usar local (offline)
+                        remote.cuadrante = localCuad;
+                    } else if (localCuad.length > 0 && remoteCuad.length > 0) {
+                        // Ambos tienen datos → fusionar inteligentemente
+                        // Se usa el remoto como base (contiene los datos más recientes de la nube)
+                        // y se incorporan los datos locales que no existan en el remoto
+                        var base = remoteCuad.map(function(f) {
+                            return { proyectoId: f.proyectoId, asignaciones: Object.assign({}, f.asignaciones || {}) };
+                        });
+                        var localMap = {};
+                        localCuad.forEach(function(f) {
+                            localMap[f.proyectoId] = Object.assign({}, f.asignaciones || {});
+                        });
+
+                        // Para cada fila local, fusionar con la base remota
+                        Object.keys(localMap).forEach(function(proyId) {
+                            var filaIdx = base.findIndex(function(b) { return b.proyectoId === proyId; });
+                            if (filaIdx === -1) {
+                                // Proyecto no existe en el remoto → añadirlo completo
+                                base.push({
+                                    proyectoId: proyId,
+                                    asignaciones: Object.assign({}, localMap[proyId])
+                                });
+                            } else {
+                                // Proyecto existe en ambos → fusionar asignaciones
+                                var asigBase = base[filaIdx].asignaciones;
+                                var asigLocal = localMap[proyId];
+                                FRANJAS_HORARIAS.forEach(function(franja) {
+                                    var valBase = asigBase[franja] || '';
+                                    var valLocal = asigLocal[franja] || '';
+                                    if (valLocal.trim() !== '' && valBase.trim() === '') {
+                                        // Local tiene dato, remoto vacío → copiar local
+                                        asigBase[franja] = valLocal;
+                                    }
+                                    // Si ambos tienen datos → prevalece el remoto (más reciente de la nube)
+                                });
+                            }
+                        });
+
+                        remote.cuadrante = base;
+                    }
+                });
+            } catch (e) { console.warn('[PWA] Error al fusionar datos locales con remotos:', e); }
         }
 
         // =========================================
@@ -1126,8 +1232,8 @@
                     // Primera carga: los datos de Firestore siempre ganan
                     _firebaseListenerListo = true;
                     _jsonDatosEscritos = null;
-                    // Preservar cuadrantes locales si no existen en remoto
-                    _preservarCuadrantesLocales(remotos);
+                    // Fusionar datos locales con remotos (cada sesión aporta sus cambios)
+                    _fusionarDatosLocalesConRemotos(remotos);
                     datosGlobales = remotos;
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(datosGlobales));
                     productos = [...getDatabase()];
@@ -1138,16 +1244,19 @@
                     actualizarEstadisticas();
                     renderizarTabla();
                     generarTodosLosInformes();
+                    if (vistaActual === 'cuadrante') renderizarCuadrante();
                     renderLucideIcons();
                     firebaseConectado = true;
                     actualizarIndicadorSincronizacion('conectado');
-                    console.log('[Firestore] Primera carga: datos descargados de la nube');
+                    console.log('[Firestore] Primera carga: datos descargados y fusionados de la nube');
                     return;
                 }
 
                 // FILTRO ANTI-CACHE: tras una escritura local, ignorar snapshots
                 // que no coincidan con los datos que acabamos de subir.
                 // Esto evita que un cache obsoleto sobreescriba nuestros cambios.
+                // PERO: si el snapshot trae datos nuevos de otra sesión (más proyectos
+                // o cuadrante distinto), los aceptamos y fusionamos.
                 if (_jsonDatosEscritos !== null) {
                     if (jsonRemoto === _jsonDatosEscritos || _sonDatosEquivalentes(remotos, datosGlobales)) {
                         // Firestore confirma los datos que subimos — limpiar filtro
@@ -1155,6 +1264,20 @@
                         firebaseConectado = true;
                         actualizarIndicadorSincronizacion('conectado');
                         console.log('[Firestore] Escritura local confirmada por la nube');
+                        return;
+                    } else if (_remotoTieneDatosNuevos(remotos)) {
+                        // El snapshot tiene datos que nosotros no teníamos (otros usuarios)
+                        // → fusionar en lugar de ignorar
+                        console.log('[Firestore] Datos nuevos de otra sesión detectados — fusionando');
+                        _jsonDatosEscritos = null;
+                        _fusionarDatosLocalesConRemotos(remotos);
+                        datosGlobales = remotos;
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(datosGlobales));
+                        productos = [...getDatabase()];
+                        renderizarSelectorAño();
+                        actualizarTodo();
+                        firebaseConectado = true;
+                        actualizarIndicadorSincronizacion('conectado');
                         return;
                     } else {
                         // Snapshot con datos diferentes a los que subimos (cache obsoleto)
@@ -1173,9 +1296,9 @@
                 }
 
                 // Datos realmente cambiaron desde otro dispositivo/sesión
-                console.log('[Firestore] Datos actualizados desde otro dispositivo');
-                // Preservar cuadrantes locales si no existen en remoto
-                _preservarCuadrantesLocales(remotos);
+                console.log('[Firestore] Datos actualizados desde otra sesión — fusionando');
+                // Fusionar datos locales con remotos para no perder cambios de ninguna sesión
+                _fusionarDatosLocalesConRemotos(remotos);
                 datosGlobales = remotos;
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(datosGlobales));
                 productos = [...getDatabase()];
@@ -1245,6 +1368,61 @@
             })();
         }
 
+        // Detecta si los datos remotos contienen información que no existe localmente.
+        // Se usa durante el filtro anti-cache para decidir si un snapshot que no coincide
+        // con nuestra escritura local es un cache obsoleto (ignorar) o datos nuevos de otro
+        // usuario (aceptar y fusionar).
+        function _remotoTieneDatosNuevos(remotos) {
+            try {
+                if (!datosGlobales || !datosGlobales.años) return true;
+
+                // Comprobar si el remoto tiene años que no existen localmente
+                var añosLocales = Object.keys(datosGlobales.años);
+                var añosRemotos = Object.keys(remotos.años || {});
+                for (var a = 0; a < añosRemotos.length; a++) {
+                    if (!datosGlobales.años[añosRemotos[a]]) return true; // Año nuevo
+                }
+
+                // Revisar TODOS los años en busca de diferencias (no solo el activo)
+                var todosAños = new Set(añosLocales.concat(añosRemotos));
+                todosAños.forEach(function(año) {
+                    var localDatos = (datosGlobales.años[año] || {});
+                    var remoteDatos = (remotos.años[año] || {});
+
+                    // Comparar número de proyectos
+                    var localProys = (localDatos.proyectos || []).length;
+                    var remoteProys = (remoteDatos.proyectos || []).length;
+                    if (remoteProys > localProys) return true;
+
+                    // Comparar IDs de proyectos (si el remoto tiene IDs que no tenemos)
+                    var localIds = new Set((localDatos.proyectos || []).map(function(p) { return p.id; }));
+                    var remoteIds = (remoteDatos.proyectos || []).map(function(p) { return p.id; });
+                    for (var j = 0; j < remoteIds.length; j++) {
+                        if (!localIds.has(remoteIds[j])) return true;
+                    }
+
+                    // Comparar cuadrante
+                    var localCuad = localDatos.cuadrante || [];
+                    var remoteCuad = remoteDatos.cuadrante || [];
+                    if (remoteCuad.length > localCuad.length) return true;
+                    for (var i = 0; i < remoteCuad.length; i++) {
+                        var rAsig = remoteCuad[i].asignaciones || {};
+                        var lFila = localCuad.find(function(f) { return f.proyectoId === remoteCuad[i].proyectoId; });
+                        if (!lFila) return true; // Fila nueva
+                        var lAsig = lFila.asignaciones || {};
+                        var keys = Object.keys(rAsig);
+                        for (var k = 0; k < keys.length; k++) {
+                            if (rAsig[keys[k]] && rAsig[keys[k]].trim() !== '' && (!lAsig[keys[k]] || lAsig[keys[k]].trim() === '')) {
+                                return true; // Asignación nueva en el remoto
+                            }
+                        }
+                    }
+                });
+
+                return false;
+            } catch(e) { return true; } // En caso de duda, aceptar
+        }
+
         // Compara si dos estructuras de datos globales son equivalentes.
         // Necesario porque Firestore puede alterar el orden de las claves al serializar,
         // haciendo que JSON.stringify() produzca cadenas diferentes para los mismos datos.
@@ -1256,27 +1434,45 @@
                 var añosB = Object.keys(b.años || {}).sort();
                 if (JSON.stringify(añosA) !== JSON.stringify(añosB)) return false;
                 for (var i = 0; i < añosA.length; i++) {
-                    var proysA = (a.años[añosA[i]] || {}).proyectos || [];
-                    var proysB = (b.años[añosB[i]] || {}).proyectos || [];
+                    var datosA = a.años[añosA[i]] || {};
+                    var datosB = b.años[añosB[i]] || {};
+
+                    // Comparar proyectos
+                    var proysA = datosA.proyectos || [];
+                    var proysB = datosB.proyectos || [];
                     if (proysA.length !== proysB.length) return false;
                     for (var j = 0; j < proysA.length; j++) {
                         if (proysA[j].id !== proysB[j].id || proysA[j].nombre !== proysB[j].nombre) return false;
                         if (proysA[j].tipo !== proysB[j].tipo || proysA[j].materia !== proysB[j].materia) return false;
                         if (proysA[j].profesor !== proysB[j].profesor || proysA[j].clase !== proysB[j].clase) return false;
+                        if (proysA[j].espacioNecesario !== proysB[j].espacioNecesario) return false;
+                        if (proysA[j].espacioExposicion !== proysB[j].espacioExposicion) return false;
+                        if (proysA[j].urlEvidencia !== proysB[j].urlEvidencia) return false;
+                    }
+
+                    // Comparar cuadrante temporal
+                    var cuadA = datosA.cuadrante || [];
+                    var cuadB = datosB.cuadrante || [];
+                    if (cuadA.length !== cuadB.length) return false;
+                    for (var k = 0; k < cuadA.length; k++) {
+                        if (cuadA[k].proyectoId !== cuadB[k].proyectoId) return false;
+                        var asigA = cuadA[k].asignaciones || {};
+                        var asigB = cuadB[k].asignaciones || {};
+                        if (JSON.stringify(asigA) !== JSON.stringify(asigB)) return false;
                     }
                 }
                 return true;
             } catch(e) { return false; }
         }
 
-        // Timeout de seguridad: si el filtro anti-cache lleva activo más de 15 segundos,
+        // Timeout de seguridad: si el filtro anti-cache lleva activo más de 8 segundos,
         // limpiarlo para no bloquear actualizaciones remotas indefinidamente
         setInterval(function() {
             if (_jsonDatosEscritos !== null) {
                 console.warn('[Firestore] Timeout de seguridad: limpiando filtro anti-cache bloqueado');
                 _jsonDatosEscritos = null;
             }
-        }, 15000);
+        }, 8000);
 
         function actualizarIndicadorSincronizacion(estado) {
             var dot = document.getElementById('sync-dot');
@@ -3354,6 +3550,167 @@
             var fechaHora = String(ahora.getDate()).padStart(2,'0') + '-' + String(ahora.getMonth()+1).padStart(2,'0') + '-' + String(ahora.getFullYear()).slice(-2) + '_' + String(ahora.getHours()).padStart(2,'0') + '-' + String(ahora.getMinutes()).padStart(2,'0') + '-' + String(ahora.getSeconds()).padStart(2,'0');
             link.setAttribute('download', 'Cuadrante_ExpoVilladiego_' + añoFin + '_' + fechaHora + '.csv');
             document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        }
+
+        // Importar Cuadrante desde CSV
+        function importarCSVCuadrante() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.csv,.txt';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    try {
+                        const text = ev.target.result;
+                        const lineas = text.split(/\r?\n/).filter(function(l) { return l.trim() !== ''; });
+                        if (lineas.length < 2) { alert('El archivo CSV está vacío o no tiene datos suficientes.'); return; }
+
+                        // Parsear cabecera
+                        const headerRaw = lineas[0];
+                        const headers = parsearLineaCSV(headerRaw);
+                        if (headers.length < 2 || headers[0].replace(/ª/g, '').trim().toLowerCase() !== 'proyecto') {
+                            alert('El formato del CSV no es válido. La primera columna debe ser "Proyecto" y las siguientes las franjas horarias (M3ª, X1ª, etc.).');
+                            return;
+                        }
+
+                        // Extraer franjas de la cabecera (eliminar la primera columna 'Proyecto')
+                        const franjasCSV = headers.slice(1).map(function(h) {
+                            return h.replace(/ª/g, '').trim();
+                        });
+                        // Verificar que las franjas del CSV coinciden con las del sistema
+                        const franjasSistema = FRANJAS_HORARIAS.slice();
+                        const franjasOk = franjasCSV.every(function(f) { return franjasSistema.indexOf(f) !== -1; });
+                        if (!franjasOk) {
+                            alert('Las franjas horarias del CSV no coinciden con las del sistema. Se esperan: ' + franjasSistema.join(', '));
+                            return;
+                        }
+
+                        // Obtener la base de datos de proyectos para matching por nombre
+                        const db = getDatabase();
+                        const cuadranteActual = getCuadrante();
+                        const filasNuevas = [];
+
+                        // Parsear cada línea de datos
+                        for (var i = 1; i < lineas.length; i++) {
+                            const campos = parsearLineaCSV(lineas[i]);
+                            if (campos.length < 2) continue;
+
+                            const nombreProyecto = campos[0].trim();
+                            if (!nombreProyecto) continue;
+
+                            // Buscar el proyecto por nombre en la base de datos
+                            const proyecto = db.find(function(p) {
+                                return p.nombre && p.nombre.trim() === nombreProyecto;
+                            });
+
+                            if (!proyecto) {
+                                console.warn('[Import CSV] Proyecto no encontrado:', nombreProyecto);
+                                continue;
+                            }
+
+                            // Construir asignaciones
+                            var asignaciones = {};
+                            for (var j = 1; j < campos.length && j - 1 < franjasCSV.length; j++) {
+                                var val = campos[j] ? campos[j].trim() : '';
+                                if (val) {
+                                    asignaciones[franjasCSV[j - 1]] = val;
+                                }
+                            }
+
+                            filasNuevas.push({
+                                proyectoId: proyecto.id,
+                                asignaciones: asignaciones
+                            });
+                        }
+
+                        if (filasNuevas.length === 0) {
+                            alert('No se encontraron proyectos coincidentes en el CSV. Verifica que los nombres de los proyectos coincidan exactamente.');
+                            return;
+                        }
+
+                        // Preguntar modo de importación
+                        var modo = null;
+                        if (cuadranteActual.length === 0) {
+                            modo = 'reemplazar';
+                        } else {
+                            modo = confirm('El cuadrante actual tiene ' + cuadranteActual.length + ' filas.\n\nPulsa ACEPTAR para REEMPLAZAR el cuadrante actual con los datos del CSV.\nPulsa CANCELAR para FUSIONAR: se mantienen las filas actuales y se añaden/actualizan las del CSV.') ? 'reemplazar' : 'fusionar';
+                        }
+
+                        if (modo === 'reemplazar') {
+                            datosGlobales.años[datosGlobales.añoActivo].cuadrante = filasNuevas;
+                        } else {
+                            // Fusión: actualizar filas existentes y añadir nuevas
+                            var cuadranteFusionado = cuadranteActual.map(function(fila) {
+                                var nuevaFila = filasNuevas.find(function(nf) { return nf.proyectoId === fila.proyectoId; });
+                                if (nuevaFila) {
+                                    return {
+                                        proyectoId: fila.proyectoId,
+                                        asignaciones: Object.assign({}, fila.asignaciones || {}, nuevaFila.asignaciones)
+                                    };
+                                }
+                                return fila;
+                            });
+                            // Añadir filas nuevas (proyectos que no estaban en el cuadrante)
+                            filasNuevas.forEach(function(nf) {
+                                var existe = cuadranteFusionado.find(function(f) { return f.proyectoId === nf.proyectoId; });
+                                if (!existe) {
+                                    cuadranteFusionado.push(nf);
+                                }
+                            });
+                            datosGlobales.años[datosGlobales.añoActivo].cuadrante = cuadranteFusionado;
+                        }
+
+                        // Guardar y sincronizar
+                        guardarDatosEnStorage();
+                        sincronizarConFirebase();
+                        renderizarCuadrante();
+
+                        alert('Cuadrante importado correctamente: ' + filasNuevas.length + ' filas procesadas (' + modo + ').');
+
+                    } catch (err) {
+                        console.error('[Import CSV] Error:', err);
+                        alert('Error al importar el CSV: ' + err.message);
+                    }
+                };
+                reader.readAsText(file, 'UTF-8');
+            };
+            input.click();
+        }
+
+        // Utilidad para parsear una línea CSV (maneja comillas)
+        function parsearLineaCSV(linea) {
+            var resultado = [];
+            var actual = '';
+            var entreComillas = false;
+            for (var i = 0; i < linea.length; i++) {
+                var c = linea[i];
+                if (entreComillas) {
+                    if (c === '"') {
+                        if (i + 1 < linea.length && linea[i + 1] === '"') {
+                            actual += '"';
+                            i++;
+                        } else {
+                            entreComillas = false;
+                        }
+                    } else {
+                        actual += c;
+                    }
+                } else {
+                    if (c === '"') {
+                        entreComillas = true;
+                    } else if (c === ',') {
+                        resultado.push(actual.trim());
+                        actual = '';
+                    } else {
+                        actual += c;
+                    }
+                }
+            }
+            resultado.push(actual.trim());
+            return resultado;
         }
 
         // Exportar Cuadrante a PDF (vía impresión)
