@@ -3943,15 +3943,29 @@
         }
 
         function registrarServiceWorker() {
-            // Leer la versión del service worker y mostrarla en el header
-            fetch('./sw.js?_v=' + Date.now())
+            // Función que muestra la versión en el header
+            function mostrarVersion(version) {
+                var badge = document.getElementById('app-version-badge');
+                if (badge) badge.textContent = 'v' + version;
+            }
+
+            // Función para pedir versión al SW vía postMessage
+            function pedirVersionAlSW() {
+                if (navigator.serviceWorker.controller) {
+                    var channel = new MessageChannel();
+                    channel.port1.onmessage = function(event) {
+                        if (event.data && event.data.version) mostrarVersion(event.data.version);
+                    };
+                    navigator.serviceWorker.controller.postMessage({ type: 'GET_VERSION' }, [channel.port2]);
+                }
+            }
+
+            // Intentar leer versión por fetch (sin caché del SW)
+            fetch('./sw.js', { cache: 'no-store', headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' } })
                 .then(function(r) { return r.text(); })
                 .then(function(text) {
                     var match = text.match(/const\s+APP_VERSION\s*=\s*['"]([^'"]+)['"]/);
-                    if (match) {
-                        var badge = document.getElementById('app-version-badge');
-                        if (badge) badge.textContent = 'v' + match[1];
-                    }
+                    if (match) mostrarVersion(match[1]);
                 })
                 .catch(function() { /* silencioso */ });
 
@@ -3959,6 +3973,14 @@
                 navigator.serviceWorker.register('./sw.js')
                     .then((registration) => {
                         console.log('[PWA] Service Worker registrado. Scope:', registration.scope);
+                        // Si ya hay SW controlando la página, pedir versión directamente
+                        if (navigator.serviceWorker.controller) {
+                            pedirVersionAlSW();
+                        }
+                        // Si el SW se activa después, escuchar el evento
+                        navigator.serviceWorker.addEventListener('controllerchange', function() {
+                            setTimeout(pedirVersionAlSW, 500);
+                        });
                         registration.addEventListener('updatefound', () => {
                             console.log('[PWA] Nueva versión del SW detectada');
                         });
