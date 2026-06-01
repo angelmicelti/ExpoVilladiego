@@ -2919,12 +2919,12 @@
             return Array.from(setAlumnos).sort((a, b) => a.localeCompare(b, 'es'));
         }
 
-        // Obiene los proyectos que aún no están en el cuadrante
+        // Obtiene los proyectos que aún no están en el cuadrante (ordenados alfabéticamente)
         function getProyectosDisponiblesCuadrante() {
             const db = getDatabase();
             const cuadrante = getCuadrante();
             const usados = new Set(cuadrante.map(f => f.proyectoId));
-            return db.filter(p => !usados.has(p.id));
+            return db.filter(p => !usados.has(p.id)).sort((a, b) => (a.nombre || '').localeCompare(b.nombre || '', 'es', { sensitivity: 'base' }));
         }
 
         // Añade una nueva fila al cuadrante
@@ -2952,7 +2952,7 @@
         // Cambia el proyecto de una fila
         function cambiarProyectoCuadrante(index, nuevoId) {
             const cuadrante = getCuadrante();
-            cuadrante[index].proyectoId = nuevoId;
+            cuadrante[index].proyectoId = parseInt(nuevoId);
             // Limpiar asignaciones que tengan conflicto
             verificarConflictosCuadrante();
             guardarDatosEnStorage();
@@ -3068,11 +3068,11 @@
                 const proyecto = db.find(p => p.id === fila.proyectoId);
                 const nombreProyecto = proyecto ? proyecto.nombre : '(proyecto eliminado)';
 
-                // Select de proyecto
-                const disponibles = getProyectosDisponiblesCuadrante();
+                // Select de proyecto (ordenado alfabéticamente)
                 const usadosIds = new Set(cuadrante.map(f => f.proyectoId));
+                const dbOrdenado = [...db].sort((a, b) => (a.nombre || '').localeCompare(b.nombre || '', 'es', { sensitivity: 'base' }));
                 let opcionesProyecto = '';
-                db.forEach(p => {
+                dbOrdenado.forEach(p => {
                     const selected = p.id === fila.proyectoId ? 'selected' : '';
                     const disabled = (usadosIds.has(p.id) && p.id !== fila.proyectoId) ? 'disabled' : '';
                     opcionesProyecto += `<option value="${p.id}" ${selected} ${disabled}>${p.nombre || 'Sin nombre'}</option>`;
