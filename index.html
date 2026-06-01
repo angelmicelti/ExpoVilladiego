@@ -3301,6 +3301,9 @@
         // ==========================================
         const FRANJAS_HORARIAS = ['M3', 'X1', 'X2', 'X3', 'X4', 'X5', 'X6', 'XT1', 'XT2', 'XT3'];
 
+        // Comparación flexible de IDs (string vs number tras JSON)
+        function mismoId(a, b) { return String(a) === String(b); }
+
         // Guarda el cuadrante en una clave separada de localStorage como respaldo
         function _guardarBackupCuadrante() {
             try {
@@ -3561,9 +3564,6 @@
 
             // Construir mapa de IDs de proyectos ya en el cuadrante (para ocultarlos del dropdown)
             const usadosIds = new Set(cuadrante.map(f => String(f.proyectoId)));
-            // Función auxiliar para comparar IDs flexibles (string vs number tras JSON)
-            const mismoId = (a, b) => String(a) === String(b);
-
             // Construir mapas: qué alumnos están ya usados en cada franja (para deshabilitarlos en los selects)
             const usadosPorFranja = {};
             FRANJAS_HORARIAS.forEach(f => { usadosPorFranja[f] = new Set(); });
