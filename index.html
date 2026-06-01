@@ -1411,42 +1411,49 @@
                 }
 
                 // Revisar TODOS los años en busca de diferencias (no solo el activo)
-                var todosAños = new Set(añosLocales.concat(añosRemotos));
-                todosAños.forEach(function(año) {
+                var todosAños = Array.from(new Set(añosLocales.concat(añosRemotos)));
+                var hayDatosNuevos = false;
+                for (var a2 = 0; a2 < todosAños.length; a2++) {
+                    var año = todosAños[a2];
                     var localDatos = (datosGlobales.años[año] || {});
                     var remoteDatos = (remotos.años[año] || {});
 
                     // Comparar número de proyectos
                     var localProys = (localDatos.proyectos || []).length;
                     var remoteProys = (remoteDatos.proyectos || []).length;
-                    if (remoteProys > localProys) return true;
+                    if (remoteProys > localProys) { hayDatosNuevos = true; break; }
 
                     // Comparar IDs de proyectos (si el remoto tiene IDs que no tenemos)
                     var localIds = new Set((localDatos.proyectos || []).map(function(p) { return p.id; }));
                     var remoteIds = (remoteDatos.proyectos || []).map(function(p) { return p.id; });
+                    var idNuevo = false;
                     for (var j = 0; j < remoteIds.length; j++) {
-                        if (!localIds.has(remoteIds[j])) return true;
+                        if (!localIds.has(remoteIds[j])) { idNuevo = true; break; }
                     }
+                    if (idNuevo) { hayDatosNuevos = true; break; }
 
                     // Comparar cuadrante
                     var localCuad = localDatos.cuadrante || [];
                     var remoteCuad = remoteDatos.cuadrante || [];
-                    if (remoteCuad.length > localCuad.length) return true;
+                    if (remoteCuad.length > localCuad.length) { hayDatosNuevos = true; break; }
+                    var cuadNuevo = false;
                     for (var i = 0; i < remoteCuad.length; i++) {
                         var rAsig = remoteCuad[i].asignaciones || {};
-                        var lFila = localCuad.find(function(f) { return f.proyectoId === remoteCuad[i].proyectoId; });
-                        if (!lFila) return true; // Fila nueva
+                        var lFila = localCuad.find(function(f) { return String(f.proyectoId) === String(remoteCuad[i].proyectoId); });
+                        if (!lFila) { cuadNuevo = true; break; }
                         var lAsig = lFila.asignaciones || {};
                         var keys = Object.keys(rAsig);
                         for (var k = 0; k < keys.length; k++) {
                             if (rAsig[keys[k]] && rAsig[keys[k]].trim() !== '' && (!lAsig[keys[k]] || lAsig[keys[k]].trim() === '')) {
-                                return true; // Asignación nueva en el remoto
+                                cuadNuevo = true; break;
                             }
                         }
+                        if (cuadNuevo) break;
                     }
-                });
+                    if (cuadNuevo) { hayDatosNuevos = true; break; }
+                }
 
-                return false;
+                return hayDatosNuevos;
             } catch(e) { return true; } // En caso de duda, aceptar
         }
 
@@ -1464,19 +1471,24 @@
                     var datosA = a.años[añosA[i]] || {};
                     var datosB = b.años[añosB[i]] || {};
 
-                    // Comparar proyectos
+                    // Comparar proyectos (por ID, no por posición — el orden puede variar)
                     var proysA = datosA.proyectos || [];
                     var proysB = datosB.proyectos || [];
                     if (proysA.length !== proysB.length) return false;
+                    var mapB = {};
+                    proysB.forEach(function(p) { mapB[p.id] = p; });
                     for (var j = 0; j < proysA.length; j++) {
-                        if (proysA[j].id !== proysB[j].id || proysA[j].nombre !== proysB[j].nombre) return false;
-                        if (proysA[j].tipo !== proysB[j].tipo || proysA[j].materia !== proysB[j].materia) return false;
-                        if (proysA[j].profesor !== proysB[j].profesor || proysA[j].clase !== proysB[j].clase) return false;
-                        if (proysA[j].espacioNecesario !== proysB[j].espacioNecesario) return false;
-                        if (proysA[j].espacioExposicion !== proysB[j].espacioExposicion) return false;
-                        if (proysA[j].urlEvidencia !== proysB[j].urlEvidencia) return false;
-                        if (proysA[j].alumnado !== proysB[j].alumnado) return false;
-                        if (proysA[j].observaciones !== proysB[j].observaciones) return false;
+                        var pa = proysA[j];
+                        var pb = mapB[pa.id];
+                        if (!pb) return false;
+                        if (pa.nombre !== pb.nombre) return false;
+                        if (pa.tipo !== pb.tipo || pa.materia !== pb.materia) return false;
+                        if (pa.profesor !== pb.profesor || pa.clase !== pb.clase) return false;
+                        if (pa.espacioNecesario !== pb.espacioNecesario) return false;
+                        if (pa.espacioExposicion !== pb.espacioExposicion) return false;
+                        if (pa.urlEvidencia !== pb.urlEvidencia) return false;
+                        if (pa.alumnado !== pb.alumnado) return false;
+                        if (pa.observaciones !== pb.observaciones) return false;
                     }
 
                     // Comparar cuadrante temporal
@@ -2746,9 +2758,10 @@
                 if (index !== -1) database[index] = nuevoProducto;
             } else database.push(nuevoProducto);
 
-            cerrarModal(); inicializarFiltros(); aplicarFiltros(); actualizarEstadisticas();
+            cerrarModal(); inicializarFiltros();
+            productos = [...getDatabase()]; // actualizar antes de aplicar filtros
+            aplicarFiltros(); actualizarEstadisticas();
             if (vistaActual === 'informes') generarTodosLosInformes();
-            productos = [...getDatabase()];
             guardarDatosEnStorage();
         }
 
@@ -2763,6 +2776,7 @@
                 const index = database.findIndex(p => p.id === id);
                 if (index !== -1) {
                     database.splice(index, 1);
+                    productos = [...getDatabase()]; // sincronizar antes de filtrar
                     inicializarFiltros(); aplicarFiltros(); actualizarEstadisticas();
                     if (vistaActual === 'informes') generarTodosLosInformes();
                     guardarDatosEnStorage(); // PWA: Persistir cambios
@@ -3380,6 +3394,8 @@
             }
             const cuadrante = getCuadrante();
             cuadrante.push({ proyectoId: disponibles[0].id, asignaciones: {} });
+            // Sincronizar de vuelta a datosGlobales (getCuadrante devuelve una copia 'limpio')
+            datosGlobales.años[datosGlobales.añoActivo].cuadrante = cuadrante;
             _guardarBackupCuadrante();
             guardarDatosEnStorage();
             renderizarCuadrante();
@@ -3390,6 +3406,7 @@
             if (!confirm('¿Eliminar este proyecto del cuadrante?')) return;
             const cuadrante = getCuadrante();
             cuadrante.splice(index, 1);
+            datosGlobales.años[datosGlobales.añoActivo].cuadrante = cuadrante;
             _guardarBackupCuadrante();
             guardarDatosEnStorage();
             renderizarCuadrante();
@@ -3399,6 +3416,7 @@
         function cambiarProyectoCuadrante(index, nuevoId) {
             const cuadrante = getCuadrante();
             cuadrante[index].proyectoId = parseInt(nuevoId);
+            datosGlobales.años[datosGlobales.añoActivo].cuadrante = cuadrante;
             // Limpiar asignaciones que tengan conflicto
             verificarConflictosCuadrante();
             _guardarBackupCuadrante();
@@ -3416,6 +3434,7 @@
         // Asigna un alumno a una celda, verificando conflictos
         function asignarAlumnoCuadrante(filaIndex, franja, alumnoNombre) {
             const cuadrante = getCuadrante();
+            datosGlobales.años[datosGlobales.añoActivo].cuadrante = cuadrante;
             if (!cuadrante[filaIndex].asignaciones) cuadrante[filaIndex].asignaciones = {};
 
             if (!alumnoNombre || alumnoNombre.trim() === '') {
@@ -3744,7 +3763,7 @@
                         } else {
                             // Fusión: actualizar filas existentes y añadir nuevas
                             var cuadranteFusionado = cuadranteActual.map(function(fila) {
-                                var nuevaFila = filasNuevas.find(function(nf) { return nf.proyectoId === fila.proyectoId; });
+                                var nuevaFila = filasNuevas.find(function(nf) { return String(nf.proyectoId) === String(fila.proyectoId); });
                                 if (nuevaFila) {
                                     return {
                                         proyectoId: fila.proyectoId,
@@ -3755,7 +3774,7 @@
                             });
                             // Añadir filas nuevas (proyectos que no estaban en el cuadrante)
                             filasNuevas.forEach(function(nf) {
-                                var existe = cuadranteFusionado.find(function(f) { return f.proyectoId === nf.proyectoId; });
+                                var existe = cuadranteFusionado.find(function(f) { return String(f.proyectoId) === String(nf.proyectoId); });
                                 if (!existe) {
                                     cuadranteFusionado.push(nf);
                                 }
