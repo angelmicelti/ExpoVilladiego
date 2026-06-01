@@ -593,6 +593,10 @@
                             <i data-lucide="file-down" class="h-4 w-4"></i>
                             Exportar PDF
                         </button>
+                        <button onclick="borrarTodoCuadrante()" class="bg-red-600 hover:bg-red-700 active:scale-95 transition-all text-white font-semibold px-4 py-2 rounded-xl shadow-md shadow-red-600/30 flex items-center gap-2 text-sm border-2 border-red-400/40" title="Borrar todas las filas del cuadrante">
+                            <i data-lucide="trash-2" class="h-4 w-4"></i>
+                            Borrar todo
+                        </button>
                     </div>
                 </div>
                 <!-- Leyenda -->
@@ -1331,7 +1335,13 @@
 
         function sincronizarConFirebase() {
             if (!db) return;
-            if (_syncEnCurso) return;
+            // Si ya hay una sincronización en curso, programar otra para después
+            // Esto asegura que cambios rápidos no se pierdan
+            if (_syncEnCurso) {
+                console.log('[Firestore] Sync en curso, programando reintento en 500ms');
+                _syncTimer = setTimeout(function() { sincronizarConFirebase(); }, 500);
+                return;
+            }
 
             // Cancelar timer anterior (sincronización inmediata)
             if (_syncTimer) clearTimeout(_syncTimer);
@@ -1362,6 +1372,13 @@
                         // 3. LIMPIAR filtro y reconectar — Firestore ya tiene los datos correctos
                         _jsonDatosEscritos = null;
                         conectarListenerFirestore();
+                        // 4. Si se programó un reintento durante la escritura, ejecutarlo ahora
+                        if (_syncTimer) {
+                            var pendingTimer = _syncTimer;
+                            _syncTimer = null;
+                            clearTimeout(pendingTimer);
+                            sincronizarConFirebase();
+                        }
                     })
                     .catch(function(err) {
                         _syncEnCurso = false;
@@ -1373,6 +1390,8 @@
                             console.error('[Firestore] PERMISO DENEGADO — Configura las reglas en Firebase Console');
                             actualizarIndicadorSincronizacion('error');
                         } else {
+                            // Reintentar en 3 segundos si hay error transitorio
+                            _syncTimer = setTimeout(function() { sincronizarConFirebase(); }, 3000);
                             actualizarIndicadorSincronizacion('offline');
                         }
                     });
@@ -3462,6 +3481,45 @@
                     renderLucideIcons();
                 }, 1500);
             }
+        }
+
+        // Borra todas las filas del cuadrante (con doble confirmación de seguridad)
+        function borrarTodoCuadrante() {
+            const cuadrante = getCuadrante();
+            if (cuadrante.length === 0) {
+                alert('El cuadrante ya está vacío.');
+                return;
+            }
+            var numFilas = cuadrante.length;
+            var confirmado = confirm(
+                '⚠️ BORRADO DEL CUADRANTE TEMPORAL ⚠️\n\n' +
+                'Estás a punto de eliminar las ' + numFilas + ' filas del cuadrante.\n\n' +
+                'Se perderán TODAS las asignaciones de alumnado por franja horaria.\n' +
+                'Esta acción afectará a todos los usuarios conectados.\n\n' +
+                '¿Estás SEGURO de que quieres continuar?'
+            );
+            if (!confirmado) return;
+
+            // Segunda confirmación
+            var confirmado2 = confirm(
+                '🔴 ÚLTIMA ADVERTENCIA 🔴\n\n' +
+                'Se van a borrar definitivamente las ' + numFilas + ' filas del cuadrante.\n' +
+                'Esta operación NO se puede deshacer.\n\n' +
+                'Escribe OK en el siguiente diálogo para confirmar.'
+            );
+            if (!confirmado2) return;
+
+            // Borrar el cuadrante
+            datosGlobales.años[datosGlobales.añoActivo].cuadrante = [];
+            // También limpiar el backup
+            try {
+                localStorage.removeItem('expovilladiego_cuadrante_' + datosGlobales.añoActivo);
+            } catch(e) { /* ignorar */ }
+
+            guardarDatosEnStorage();
+            renderizarCuadrante();
+
+            console.log('[Cuadrante] Todas las filas borradas (' + numFilas + ') y sincronizado con Firebase');
         }
 
         // Renderiza todo el cuadrante
