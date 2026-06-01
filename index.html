@@ -577,10 +577,6 @@
                             <i data-lucide="plus" class="h-4 w-4"></i>
                             Añadir Proyecto
                         </button>
-                        <button onclick="guardarCuadrante()" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 transition-all text-white font-semibold px-4 py-2 rounded-xl shadow-md shadow-indigo-600/20 flex items-center gap-2 text-sm">
-                            <i data-lucide="save" class="h-4 w-4"></i>
-                            Guardar
-                        </button>
                         <button onclick="exportarCSVCuadrante()" class="bg-teal-600 hover:bg-teal-700 active:scale-95 transition-all text-white font-semibold px-4 py-2 rounded-xl shadow-md shadow-teal-600/20 flex items-center gap-2 text-sm">
                             <i data-lucide="file-spreadsheet" class="h-4 w-4"></i>
                             Exportar CSV
@@ -1478,6 +1474,8 @@
                         if (proysA[j].espacioNecesario !== proysB[j].espacioNecesario) return false;
                         if (proysA[j].espacioExposicion !== proysB[j].espacioExposicion) return false;
                         if (proysA[j].urlEvidencia !== proysB[j].urlEvidencia) return false;
+                        if (proysA[j].alumnado !== proysB[j].alumnado) return false;
+                        if (proysA[j].observaciones !== proysB[j].observaciones) return false;
                     }
 
                     // Comparar cuadrante temporal
