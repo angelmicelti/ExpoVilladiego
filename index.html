@@ -1146,24 +1146,25 @@
                         var base = remoteCuad.map(function(f) {
                             return { proyectoId: f.proyectoId, asignaciones: Object.assign({}, f.asignaciones || {}) };
                         });
-                        var localMap = {};
-                        localCuad.forEach(function(f) {
-                            localMap[f.proyectoId] = Object.assign({}, f.asignaciones || {});
-                        });
 
-                        // Para cada fila local, fusionar con la base remota
-                        Object.keys(localMap).forEach(function(proyId) {
-                            var filaIdx = base.findIndex(function(b) { return b.proyectoId === proyId; });
+                        // Iterar filas locales directamente (NO usar Object.keys porque convierte proyectoId a string)
+                        localCuad.forEach(function(filaLocal) {
+                            var proyId = filaLocal.proyectoId;
+                            var asigLocal = filaLocal.asignaciones || {};
+                            // Buscar coincidencia por proyectoId con comparación flexible (== para permitir string vs number)
+                            var filaIdx = -1;
+                            for (var k = 0; k < base.length; k++) {
+                                if (base[k].proyectoId == proyId) { filaIdx = k; break; }
+                            }
                             if (filaIdx === -1) {
                                 // Proyecto no existe en el remoto → añadirlo completo
                                 base.push({
                                     proyectoId: proyId,
-                                    asignaciones: Object.assign({}, localMap[proyId])
+                                    asignaciones: Object.assign({}, asigLocal)
                                 });
                             } else {
                                 // Proyecto existe en ambos → fusionar asignaciones
                                 var asigBase = base[filaIdx].asignaciones;
-                                var asigLocal = localMap[proyId];
                                 FRANJAS_HORARIAS.forEach(function(franja) {
                                     var valBase = asigBase[franja] || '';
                                     var valLocal = asigLocal[franja] || '';
@@ -1176,7 +1177,17 @@
                             }
                         });
 
-                        remote.cuadrante = base;
+                        // Deduplicar: eliminar filas con proyectoId duplicado (quedar la última con más datos)
+                        var mapaUnico = {};
+                        var cuadranteDedup = [];
+                        for (var d = base.length - 1; d >= 0; d--) {
+                            var clave = String(base[d].proyectoId);
+                            if (!mapaUnico[clave]) {
+                                mapaUnico[clave] = true;
+                                cuadranteDedup.unshift(base[d]);
+                            }
+                        }
+                        remote.cuadrante = cuadranteDedup;
                     }
                 });
             } catch (e) { console.warn('[PWA] Error al fusionar datos locales con remotos:', e); }
@@ -3271,7 +3282,7 @@
             } catch (e) { /* ignorar */ }
         }
 
-        // Lee el cuadrante guardado en datosGlobales
+        // Lee el cuadrante guardado en datosGlobales, con deduplicación automática
         function getCuadrante() {
             const año = datosGlobales.añoActivo;
             if (!datosGlobales.años[año]) datosGlobales.años[año] = { proyectos: [], cuadrante: [] };
@@ -3289,7 +3300,36 @@
                     }
                 } catch (e) { /* ignorar */ }
             }
-            return datosGlobales.años[año].cuadrante;
+            // ── Deduplicar: eliminar filas con proyectoId repetido ──
+            var cuad = datosGlobales.años[año].cuadrante;
+            var visto = {};
+            var limpio = [];
+            var huboDuplicados = false;
+            cuad.forEach(function(fila) {
+                var clave = String(fila.proyectoId);
+                if (visto[clave]) {
+                    huboDuplicados = true;
+                    // Fusionar asignaciones de la duplicada en la existente
+                    var existente = limpio.find(function(f) { return String(f.proyectoId) === clave; });
+                    if (existente && fila.asignaciones) {
+                        Object.keys(fila.asignaciones).forEach(function(franja) {
+                            var val = fila.asignaciones[franja];
+                            if (val && val.trim() !== '' && (!existente.asignaciones[franja] || existente.asignaciones[franja].trim() === '')) {
+                                existente.asignaciones[franja] = val;
+                            }
+                        });
+                    }
+                } else {
+                    visto[clave] = true;
+                    limpio.push(fila);
+                }
+            });
+            if (huboDuplicados) {
+                console.warn('[PWA] Cuadrante deduplicado: se eliminaron ' + (cuad.length - limpio.length) + ' filas repetidas');
+                datosGlobales.años[año].cuadrante = limpio;
+                guardarDatosEnStorage();
+            }
+            return limpio;
         }
 
         // Obtiene todos los alumnos únicos de todos los proyectos
