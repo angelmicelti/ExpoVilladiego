@@ -572,7 +572,7 @@
                         </h2>
                         <p class="text-xs text-slate-500 mt-1">Asignación de alumnado por franja horaria a cada proyecto</p>
                     </div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 flex-wrap">
                         <button onclick="añadirFilaCuadrante()" class="bg-emerald-500 hover:bg-emerald-600 active:scale-95 transition-all text-white font-semibold px-4 py-2 rounded-xl shadow-lg shadow-emerald-700/20 flex items-center gap-2 text-sm">
                             <i data-lucide="plus" class="h-4 w-4"></i>
                             Añadir Proyecto
@@ -580,6 +580,14 @@
                         <button onclick="guardarCuadrante()" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 transition-all text-white font-semibold px-4 py-2 rounded-xl shadow-md shadow-indigo-600/20 flex items-center gap-2 text-sm">
                             <i data-lucide="save" class="h-4 w-4"></i>
                             Guardar
+                        </button>
+                        <button onclick="exportarCSVCuadrante()" class="bg-teal-600 hover:bg-teal-700 active:scale-95 transition-all text-white font-semibold px-4 py-2 rounded-xl shadow-md shadow-teal-600/20 flex items-center gap-2 text-sm">
+                            <i data-lucide="file-spreadsheet" class="h-4 w-4"></i>
+                            Exportar CSV
+                        </button>
+                        <button onclick="exportarPDFCuadrante()" class="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 active:scale-95 transition-all text-white font-semibold px-4 py-2 rounded-xl shadow-md shadow-indigo-600/20 flex items-center gap-2 text-sm">
+                            <i data-lucide="file-down" class="h-4 w-4"></i>
+                            Exportar PDF
                         </button>
                     </div>
                 </div>
@@ -3123,6 +3131,78 @@
 
             tbody.innerHTML = html;
             renderLucideIcons();
+        }
+
+        // Exportar Cuadrante a CSV
+        function exportarCSVCuadrante() {
+            const cuadrante = getCuadrante();
+            const db = getDatabase();
+            if (cuadrante.length === 0) { alert('No hay datos en el cuadrante para exportar.'); return; }
+
+            const headers = ['Proyecto', 'M3ª', 'X1ª', 'X2ª', 'X3ª', 'X4ª', 'X5ª', 'X6ª', 'XT1ª', 'XT2ª', 'XT3ª'];
+            let csvContent = "data:text/csv;charset=utf-8," + headers.map(h => `"${h}"`).join(',') + "\n";
+
+            cuadrante.forEach(fila => {
+                const proyecto = db.find(p => p.id === fila.proyectoId);
+                const nombre = proyecto ? (proyecto.nombre || '').replace(/"/g, '""') : '(proyecto eliminado)';
+                const valores = FRANJAS_HORARIAS.map(f => {
+                    const al = fila.asignaciones && fila.asignaciones[f] ? fila.asignaciones[f].replace(/"/g, '""') : '';
+                    return `"${al}"`;
+                });
+                csvContent += `"${nombre}",${valores.join(',')}\n`;
+            });
+
+            const link = document.createElement('a');
+            link.setAttribute('href', encodeURI(csvContent));
+            var añoFin = (datosGlobales.añoActivo || '2025-2026').split('-')[1] || datosGlobales.añoActivo;
+            var ahora = new Date();
+            var fechaHora = String(ahora.getDate()).padStart(2,'0') + '-' + String(ahora.getMonth()+1).padStart(2,'0') + '-' + String(ahora.getFullYear()).slice(-2) + '_' + String(ahora.getHours()).padStart(2,'0') + '-' + String(ahora.getMinutes()).padStart(2,'0') + '-' + String(ahora.getSeconds()).padStart(2,'0');
+            link.setAttribute('download', 'Cuadrante_ExpoVilladiego_' + añoFin + '_' + fechaHora + '.csv');
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        }
+
+        // Exportar Cuadrante a PDF (vía impresión)
+        function exportarPDFCuadrante() {
+            const cuadrante = getCuadrante();
+            const db = getDatabase();
+            if (cuadrante.length === 0) { alert('No hay datos en el cuadrante para exportar.'); return; }
+
+            const printContainer = document.getElementById('print-section');
+            const añoFin = (datosGlobales.añoActivo || '2025-2026').split('-')[1] || datosGlobales.añoActivo;
+            const añoCurso = datosGlobales.añoActivo || '2025-2026';
+
+            let html = `<div class="border-b-2 border-slate-800 pb-4 mb-6">
+                <h1 class="text-2xl font-black text-slate-900 uppercase tracking-tight">EXPOVILLADIEGO ${añoFin}</h1>
+                <p class="text-sm font-bold text-slate-600 uppercase tracking-wider">Curso escolar ${añoCurso} · IES Peñaflor, Sevilla</p>
+                <p class="text-xs text-slate-400 mt-0.5">Cuadrante Temporal — Asignación de alumnado por franja horaria</p>
+                <p class="text-xs text-slate-400 mt-1">Generado el: <strong>${new Date().toLocaleDateString('es-ES')}</strong></p>
+            </div>`;
+
+            // Cabecera de tabla
+            html += '<table class="w-full text-left text-xs border-collapse border-t-2 border-slate-300"><thead><tr class="bg-slate-100 text-slate-600 font-bold uppercase text-[10px]"><th class="py-2 px-3 border-b border-slate-200">Proyecto</th>';
+            FRANJAS_HORARIAS.forEach(f => {
+                html += `<th class="py-2 px-3 border-b border-slate-200 text-center">${f}ª</th>`;
+            });
+            html += '</tr></thead><tbody class="divide-y divide-slate-100">';
+
+            cuadrante.forEach(fila => {
+                const proyecto = db.find(p => p.id === fila.proyectoId);
+                const nombre = proyecto ? proyecto.nombre : '(proyecto eliminado)';
+                html += '<tr class="print-card"><td class="py-2 px-3 font-bold text-slate-800">' + (nombre || '') + '</td>';
+                FRANJAS_HORARIAS.forEach(f => {
+                    const al = fila.asignaciones && fila.asignaciones[f] ? fila.asignaciones[f] : '';
+                    if (al) {
+                        html += `<td class="py-2 px-3 text-center font-semibold" style="color:#4f46e5;">${al}</td>`;
+                    } else {
+                        html += '<td class="py-2 px-3 text-center" style="color:#cbd5e1;">—</td>';
+                    }
+                });
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            printContainer.innerHTML = html;
+            setTimeout(() => window.print(), 300);
         }
 
         // EXPORTACIÓN A PDF / IMPRESIÓN
