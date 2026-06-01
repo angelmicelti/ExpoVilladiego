@@ -85,7 +85,7 @@
         /* Estilos específicos de impresión */
         @media print {
             body { background: white !important; color: black !important; font-size: 12px; }
-            header, footer, #tab-tabla, #tab-informes, #vista-tabla, .reporte-tab-btn, #btn-lanzar-pdf, section.bg-white.p-4, .no-print, #offline-bar, #btn-instalar, #modal-instalar { display: none !important; }
+            header, footer, #tab-tabla, #tab-informes, #tab-cuadrante, #vista-tabla, #vista-cuadrante, .reporte-tab-btn, #btn-lanzar-pdf, section.bg-white.p-4, .no-print, #offline-bar, #btn-instalar, #modal-instalar { display: none !important; }
             #print-section { display: block !important; visibility: visible !important; width: 100% !important; position: absolute; left: 0; top: 0; }
             .print-card { background: white !important; border: 1px solid #e2e8f0 !important; box-shadow: none !important; page-break-inside: avoid; margin-bottom: 1.5rem; }
             .page-break { page-break-before: always; }
@@ -269,6 +269,10 @@
                 <i data-lucide="bar-chart-3" class="h-4 w-4"></i>
                 Informes Dinámicos
                 
+            </button>
+            <button id="tab-cuadrante" onclick="cambiarVistaPrincipal('cuadrante')" class="px-4 sm:px-6 py-3 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-indigo-600 hover:border-slate-300 transition flex items-center gap-2 whitespace-nowrap">
+                <i data-lucide="calendar-clock" class="h-4 w-4"></i>
+                Cuadrante Temporal
             </button>
         </div>
 
@@ -555,6 +559,64 @@
                 </div>
                 <div id="cont-reporte-evidencia" class="overflow-x-auto"></div>
             </div>
+        </div>
+
+        <!-- VISTA 3: CUADRANTE TEMPORAL -->
+        <div id="vista-cuadrante" class="hidden space-y-6">
+            <section class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                            <i data-lucide="calendar-clock" class="text-amber-600"></i>
+                            Cuadrante Temporal
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">Asignación de alumnado por franja horaria a cada proyecto</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="añadirFilaCuadrante()" class="bg-emerald-500 hover:bg-emerald-600 active:scale-95 transition-all text-white font-semibold px-4 py-2 rounded-xl shadow-lg shadow-emerald-700/20 flex items-center gap-2 text-sm">
+                            <i data-lucide="plus" class="h-4 w-4"></i>
+                            Añadir Proyecto
+                        </button>
+                        <button onclick="guardarCuadrante()" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 transition-all text-white font-semibold px-4 py-2 rounded-xl shadow-md shadow-indigo-600/20 flex items-center gap-2 text-sm">
+                            <i data-lucide="save" class="h-4 w-4"></i>
+                            Guardar
+                        </button>
+                    </div>
+                </div>
+                <!-- Leyenda -->
+                <div class="flex flex-wrap gap-2 text-xs">
+                    <span class="inline-flex items-center gap-1 bg-amber-50 text-amber-700 px-2.5 py-1 rounded-lg border border-amber-200 font-semibold"><i data-lucide="info" class="h-3 w-3"></i> Un alumno no puede estar en dos proyectos a la misma hora</span>
+                </div>
+                <!-- Tabla del cuadrante -->
+                <div class="overflow-x-auto touch-scroll">
+                    <table class="w-full text-sm border-collapse min-w-[900px]">
+                        <thead>
+                            <tr class="bg-gradient-to-r from-slate-100 to-slate-50">
+                                <th class="py-3 px-4 text-left text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200 sticky left-0 bg-gradient-to-r from-slate-100 to-slate-50 z-10 min-w-[200px]">Proyecto</th>
+                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">M3</th>
+                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">X1</th>
+                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">X2</th>
+                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">X3</th>
+                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">X4</th>
+                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">X5</th>
+                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">X6</th>
+                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">XT1</th>
+                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">XT2</th>
+                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">XT3</th>
+                                <th class="py-3 px-3 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200 min-w-[50px]"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-cuadrante" class="divide-y divide-slate-100">
+                            <!-- Las filas se generan dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="cuadrante-vacio" class="py-12 text-center text-sm text-slate-400">
+                    <i data-lucide="calendar" class="h-10 w-10 mx-auto mb-3 text-slate-300"></i>
+                    <p class="font-semibold">No hay proyectos en el cuadrante</p>
+                    <p class="text-xs mt-1">Pulsa "Añadir Proyecto" para comenzar a asignar alumnado por franjas horarias</p>
+                </div>
+            </section>
         </div>
     </main>
 
@@ -2152,18 +2214,29 @@
         // GESTIÓN DE VISTAS, FILTROS Y ORDENACIÓN
         function cambiarVistaPrincipal(vista) {
             vistaActual = vista;
-            const tabTabla = document.getElementById('tab-tabla'), tabInformes = document.getElementById('tab-informes');
-            const vistaTabla = document.getElementById('vista-tabla'), vistaInformes = document.getElementById('vista-informes');
+            const tabTabla = document.getElementById('tab-tabla'), tabInformes = document.getElementById('tab-informes'), tabCuadrante = document.getElementById('tab-cuadrante');
+            const vistaTabla = document.getElementById('vista-tabla'), vistaInformes = document.getElementById('vista-informes'), vistaCuadrante = document.getElementById('vista-cuadrante');
+            const activeClass = "px-4 sm:px-6 py-3 font-bold text-sm border-b-2 border-indigo-600 text-indigo-600 transition flex items-center gap-2 whitespace-nowrap";
+            const inactiveClass = "px-4 sm:px-6 py-3 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-indigo-600 hover:border-slate-300 transition flex items-center gap-2 whitespace-nowrap";
+
+            tabTabla.className = inactiveClass;
+            tabInformes.className = inactiveClass;
+            tabCuadrante.className = inactiveClass;
+            vistaTabla.classList.add('hidden');
+            vistaInformes.classList.add('hidden');
+            vistaCuadrante.classList.add('hidden');
 
             if (vista === 'tabla') {
-                tabTabla.className = "px-6 py-3 font-bold text-sm border-b-2 border-indigo-600 text-indigo-600 transition flex items-center gap-2";
-                tabInformes.className = "px-6 py-3 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-indigo-600 hover:border-slate-300 transition flex items-center gap-2";
-                vistaTabla.classList.remove('hidden'); vistaInformes.classList.add('hidden');
-            } else {
-                tabTabla.className = "px-6 py-3 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-indigo-600 hover:border-slate-300 transition flex items-center gap-2";
-                tabInformes.className = "px-6 py-3 font-bold text-sm border-b-2 border-indigo-600 text-indigo-600 transition flex items-center gap-2";
-                vistaTabla.classList.add('hidden'); vistaInformes.classList.remove('hidden');
+                tabTabla.className = activeClass;
+                vistaTabla.classList.remove('hidden');
+            } else if (vista === 'informes') {
+                tabInformes.className = activeClass;
+                vistaInformes.classList.remove('hidden');
                 generarTodosLosInformes();
+            } else if (vista === 'cuadrante') {
+                tabCuadrante.className = activeClass;
+                vistaCuadrante.classList.remove('hidden');
+                renderizarCuadrante();
             }
         }
 
@@ -2819,6 +2892,235 @@
             html += '</tbody></table>';
             printContainer.innerHTML = html;
             setTimeout(() => window.print(), 300);
+        }
+
+        // ==========================================
+        // CUADRANTE TEMPORAL
+        // ==========================================
+        const FRANJAS_HORARIAS = ['M3', 'X1', 'X2', 'X3', 'X4', 'X5', 'X6', 'XT1', 'XT2', 'XT3'];
+
+        // Lee el cuadrante guardado en datosGlobales
+        function getCuadrante() {
+            const año = datosGlobales.añoActivo;
+            if (!datosGlobales.años[año]) datosGlobales.años[año] = { proyectos: [], cuadrante: [] };
+            if (!datosGlobales.años[año].cuadrante) datosGlobales.años[año].cuadrante = [];
+            return datosGlobales.años[año].cuadrante;
+        }
+
+        // Obtiene todos los alumnos únicos de todos los proyectos
+        function getTodosAlumnos() {
+            const db = getDatabase();
+            const setAlumnos = new Set();
+            db.forEach(p => {
+                if (p.alumnado) {
+                    p.alumnado.split(/[,;]/).map(a => a.trim()).filter(a => a.length > 0).forEach(a => setAlumnos.add(a));
+                }
+            });
+            return Array.from(setAlumnos).sort((a, b) => a.localeCompare(b, 'es'));
+        }
+
+        // Obiene los proyectos que aún no están en el cuadrante
+        function getProyectosDisponiblesCuadrante() {
+            const db = getDatabase();
+            const cuadrante = getCuadrante();
+            const usados = new Set(cuadrante.map(f => f.proyectoId));
+            return db.filter(p => !usados.has(p.id));
+        }
+
+        // Añade una nueva fila al cuadrante
+        function añadirFilaCuadrante() {
+            const disponibles = getProyectosDisponiblesCuadrante();
+            if (disponibles.length === 0) {
+                alert('No hay proyectos disponibles. Todos los proyectos ya están en el cuadrante.');
+                return;
+            }
+            const cuadrante = getCuadrante();
+            cuadrante.push({ proyectoId: disponibles[0].id, asignaciones: {} });
+            guardarDatosEnStorage();
+            renderizarCuadrante();
+        }
+
+        // Elimina una fila del cuadrante
+        function eliminarFilaCuadrante(index) {
+            if (!confirm('¿Eliminar este proyecto del cuadrante?')) return;
+            const cuadrante = getCuadrante();
+            cuadrante.splice(index, 1);
+            guardarDatosEnStorage();
+            renderizarCuadrante();
+        }
+
+        // Cambia el proyecto de una fila
+        function cambiarProyectoCuadrante(index, nuevoId) {
+            const cuadrante = getCuadrante();
+            cuadrante[index].proyectoId = nuevoId;
+            // Limpiar asignaciones que tengan conflicto
+            verificarConflictosCuadrante();
+            guardarDatosEnStorage();
+            renderizarCuadrante();
+        }
+
+        // Obtiene el alumno asignado en una celda específica
+        function getAlumnoEnCelda(filaIndex, franja) {
+            const cuadrante = getCuadrante();
+            if (!cuadrante[filaIndex] || !cuadrante[filaIndex].asignaciones) return '';
+            return cuadrante[filaIndex].asignaciones[franja] || '';
+        }
+
+        // Asigna un alumno a una celda, verificando conflictos
+        function asignarAlumnoCuadrante(filaIndex, franja, alumnoNombre) {
+            const cuadrante = getCuadrante();
+            if (!cuadrante[filaIndex].asignaciones) cuadrante[filaIndex].asignaciones = {};
+
+            if (!alumnoNombre || alumnoNombre.trim() === '') {
+                delete cuadrante[filaIndex].asignaciones[franja];
+            } else {
+                // Verificar que este alumno no está ya asignado en la misma franja en otra fila
+                const conflicto = cuadrante.some((fila, i) => {
+                    if (i === filaIndex) return false;
+                    const asignado = fila.asignaciones && fila.asignaciones[franja];
+                    if (asignado && asignado.toLowerCase() === alumnoNombre.trim().toLowerCase()) return true;
+                    return false;
+                });
+
+                if (conflicto) {
+                    alert('Este alumno ya está asignado a otro proyecto en la franja ' + franja + '. No se permite solapamiento.');
+                    renderizarCuadrante();
+                    return;
+                }
+
+                cuadrante[filaIndex].asignaciones[franja] = alumnoNombre.trim();
+            }
+            guardarDatosEnStorage();
+            renderizarCuadrante();
+        }
+
+        // Verifica y limpia conflictos (por ejemplo, al cambiar de proyecto)
+        function verificarConflictosCuadrante() {
+            const cuadrante = getCuadrante();
+            FRANJAS_HORARIAS.forEach(franja => {
+                const usados = {};
+                cuadrante.forEach((fila, i) => {
+                    if (!fila.asignaciones) return;
+                    const alumno = fila.asignaciones[franja];
+                    if (!alumno) return;
+                    const key = alumno.toLowerCase();
+                    if (usados[key] !== undefined) {
+                        // El alumno duplicado (el más reciente) se elimina
+                        delete cuadrante[i].asignaciones[franja];
+                    } else {
+                        usados[key] = i;
+                    }
+                });
+            });
+        }
+
+        // Guarda el cuadrante (ya se guarda en cada operación, pero botón explícito)
+        function guardarCuadrante() {
+            guardarDatosEnStorage();
+            // Feedback visual
+            const btn = document.querySelector('[onclick="guardarCuadrante()"]');
+            if (btn) {
+                const origHtml = btn.innerHTML;
+                btn.innerHTML = '<i data-lucide="check" class="h-4 w-4"></i> Guardado';
+                btn.classList.replace('bg-indigo-600', 'bg-emerald-600');
+                btn.classList.replace('hover:bg-indigo-700', 'hover:bg-emerald-700');
+                renderLucideIcons();
+                setTimeout(() => {
+                    btn.innerHTML = origHtml;
+                    btn.classList.replace('bg-emerald-600', 'bg-indigo-600');
+                    btn.classList.replace('hover:bg-emerald-700', 'hover:bg-indigo-700');
+                    renderLucideIcons();
+                }, 1500);
+            }
+        }
+
+        // Renderiza todo el cuadrante
+        function renderizarCuadrante() {
+            const tbody = document.getElementById('tbody-cuadrante');
+            const msgVacio = document.getElementById('cuadrante-vacio');
+            if (!tbody) return;
+
+            const cuadrante = getCuadrante();
+            const db = getDatabase();
+            const todosAlumnos = getTodosAlumnos();
+
+            if (cuadrante.length === 0) {
+                tbody.innerHTML = '';
+                if (msgVacio) msgVacio.classList.remove('hidden');
+                renderLucideIcons();
+                return;
+            }
+            if (msgVacio) msgVacio.classList.add('hidden');
+
+            // Construir mapas: qué alumnos están ya usados en cada franja (para deshabilitarlos en los selects)
+            const usadosPorFranja = {};
+            FRANJAS_HORARIAS.forEach(f => { usadosPorFranja[f] = new Set(); });
+            cuadrante.forEach(fila => {
+                if (!fila.asignaciones) return;
+                FRANJAS_HORARIAS.forEach(f => {
+                    const al = fila.asignaciones[f];
+                    if (al) usadosPorFranja[f].add(al.toLowerCase());
+                });
+            });
+
+            let html = '';
+            cuadrante.forEach((fila, filaIdx) => {
+                const proyecto = db.find(p => p.id === fila.proyectoId);
+                const nombreProyecto = proyecto ? proyecto.nombre : '(proyecto eliminado)';
+
+                // Select de proyecto
+                const disponibles = getProyectosDisponiblesCuadrante();
+                const usadosIds = new Set(cuadrante.map(f => f.proyectoId));
+                let opcionesProyecto = '';
+                db.forEach(p => {
+                    const selected = p.id === fila.proyectoId ? 'selected' : '';
+                    const disabled = (usadosIds.has(p.id) && p.id !== fila.proyectoId) ? 'disabled' : '';
+                    opcionesProyecto += `<option value="${p.id}" ${selected} ${disabled}>${p.nombre || 'Sin nombre'}</option>`;
+                });
+
+                // Celdas de franjas horarias
+                let celdasHtml = '';
+                FRANJAS_HORARIAS.forEach(franja => {
+                    const alumnoActual = fila.asignaciones && fila.asignaciones[franja] ? fila.asignaciones[franja] : '';
+
+                    // Opciones del select: opción vacía + todos los alumnos
+                    let optsAlumno = '<option value="">—</option>';
+                    todosAlumnos.forEach(al => {
+                        const selected = al.toLowerCase() === alumnoActual.toLowerCase() ? 'selected' : '';
+                        const disabled = (usadosPorFranja[franja].has(al.toLowerCase()) && al.toLowerCase() !== alumnoActual.toLowerCase()) ? 'disabled' : '';
+                        optsAlumno += `<option value="${al}" ${selected} ${disabled}>${al}</option>`;
+                    });
+
+                    const tieneAlumno = alumnoActual.length > 0;
+                    const bgCell = tieneAlumno ? 'bg-indigo-50' : '';
+
+                    celdasHtml += `<td class="py-2 px-1 text-center ${bgCell} transition-colors">
+                        <select onchange="asignarAlumnoCuadrante(${filaIdx}, '${franja}', this.value)"
+                            class="w-full text-xs px-1.5 py-1.5 border border-slate-200 rounded-lg bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-200 outline-none transition-all ${tieneAlumno ? 'font-semibold text-indigo-700 border-indigo-300' : 'text-slate-500'}">
+                            ${optsAlumno}
+                        </select>
+                    </td>`;
+                });
+
+                // Botón eliminar
+                const btnEliminar = `<button onclick="eliminarFilaCuadrante(${filaIdx})" class="text-red-400 hover:text-red-600 hover:bg-red-50 p-1.5 rounded-lg transition" title="Eliminar fila">
+                    <i data-lucide="trash-2" class="h-4 w-4"></i>
+                </button>`;
+
+                html += `<tr class="hover:bg-slate-50/50 transition-colors group">
+                    <td class="py-2 px-3 sticky left-0 bg-white z-10 group-hover:bg-slate-50/50 transition-colors">
+                        <select onchange="cambiarProyectoCuadrante(${filaIdx}, this.value)"
+                            class="w-full text-xs font-semibold px-2 py-2 border border-slate-200 rounded-lg bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-200 outline-none transition-all text-slate-800">
+                            ${opcionesProyecto}
+                        </select>
+                    </td>
+                    ${celdasHtml}
+                    <td class="py-2 px-2 text-center">${btnEliminar}</td>
+                </tr>`;
+            });
+
+            tbody.innerHTML = html;
+            renderLucideIcons();
         }
 
         // EXPORTACIÓN A PDF / IMPRESIÓN
