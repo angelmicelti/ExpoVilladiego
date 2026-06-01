@@ -1138,7 +1138,7 @@
             if (!db) return;
             if (_syncEnCurso) return;
 
-            // Cancelar timer anterior (debounce de 300ms)
+            // Cancelar timer anterior (sincronización inmediata)
             if (_syncTimer) clearTimeout(_syncTimer);
 
             // Guardar el JSON de los datos que vamos a subir — el listener lo usará
@@ -1147,7 +1147,8 @@
 
             actualizarIndicadorSincronizacion('sincronizando');
 
-            _syncTimer = setTimeout(function() {
+            // Ejecutar sincronización inmediatamente (sin debounce)
+            (function() {
                 _syncEnCurso = true;
 
                 // 1. DESCONECTAR el listener para que no reciba snapshots durante la escritura
@@ -1180,7 +1181,7 @@
                             actualizarIndicadorSincronizacion('offline');
                         }
                     });
-            }, 300);
+            })();
         }
 
         // Compara si dos estructuras de datos globales son equivalentes.
