@@ -3676,22 +3676,27 @@
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = '.csv,.txt';
+            input.style.display = 'none';
+            document.body.appendChild(input);
             input.onchange = function(e) {
                 const file = e.target.files[0];
-                if (!file) return;
+                if (!file) { document.body.removeChild(input); return; }
 
                 const reader = new FileReader();
                 reader.onload = function(ev) {
                     try {
                         const text = ev.target.result;
                         const lineas = text.split(/\r?\n/).filter(function(l) { return l.trim() !== ''; });
-                        if (lineas.length < 2) { alert('El archivo CSV está vacío o no tiene datos suficientes.'); return; }
+                        if (lineas.length < 2) { alert('El archivo CSV está vacío o no tiene datos suficientes.'); document.body.removeChild(input); return; }
 
                         // Parsear cabecera
                         const headerRaw = lineas[0];
                         const headers = parsearLineaCSV(headerRaw);
+                        // Limpiar posible BOM UTF-8 del primer header
+                        headers[0] = headers[0].replace(/^\uFEFF/, '');
                         if (headers.length < 2 || headers[0].replace(/ª/g, '').trim().toLowerCase() !== 'proyecto') {
                             alert('El formato del CSV no es válido. La primera columna debe ser "Proyecto" y las siguientes las franjas horarias (M3ª, X1ª, etc.).');
+                            document.body.removeChild(input);
                             return;
                         }
 
@@ -3704,6 +3709,7 @@
                         const franjasOk = franjasCSV.every(function(f) { return franjasSistema.indexOf(f) !== -1; });
                         if (!franjasOk) {
                             alert('Las franjas horarias del CSV no coinciden con las del sistema. Se esperan: ' + franjasSistema.join(', '));
+                            document.body.removeChild(input);
                             return;
                         }
 
@@ -3747,6 +3753,7 @@
 
                         if (filasNuevas.length === 0) {
                             alert('No se encontraron proyectos coincidentes en el CSV. Verifica que los nombres de los proyectos coincidan exactamente.');
+                            document.body.removeChild(input);
                             return;
                         }
 
@@ -3784,6 +3791,7 @@
 
                         // Guardar y sincronizar
                         guardarDatosEnStorage();
+                        _guardarBackupCuadrante();
                         sincronizarConFirebase();
                         renderizarCuadrante();
 
@@ -3793,6 +3801,7 @@
                         console.error('[Import CSV] Error:', err);
                         alert('Error al importar el CSV: ' + err.message);
                     }
+                    document.body.removeChild(input);
                 };
                 reader.readAsText(file, 'UTF-8');
             };
