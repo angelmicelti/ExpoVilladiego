@@ -20,9 +20,9 @@
     <meta name="background_color" content="#f8fafc">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Expo 2026">
+    <meta name="apple-mobile-web-app-title" id="meta-apple-title" content="Expo">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="EXPOVILLADIEGO 2026">
+    <meta name="application-name" id="meta-app-name" content="EXPOVILLADIEGO">
     <meta name="msapplication-TileColor" content="#4338ca">
     <meta name="msapplication-navbutton-color" content="#4338ca">
 
@@ -57,7 +57,6 @@
             },
         }
     </script>
-    <!-- PDF.js: carga diferida solo cuando se importa un PDF (ahorra ~600KB RAM) -->
     <style>
         /* === Estilos propios (no proporcionados por Tailwind) === */
 
@@ -85,7 +84,7 @@
         /* Estilos específicos de impresión */
         @media print {
             body { background: white !important; color: black !important; font-size: 12px; }
-            header, footer, #tab-tabla, #tab-informes, #tab-cuadrante, #vista-tabla, #vista-cuadrante, .reporte-tab-btn, #btn-lanzar-pdf, section.bg-white.p-4, .no-print, #offline-bar, #btn-instalar, #modal-instalar { display: none !important; }
+            header, footer, #banner-fase, #tab-tabla, #tab-informes, #tab-cuadrante, #vista-tabla, #vista-cuadrante, .reporte-tab-btn, #btn-lanzar-pdf, section.bg-white.p-4, .no-print, #offline-bar, #btn-instalar, #modal-instalar { display: none !important; }
             #print-section { display: block !important; visibility: visible !important; width: 100% !important; position: absolute; left: 0; top: 0; }
             .print-card { background: white !important; border: 1px solid #e2e8f0 !important; box-shadow: none !important; page-break-inside: avoid; margin-bottom: 1.5rem; }
             .page-break { page-break-before: always; }
@@ -122,7 +121,7 @@
                 </div>
                 <div>
                     <span class="text-[10px] sm:text-xs font-bold tracking-widest text-indigo-200 uppercase">Gestión cooperativa de la</span>
-                    <h1 id="titulo-exposicion" class="text-xl sm:text-3xl font-extrabold tracking-tight leading-tight">EXPOVILLADIEGO 2026</h1>
+                    <h1 id="titulo-exposicion" class="text-xl sm:text-3xl font-extrabold tracking-tight leading-tight">EXPOVILLADIEGO</h1>
                     <span id="app-version-badge" class="text-[9px] sm:text-[10px] font-medium text-indigo-300/60 tracking-wide"></span>
                 </div>
             </div>
@@ -137,29 +136,43 @@
                     <span id="sync-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 shrink-0"></span>
                     <span id="sync-text" class="hidden sm:inline">Sinc.</span>
                 </div>
+                <!-- Histórico de Proyectos (paleta del curso) -->
+                <a id="btn-historico-banner" href="https://angelmicelti.github.io/ExpoVilladiego/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-white font-bold px-4 py-2 rounded-xl shadow-md text-xs sm:text-sm no-underline transition-all active:scale-95 shrink-0 bg-indigo-600 border border-indigo-500 shadow-indigo-700/20 hover:brightness-110">
+                    <i data-lucide="history" class="h-4 w-4"></i>
+                    <span class="hidden sm:inline">Histórico de Proyectos</span>
+                    <span class="sm:hidden">Histórico</span>
+                </a>
             </div>
         </div>
     </header>
+
+    <!-- BANNER DE FASE ACTUAL -->
+    <div id="banner-fase">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+            <div id="banner-fase-inner" class="flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-center">
+                <i data-lucide="clock" class="h-4 w-4 shrink-0"></i>
+                <span id="banner-fase-texto" class="text-xs sm:text-sm font-extrabold uppercase tracking-wider"></span>
+            </div>
+        </div>
+    </div>
 
     <!-- ACORDEÓN DE CONFIGURACIÓN -->
     <div class="bg-white border-b border-slate-200 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <button onclick="toggleAcordeonConfig()" id="btn-acordeon-config" class="w-full flex items-center justify-between py-3 px-1 text-sm font-bold text-slate-700 hover:text-indigo-600 transition group">
                 <div class="flex items-center gap-2">
-                    <i data-lucide="settings" class="h-4 w-4 text-slate-400 group-hover:text-indigo-500 transition"></i>
+                    <i data-lucide="shield-check" class="h-4 w-4 text-slate-400 group-hover:text-indigo-500 transition"></i>
                     <span>Configuración</span>
+                    <i data-lucide="lock" class="h-3.5 w-3.5 text-slate-400 group-hover:text-amber-500 transition" id="icon-lock-config"></i>
                 </div>
                 <i data-lucide="chevron-down" id="chevron-config" class="h-4 w-4 text-slate-400 transition-transform duration-300"></i>
             </button>
             <div id="acordeon-config-body" class="overflow-hidden transition-all duration-300" style="max-height: 0; opacity: 0;">
                 <div class="pb-4 pt-1 flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-wrap">
-                    <!-- Selector de Año Escolar -->
+                    <!-- Indicador del Año Escolar activo -->
                     <div class="flex items-center gap-2 bg-slate-100 border border-slate-200 px-3 py-2 rounded-xl">
                         <i data-lucide="calendar" class="h-4 w-4 text-indigo-500"></i>
-                        <select id="selector-año" onchange="_cambiarAñoSelector(this)" class="bg-transparent text-slate-800 font-bold text-sm outline-none cursor-pointer"></select>
-                        <button onclick="abrirModalGestionAños()" class="text-slate-400 hover:text-indigo-600 transition" title="Gestionar años escolares">
-                            <i data-lucide="settings-2" class="h-4 w-4"></i>
-                        </button>
+                        <span id="selector-año" class="text-slate-800 font-bold text-sm"></span>
                     </div>
                     <div class="flex items-center gap-2 flex-wrap">
                         <button onclick="exportarCSV()" class="bg-blue-500 hover:bg-blue-600 active:scale-95 transition-all text-white font-semibold px-4 py-2 rounded-xl shadow-md shadow-blue-500/20 flex items-center gap-2 text-sm">
@@ -170,28 +183,68 @@
                             <i data-lucide="upload" class="h-4 w-4"></i>
                             Importar CSV
                         </button>
-                        <button onclick="resetearDatos()" class="bg-red-500 hover:bg-red-600 active:scale-95 transition-all text-white font-semibold px-4 py-2 rounded-xl shadow-md shadow-red-500/20 flex items-center gap-2 text-sm" title="Borrar todos los datos del curso actual">
+                        <button id="btn-borrar-datos" onclick="resetearDatos()" class="bg-red-500 hover:bg-red-600 active:scale-95 transition-all text-white font-semibold px-4 py-2 rounded-xl shadow-md shadow-red-500/20 flex items-center gap-2 text-sm" title="Borrar todos los datos del curso actual">
                             <i data-lucide="trash-2" class="h-4 w-4"></i>
                             Borrar datos
                         </button>
                     </div>
-                    <!-- Segunda fila: Histórico, Importar PDF y Añadir -->
-                    <div class="flex items-center gap-2 flex-wrap w-full mt-1">
-                        <a href="https://angelmicelti.github.io/ExpoVilladiego/" target="_blank" rel="noopener noreferrer" class="bg-teal-500 hover:bg-teal-600 active:scale-95 transition-all text-white font-semibold px-4 py-2 rounded-xl shadow-md shadow-teal-500/20 flex items-center gap-2 text-sm no-underline">
-                            <i data-lucide="history" class="h-4 w-4"></i>
-                            Histórico de Proyectos
-                        </a>
-                        <div class="w-32 sm:w-48 shrink-0"></div>
-                        <button onclick="abrirModalImportar()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-xl border border-indigo-500 transition-all flex items-center gap-2 text-sm shadow-lg shadow-indigo-700/20 active:scale-95">
-                            <i data-lucide="file-up" class="h-4 w-4"></i>
-                            <span class="hidden sm:inline">Importar productos desde PDF</span>
-                            <span class="sm:hidden">Importar PDF</span>
-                        </button>
-                        <button onclick="abrirModalNuevo()" class="bg-emerald-500 hover:bg-emerald-600 active:scale-95 transition-all text-white font-semibold px-4 py-2 rounded-xl shadow-lg shadow-emerald-700/20 flex items-center gap-2 text-sm">
-                            <i data-lucide="plus-circle" class="h-4 w-4"></i>
-                            <span class="hidden sm:inline">Añadir producto individualmente</span>
-                            <span class="sm:hidden">Añadir</span>
-                        </button>
+                </div>
+                <!-- Secciones de administración (solo visibles si autenticado) -->
+                <div id="admin-secciones-config" class="hidden">
+                    <div class="border-t border-slate-200 mt-2 pt-3 space-y-3">
+                        <!-- Salir del perfil admin (botón prominente) -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-lg">
+                                    <i data-lucide="shield-check" class="h-3.5 w-3.5"></i> Perfil Administrador activo
+                                </span>
+                            </div>
+                            <button onclick="cerrarSesionAdmin()" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 transition-all active:scale-95 flex items-center gap-1.5 border border-red-200">
+                                <i data-lucide="log-out" class="h-3.5 w-3.5"></i> Salir del perfil admin
+                            </button>
+                        </div>
+                        <!-- Fase temporal -->
+                        <div class="bg-gradient-to-br from-slate-50 to-violet-50/40 rounded-xl border border-slate-200 p-3 space-y-2">
+                            <h3 class="text-xs font-bold text-slate-700 flex items-center gap-2">
+                                <i data-lucide="clock" class="h-4 w-4 text-violet-500"></i> Fase temporal del curso
+                            </h3>
+                            <div id="radio-fases" class="space-y-1.5"></div>
+                            <div id="fase-auto-msg" class="hidden text-[11px] text-violet-600 font-semibold flex items-center gap-1"><i data-lucide="zap" class="h-3 w-3"></i> <span id="fase-auto-text"></span></div>
+                            <!-- Checkbox para habilitar edición en fase cerrada -->
+                            <div id="check-fase-cerrada-row" class="hidden border-t border-slate-200 pt-2 mt-2">
+                                <label class="inline-flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                    <input type="checkbox" id="check-editar-cerrada" onchange="toggleEditarFaseCerrada()" class="h-4 w-4 rounded border-slate-300 text-violet-600 focus:ring-violet-500">
+                                    <span>Habilitar edición en ExpoVilladiego cerrada</span>
+                                </label>
+                            </div>
+                        </div>
+                        <!-- Gestión de años escolares -->
+                        <div class="bg-gradient-to-br from-slate-50 to-indigo-50/40 rounded-xl border border-slate-200 p-3 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-xs font-bold text-slate-700 flex items-center gap-2">
+                                    <i data-lucide="calendar-days" class="h-4 w-4 text-indigo-500"></i> Gestión de años escolares
+                                </h3>
+                                <button onclick="_mostrarModalAños()" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-indigo-100 text-indigo-700 hover:bg-indigo-200 transition-all active:scale-95 flex items-center gap-1.5">
+                                    <i data-lucide="settings-2" class="h-3.5 w-3.5"></i> Gestionar
+                                </button>
+                            </div>
+                            <p class="text-[11px] text-slate-500">Crear, renombrar y eliminar cursos escolares.</p>
+                        </div>
+                        <!-- Cambio de contraseña -->
+                        <div class="bg-gradient-to-br from-slate-50 to-amber-50/30 rounded-xl border border-slate-200 p-3 space-y-2">
+                            <h3 class="text-xs font-bold text-slate-700 flex items-center gap-2">
+                                <i data-lucide="key" class="h-4 w-4 text-amber-500"></i> Contraseña de administración
+                            </h3>
+                            <p class="text-[11px] text-slate-500">Modificar la clave de acceso a la configuración.</p>
+                            <div class="flex gap-2">
+                                <input type="password" id="input-nueva-clave" placeholder="Nueva contraseña" class="flex-grow px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:border-amber-500 focus:ring-1 focus:ring-amber-300 outline-none transition-all">
+                                <input type="password" id="input-confirmar-clave" placeholder="Confirmar" class="flex-grow px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:border-amber-500 focus:ring-1 focus:ring-amber-300 outline-none transition-all">
+                                <button onclick="cambiarClaveAdmin()" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg text-xs flex items-center gap-1.5 transition-all active:scale-95 shrink-0">
+                                    <i data-lucide="check" class="h-3.5 w-3.5"></i> Guardar
+                                </button>
+                            </div>
+                            <div id="msg-clave-admin" class="hidden text-xs font-semibold flex items-center gap-1.5"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -314,6 +367,12 @@
             </section>
 
             <section class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                <div class="flex items-center justify-between px-5 py-3 bg-slate-50/75 border-b border-slate-100">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Listado de productos</span>
+                    <button id="btn-añadir-tabla" onclick="abrirModalNuevo()" class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white transition-all active:scale-95 shadow-sm">
+                        <i data-lucide="plus-circle" class="h-3.5 w-3.5"></i> Añadir producto
+                    </button>
+                </div>
                 <div class="overflow-x-auto w-full touch-scroll" style="min-width: 700px;">
                     <table class="w-full text-left border-collapse">
                         <thead>
@@ -574,7 +633,7 @@
                         <p class="text-xs text-slate-500 mt-1">Asignación de alumnado por franja horaria a cada proyecto</p>
                     </div>
                     <div class="flex items-center gap-2 flex-wrap">
-                        <button onclick="añadirFilaCuadrante()" class="bg-emerald-500 hover:bg-emerald-600 active:scale-95 transition-all text-white font-semibold px-4 py-2 rounded-xl shadow-lg shadow-emerald-700/20 flex items-center gap-2 text-sm">
+                        <button id="btn-añadir-fila-cuadrante" onclick="añadirFilaCuadrante()" class="bg-emerald-500 hover:bg-emerald-600 active:scale-95 transition-all text-white font-semibold px-4 py-2 rounded-xl shadow-lg shadow-emerald-700/20 flex items-center gap-2 text-sm">
                             <i data-lucide="plus" class="h-4 w-4"></i>
                             Añadir Proyecto
                         </button>
@@ -582,7 +641,7 @@
                             <i data-lucide="file-spreadsheet" class="h-4 w-4"></i>
                             Exportar CSV
                         </button>
-                        <button onclick="importarCSVCuadrante()" class="bg-orange-500 hover:bg-orange-600 active:scale-95 transition-all text-white font-semibold px-4 py-2 rounded-xl shadow-md shadow-orange-500/20 flex items-center gap-2 text-sm">
+                        <button id="btn-importar-csv-cuadrante" onclick="importarCSVCuadrante()" class="bg-orange-500 hover:bg-orange-600 active:scale-95 transition-all text-white font-semibold px-4 py-2 rounded-xl shadow-md shadow-orange-500/20 flex items-center gap-2 text-sm">
                             <i data-lucide="file-up" class="h-4 w-4"></i>
                             Importar CSV
                         </button>
@@ -590,34 +649,39 @@
                             <i data-lucide="file-down" class="h-4 w-4"></i>
                             Exportar PDF
                         </button>
-                        <button onclick="borrarTodoCuadrante()" class="bg-red-600 hover:bg-red-700 active:scale-95 transition-all text-white font-semibold px-4 py-2 rounded-xl shadow-md shadow-red-600/30 flex items-center gap-2 text-sm border-2 border-red-400/40" title="Borrar todas las filas del cuadrante">
+                        <button id="btn-borrar-cuadrante" onclick="borrarTodoCuadrante()" class="bg-red-600 hover:bg-red-700 active:scale-95 transition-all text-white font-semibold px-4 py-2 rounded-xl shadow-md shadow-red-600/30 flex items-center gap-2 text-sm border-2 border-red-400/40" title="Borrar todas las filas del cuadrante">
                             <i data-lucide="trash-2" class="h-4 w-4"></i>
                             Borrar todo
                         </button>
                     </div>
                 </div>
+                <!-- Contenedor para selector de fecha de celebración (solo admin) -->
+                <div id="contenedor-fecha-expo" class="hidden"></div>
                 <!-- Leyenda -->
-                <div class="flex flex-wrap gap-2 text-xs">
+                <div class="flex flex-wrap gap-2 text-xs items-center">
                     <span class="inline-flex items-center gap-1 bg-amber-50 text-amber-700 px-2.5 py-1 rounded-lg border border-amber-200 font-semibold"><i data-lucide="info" class="h-3 w-3"></i> Un alumno no puede estar en dos proyectos a la misma hora</span>
+                    <span class="inline-flex items-center gap-1 bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-lg border border-indigo-200 font-semibold"><i data-lucide="check-circle" class="h-3 w-3"></i> Clic en las franjas para marcar/desmarcar columnas del PDF</span>
+                    <button onclick="toggleTodasFranjas(true)" class="bg-indigo-100 text-indigo-600 px-2.5 py-1 rounded-lg border border-indigo-200 font-semibold hover:bg-indigo-200 transition" title="Marcar todas las franjas">Todas</button>
+                    <button onclick="toggleTodasFranjas(false)" class="bg-slate-100 text-slate-500 px-2.5 py-1 rounded-lg border border-slate-200 font-semibold hover:bg-slate-200 transition" title="Desmarcar todas las franjas">Ninguna</button>
+                    <span class="text-slate-500 font-medium">Franjas marcadas: <strong id="contador-franjas-marcadas" class="text-indigo-600">10/10</strong></span>
+                </div>
+                <!-- Selector de espacios para el PDF -->
+                <div class="mt-2 p-3 bg-slate-50 rounded-xl border border-slate-200">
+                    <div class="flex flex-wrap gap-2 text-xs items-center mb-2">
+                        <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-lg border border-emerald-200 font-semibold"><i data-lucide="map-pin" class="h-3 w-3"></i> Espacios a exportar en PDF</span>
+                        <button onclick="toggleTodasEspaciosCuadrante(true)" class="bg-emerald-100 text-emerald-600 px-2.5 py-1 rounded-lg border border-emerald-200 font-semibold hover:bg-emerald-200 transition" title="Marcar todos los espacios">Todas</button>
+                        <button onclick="toggleTodasEspaciosCuadrante(false)" class="bg-slate-100 text-slate-500 px-2.5 py-1 rounded-lg border border-slate-200 font-semibold hover:bg-slate-200 transition" title="Desmarcar todos los espacios">Ninguna</button>
+                        <span class="text-slate-500 font-medium">Espacios marcados: <strong id="contador-espacios-marcados" class="text-emerald-600">0/0</strong></span>
+                    </div>
+                    <div id="contenedor-espacios-cuadrante" class="flex flex-wrap gap-1.5 text-xs">
+                        <!-- Los checkboxes de espacios se generan dinámicamente -->
+                    </div>
                 </div>
                 <!-- Tabla del cuadrante -->
                 <div class="overflow-x-auto touch-scroll">
                     <table class="w-full text-sm border-collapse min-w-[900px]">
-                        <thead>
-                            <tr class="bg-gradient-to-r from-slate-100 to-slate-50">
-                                <th class="py-3 px-4 text-left text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200 sticky left-0 bg-gradient-to-r from-slate-100 to-slate-50 z-10 min-w-[200px]">Proyecto</th>
-                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">M3ª</th>
-                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">X1ª</th>
-                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">X2ª</th>
-                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">X3ª</th>
-                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">X4ª</th>
-                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">X5ª</th>
-                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">X6ª</th>
-                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">XT1ª</th>
-                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">XT2ª</th>
-                                <th class="py-3 px-2 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200">XT3ª</th>
-                                <th class="py-3 px-3 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200 min-w-[50px]"></th>
-                            </tr>
+                        <thead id="thead-cuadrante">
+                            <!-- Los encabezados se generan dinámicamente por renderizarEncabezadosCuadrante() -->
                         </thead>
                         <tbody id="tbody-cuadrante" class="divide-y divide-slate-100">
                             <!-- Las filas se generan dinámicamente -->
@@ -722,72 +786,25 @@
         </div>
     </div>
 
-    <!-- MODAL DE IMPORTACIÓN / SINCRONIZACIÓN DE ARCHIVO PDF -->
-    <div id="modal-importar-pdf" class="fixed inset-0 bg-slate-900/40 z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white px-6 py-4 flex justify-between items-center">
-                <h2 class="text-lg font-bold flex items-center gap-2"><i data-lucide="file-up" class="h-5 w-5"></i> Sincronizar con Dossier PDF</h2>
-                <button onclick="cerrarModalImportar()" class="text-white/80 hover:text-white hover:bg-white/10 p-1.5 rounded-lg transition"><i data-lucide="x" class="h-5 w-5"></i></button>
+    <!-- MODAL DE NUEVO TIPO DE PRODUCTO -->
+    <div id="modal-nuevo-tipo" class="fixed inset-0 bg-slate-900/40 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div class="bg-gradient-to-r from-indigo-600 to-violet-600 text-white px-6 py-4 flex justify-between items-center">
+                <h2 class="text-lg font-bold flex items-center gap-2">
+                    <i data-lucide="tag" class="h-5 w-5"></i> Nuevo tipo de producto
+                </h2>
+                <button onclick="_cerrarModalNuevoTipo()" class="text-white/80 hover:text-white hover:bg-white/10 p-1.5 rounded-lg transition"><i data-lucide="x" class="h-5 w-5"></i></button>
             </div>
             <div class="p-6 space-y-4">
-                <p class="text-xs text-slate-500 leading-relaxed">
-                    Sube un archivo PDF del dossier organizativo. El sistema de procesamiento local extraerá, normalizará y combinará los <strong>56 proyectos</strong> del documento de forma inmediata sin realizar peticiones a internet ni dar errores de permisos.
-                </p>
-                <div id="drop-zone" class="border-2 border-dashed border-slate-200 hover:border-indigo-400 bg-slate-50/50 hover:bg-indigo-50/20 transition-all rounded-2xl p-8 text-center cursor-pointer relative">
-                    <input type="file" id="file-pdf-import" accept="application/pdf" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" onchange="procesarArchivoSeleccionado(this)">
-                    <div class="space-y-2">
-                        <div class="bg-indigo-50 text-indigo-600 w-12 h-12 rounded-xl flex items-center justify-center mx-auto shadow-sm"><i data-lucide="file-text" class="h-6 w-6"></i></div>
-                        <div>
-                            <span class="block text-sm font-semibold text-slate-700">Selecciona o arrastra tu PDF</span>
-                            <span class="block text-xs text-slate-400 mt-1">Solo documentos en formato .pdf</span>
-                        </div>
-                    </div>
+                <p class="text-sm text-slate-600 leading-relaxed">Introduce el nombre del nuevo tipo de producto. Se añadirá a la lista desplegable.</p>
+                <div class="relative">
+                    <input type="text" id="input-nuevo-tipo" placeholder="Ej: Podcast, Infografía..." class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all" onkeydown="if(event.key==='Enter') _guardarNuevoTipo()">
                 </div>
-                <div class="flex justify-end gap-2 pt-4 border-t border-slate-100">
-                    <button type="button" onclick="cerrarModalImportar()" class="px-4 py-2 text-slate-500 hover:bg-slate-100 rounded-lg text-sm font-semibold">Cancelar</button>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button onclick="_cerrarModalNuevoTipo()" class="px-4 py-2.5 text-slate-500 hover:bg-slate-100 rounded-lg text-sm font-semibold transition">Cancelar</button>
+                    <button onclick="_guardarNuevoTipo()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold shadow-md transition active:scale-95">Añadir</button>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- PANTALLA DE CARGA / PROGRESO DEL ANÁLISIS IA (OVERLAY) -->
-    <div id="overlay-analisis" class="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 space-y-6 text-center">
-            <div class="relative w-16 h-16 mx-auto">
-                <div class="absolute inset-0 rounded-full border-4 border-indigo-100"></div>
-                <div class="absolute inset-0 rounded-full border-4 border-t-indigo-600 animate-spin"></div>
-            </div>
-            <div class="space-y-2">
-                <h3 class="font-bold text-slate-900 text-lg">Analizando Dossier de Forma Local</h3>
-                <p class="text-xs text-slate-400">Por favor, no cierres el navegador mientras procesamos el archivo.</p>
-            </div>
-            <div class="text-left text-xs space-y-2.5 max-w-[280px] mx-auto bg-slate-50 p-4 rounded-xl border border-slate-100 font-sans">
-                <div id="step-lectura" class="flex items-center gap-2 text-slate-400 font-medium"><i data-lucide="circle-dashed" class="h-4 w-4 spinner-step"></i><span>Leyendo y abstrayendo archivo PDF...</span></div>
-                <div id="step-envio" class="flex items-center gap-2 text-slate-400 font-medium"><i data-lucide="circle-dashed" class="h-4 w-4 spinner-step"></i><span>Extrayendo tablas de las páginas...</span></div>
-                <div id="step-sincronizacion" class="flex items-center gap-2 text-slate-400 font-medium"><i data-lucide="circle-dashed" class="h-4 w-4 spinner-step"></i><span>Sincronizando base de datos...</span></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL DE ÉXITO DE SINCRONIZACIÓN -->
-    <div id="modal-exito-sincro" class="fixed inset-0 bg-slate-900/40 z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center space-y-5 animate-in fade-in zoom-in duration-200">
-            <div class="bg-emerald-50 text-emerald-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto border border-emerald-100"><i data-lucide="check-check" class="h-6 w-6"></i></div>
-            <div class="space-y-1.5">
-                <h3 class="font-extrabold text-slate-950 text-base">Sincronización Finalizada</h3>
-                <p class="text-xs text-slate-500">Se han analizado las preinscripciones del dossier de forma local.</p>
-            </div>
-            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-3.5 rounded-xl border border-slate-100">
-                <div class="text-center p-1 border-r border-slate-200">
-                    <span class="block text-slate-400 font-semibold uppercase text-[10px]">Nuevos</span>
-                    <span id="sincro-nuevos" class="text-base font-bold text-emerald-600">0</span>
-                </div>
-                <div class="text-center p-1">
-                    <span class="block text-slate-400 font-semibold uppercase text-[10px]">Actualizados</span>
-                    <span id="sincro-actualizados" class="text-base font-bold text-indigo-600">0</span>
-                </div>
-            </div>
-            <button onclick="cerrarExitoSincro()" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold transition active:scale-95">Entendido</button>
         </div>
     </div>
 
@@ -834,7 +851,7 @@
                 <div class="border-t border-slate-100 pt-4">
                     <p class="text-xs text-slate-500 mb-2">Añadir un nuevo curso escolar (formato YYYY-YYYY):</p>
                     <div class="flex gap-2">
-                        <input type="text" id="input-nuevo-año" placeholder="Ej: 2026-2027" class="flex-grow px-3 py-2 border border-slate-200 rounded-lg text-sm focus:border-indigo-500 outline-none">
+                        <input type="text" id="input-nuevo-año" placeholder="Ej: 2025-2026" class="flex-grow px-3 py-2 border border-slate-200 rounded-lg text-sm focus:border-indigo-500 outline-none">
                         <button onclick="añadirNuevoAño()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-4 py-2 rounded-lg text-sm flex items-center gap-1.5 transition">
                             <i data-lucide="plus" class="h-4 w-4"></i> Añadir
                         </button>
@@ -924,7 +941,13 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Tipo de Producto</label>
-                        <input type="text" id="form-tipo" placeholder="Maqueta, Vídeo..." class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:border-indigo-500 outline-none">
+                        <div class="flex gap-2">
+                            <select id="form-tipo" required class="flex-grow px-3 py-2 border border-slate-200 rounded-lg text-sm focus:border-indigo-500 outline-none bg-white"></select>
+                            <button type="button" onclick="_abrirModalNuevoTipo()" class="shrink-0 px-2.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-lg transition active:scale-95" title="Añadir nuevo tipo">
+                                <i data-lucide="plus" class="h-4 w-4"></i>
+                            </button>
+                        </div>
+                        <div id="aviso-tipo-nuevo" class="hidden text-[11px] text-emerald-600 font-semibold mt-1 flex items-center gap-1"><i data-lucide="check-circle" class="h-3 w-3"></i> <span>Tipo añadido a la lista.</span></div>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Materia(s) *</label>
@@ -933,7 +956,8 @@
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Profesorado Responsable *</label>
-                    <input type="text" id="form-profesor" required placeholder="Nombre del docente" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:border-indigo-500 outline-none">
+                    <input type="text" id="form-profesor" required placeholder="Nombre1 Apellido1, Nombre2 Apellido2..." oninput="_validarProfesorado()" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:border-indigo-500 outline-none">
+                    <div id="aviso-profesor-nombre" class="hidden text-[11px] text-amber-600 font-semibold mt-1 flex items-center gap-1"><i data-lucide="alert-triangle" class="h-3 w-3"></i> <span>Cada docente debe incluir nombre y apellido (mínimo dos palabras).</span></div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -954,7 +978,8 @@
                         <div class="flex justify-between items-center mb-1">
                             <label class="block text-xs font-bold text-slate-500 uppercase">Alumnado</label>
                         </div>
-                        <input type="text" id="form-alumnado" placeholder="Separados por comas" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:border-indigo-500 outline-none">
+                        <input type="text" id="form-alumnado" placeholder="Nombre1 Apellido1, Nombre2 Apellido2..." oninput="_validarAlumnado()" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:border-indigo-500 outline-none">
+                        <div id="aviso-alumnado-nombre" class="hidden text-[11px] text-amber-600 font-semibold mt-1 flex items-center gap-1"><i data-lucide="alert-triangle" class="h-3 w-3"></i> <span>Cada alumno debe incluir nombre y apellido (mínimo dos palabras).</span></div>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Clase o Curso</label>
@@ -973,6 +998,93 @@
     <script>
         // BASE DE DATOS LOCAL — Sin datos precargados (se importa vía CSV)
         const datosIniciales = [];
+
+        // ==========================================
+        // TIPOS DE PRODUCTO PREDETERMINADOS + PERSONALIZADOS
+        // ==========================================
+        const TIPOS_BASE = [
+            'Demostración',
+            'Experimento',
+            'Folleto o Revista',
+            'Libro',
+            'Maqueta',
+            'Mural',
+            'Página Web',
+            'Taller',
+            'Vídeo'
+        ];
+
+        function _cargarTiposPersonalizados() {
+            return (datosGlobales.tiposPersonalizados || []).slice();
+        }
+
+        function _guardarTiposPersonalizados(lista) {
+            datosGlobales.tiposPersonalizados = lista.slice();
+            guardarDatosEnStorage(); // sincroniza con Firebase automáticamente
+        }
+
+        function _obtenerTodosLosTipos() {
+            var base = TIPOS_BASE.slice().sort();
+            var custom = _cargarTiposPersonalizados();
+            custom.forEach(function(t) { if (!base.includes(t)) base.push(t); });
+            return base;
+        }
+
+        function _renderizarSelectTipos(valorSeleccionado) {
+            var select = document.getElementById('form-tipo');
+            if (!select) return;
+            var tipos = _obtenerTodosLosTipos();
+            select.innerHTML = '<option value="">Seleccionar tipo...</option>';
+            tipos.forEach(function(t) {
+                var opt = document.createElement('option');
+                opt.value = t;
+                opt.textContent = t;
+                if (t === valorSeleccionado) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        function _abrirModalNuevoTipo() {
+            var modal = document.getElementById('modal-nuevo-tipo');
+            var input = document.getElementById('input-nuevo-tipo');
+            if (modal && input) {
+                input.value = '';
+                modal.classList.remove('hidden');
+                setTimeout(function() { input.focus(); }, 100);
+                renderLucideIcons();
+            }
+        }
+
+        function _cerrarModalNuevoTipo() {
+            var modal = document.getElementById('modal-nuevo-tipo');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function _guardarNuevoTipo() {
+            var input = document.getElementById('input-nuevo-tipo');
+            if (!input) return;
+            var nombre = input.value.trim();
+            if (!nombre) return;
+            var todos = _obtenerTodosLosTipos();
+            if (todos.includes(nombre)) {
+                alert('El tipo "' + nombre + '" ya existe en la lista.');
+                return;
+            }
+            var custom = _cargarTiposPersonalizados();
+            custom.push(nombre);
+            _guardarTiposPersonalizados(custom);
+            // Actualizar el select y seleccionar el nuevo tipo
+            _renderizarSelectTipos(nombre);
+            _cerrarModalNuevoTipo();
+            // Mostrar aviso de confirmación
+            var aviso = document.getElementById('aviso-tipo-nuevo');
+            if (aviso) {
+                aviso.classList.remove('hidden');
+                aviso.classList.add('flex');
+                setTimeout(function() { aviso.classList.add('hidden'); aviso.classList.remove('flex'); }, 2500);
+            }
+            renderLucideIcons();
+        }
 
         // ==========================================
         // FIRESTORE — SINCRONIZACIÓN AUTOMÁTICA E INSTANTÁNEA
@@ -1071,6 +1183,13 @@
             try {
                 if (!datosGlobales || !datosGlobales.años || !remotos || !remotos.años) return;
 
+                // ── Fusionar tipos personalizados (unir ambos lados, sin duplicados) ──
+                var tiposLocal = datosGlobales.tiposPersonalizados || [];
+                var tiposRemoto = remotos.tiposPersonalizados || [];
+                var tiposUnidos = tiposLocal.slice();
+                tiposRemoto.forEach(function(t) { if (!tiposUnidos.includes(t)) tiposUnidos.push(t); });
+                remotos.tiposPersonalizados = tiposUnidos;
+
                 // ── Paso 0: Preservar años que solo existen en local ──
                 Object.keys(datosGlobales.años).forEach(function(año) {
                     if (!remotos.años[año]) {
@@ -1166,7 +1285,7 @@
                             } else {
                                 // Proyecto existe en ambos → fusionar asignaciones
                                 var asigBase = base[filaIdx].asignaciones;
-                                FRANJAS_HORARIAS.forEach(function(franja) {
+                                FRANJAS_POR_DEFECTO.forEach(function(franja) {
                                     var valBase = asigBase[franja] || '';
                                     var valLocal = asigLocal[franja] || '';
                                     if (valLocal.trim() !== '' && valBase.trim() === '') {
@@ -1247,16 +1366,20 @@
                     // Fusionar datos locales con remotos (cada sesión aporta sus cambios)
                     _fusionarDatosLocalesConRemotos(remotos);
                     datosGlobales = remotos;
+                    _inicializarFechaExpoPorDefecto();
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(datosGlobales));
                     productos = [...getDatabase()];
                     renderizarSelectorAño();
                     actualizarTituloAño();
+                    aplicarPaletaCurso();
                     inicializarFiltros();
                     aplicarFiltros();
                     actualizarEstadisticas();
+                    actualizarEstadoFase(true);
                     renderizarTabla();
                     generarTodosLosInformes();
-                    if (vistaActual === 'cuadrante') renderizarCuadrante();
+                    if (vistaActual === 'cuadrante') { renderizarEncabezadosCuadrante(); renderizarCuadrante(); }
+                    renderizarBannerFase();
                     renderLucideIcons();
                     firebaseConectado = true;
                     actualizarIndicadorSincronizacion('conectado');
@@ -1284,6 +1407,7 @@
                         _jsonDatosEscritos = null;
                         _fusionarDatosLocalesConRemotos(remotos);
                         datosGlobales = remotos;
+                        _inicializarFechaExpoPorDefecto();
                         localStorage.setItem(STORAGE_KEY, JSON.stringify(datosGlobales));
                         productos = [...getDatabase()];
                         renderizarSelectorAño();
@@ -1312,6 +1436,7 @@
                 // Fusionar datos locales con remotos para no perder cambios de ninguna sesión
                 _fusionarDatosLocalesConRemotos(remotos);
                 datosGlobales = remotos;
+                _inicializarFechaExpoPorDefecto();
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(datosGlobales));
                 productos = [...getDatabase()];
                 renderizarSelectorAño();
@@ -1595,13 +1720,46 @@
         }
 
         let datosGlobales = cargarDatosDesdeStorage();
+
+        // Inicializar fechaExpo por defecto para cursos que no la tengan
+        function _inicializarFechaExpoPorDefecto() {
+            var años = Object.keys(datosGlobales.años || {});
+            var cambiado = false;
+            años.forEach(function(a) {
+                var finAño = parseInt((a || '').split('-')[1] || a);
+                if (datosGlobales.años[a] && !datosGlobales.años[a].fechaExpo) {
+                    datosGlobales.años[a].fechaExpo = finAño + '-06-03';
+                    cambiado = true;
+                }
+            });
+            if (cambiado) guardarDatosEnStorage();
+        }
+        _inicializarFechaExpoPorDefecto();
+
+        // Migrar tipos personalizados desde localStorage (formato antiguo) a datosGlobales
+        (function() {
+            try {
+                var raw = localStorage.getItem('expovilladiego_tipos_personalizados');
+                if (raw) {
+                    var migrados = JSON.parse(raw);
+                    if (Array.isArray(migrados) && migrados.length > 0 && !datosGlobales.tiposPersonalizados) {
+                        datosGlobales.tiposPersonalizados = migrados;
+                        guardarDatosEnStorage();
+                        localStorage.removeItem('expovilladiego_tipos_personalizados');
+                        console.log('[Migración] Tipos personalizados movidos a datosGlobales');
+                    }
+                }
+            } catch(e) {}
+        })();
+
         let productos = [...(datosGlobales.años[datosGlobales.añoActivo]?.proyectos || [])];
         let columnaOrden = 'nombre';
         let ordenAscendente = true;
         let vistaActual = 'tabla';
         let reporteActivo = 'reporte-tipos';
-        let _adminAutenticado = false; // Sesión de admin para gestión de años
+        let _adminAutenticado = false; // Sesión de admin para gestión de configuración
         let _añoPendiente = null; // Año pendiente de cambio (cuando se pide clave desde el selector)
+        let _adminDestino = null; // Destino tras autenticación: 'config' o null (años)
 
         function getDatabase() {
             return datosGlobales.años[datosGlobales.añoActivo]?.proyectos || [];
@@ -1616,6 +1774,12 @@
         }
 
         function resetearDatos() {
+
+            const fase = getFaseActual();
+            if (fase === FASES.CUADRANTE || fase === FASES.EN_MARCHA || fase === FASES.EVIDENCIAS || fase === FASES.CERRADA) {
+                alert('No se pueden borrar los datos en la fase actual.');
+                return;
+            }
             const añoActual = datosGlobales.añoActivo;
             const numProy = getDatabase().length;
             if (numProy === 0) {
@@ -1623,97 +1787,58 @@
                 return;
             }
             if (confirm('¿Borrar TODOS los datos del curso ' + añoActual + '?\n\nSe eliminarán los ' + numProy + ' proyectos actuales. Esta acción no se puede deshacer.')) {
-
-                // 1. Desconectar listener de Firestore para evitar sobreescritura
-                if (typeof _unsubscribeFirestore === 'function') {
-                    _unsubscribeFirestore();
-                    _unsubscribeFirestore = null;
-                }
-                // Cancelar cualquier sincronización pendiente
-                if (_syncTimer) { clearTimeout(_syncTimer); _syncTimer = null; }
-                _syncEnCurso = false;
-
-                // 2. Borrar todos los datos localmente
-                datosGlobales.años[añoActual].proyectos = [];
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(datosGlobales));
-
-                // 3. Actualizar la UI INMEDIATAMENTE (antes de escribir a Firestore)
-                productos = [...getDatabase()];
-                inicializarFiltros();
-                aplicarFiltros();
-                actualizarEstadisticas();
-                if (vistaActual === 'informes') generarTodosLosInformes();
-                renderLucideIcons();
-
-                // 4. Si Firestore está disponible, sincronizar con filtro anti-cache
-                if (db) {
-                    actualizarIndicadorSincronizacion('sincronizando');
-                    _jsonDatosEscritos = JSON.stringify(datosGlobales);
-
-                    db.doc(FIRESTORE_DOC).set(datosGlobales, { merge: false })
-                        .then(function() {
-                            console.log('[Firestore] Datos borrados en la nube');
-                            firebaseConectado = true;
-                            actualizarIndicadorSincronizacion('conectado');
-                            _jsonDatosEscritos = null;
-                            conectarListenerFirestore();
-                        })
-                        .catch(function(err) {
-                            console.warn('[Firestore] Error al borrar en la nube:', err);
-                            _jsonDatosEscritos = null;
-                            conectarListenerFirestore();
-                            if (err.code === 'permission-denied') {
-                                actualizarIndicadorSincronizacion('error');
-                            } else {
-                                actualizarIndicadorSincronizacion('offline');
-                            }
-                        });
-                } else {
-                    conectarListenerFirestore();
-                }
+                _ejecutarResetDatos();
             }
+        }
+
+        function _ejecutarResetDatos() {
+            var añoActual = datosGlobales.añoActivo;
+            // 1. Desconectar listener de Firestore para evitar sobreescritura
+            if (typeof _unsubscribeFirestore === 'function') { _unsubscribeFirestore(); _unsubscribeFirestore = null; }
+            if (_syncTimer) { clearTimeout(_syncTimer); _syncTimer = null; }
+            _syncEnCurso = false;
+            // 2. Borrar todos los datos localmente
+            datosGlobales.años[añoActual].proyectos = [];
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(datosGlobales));
+            // 3. Actualizar la UI INMEDIATAMENTE (antes de escribir a Firestore)
+            productos = [...getDatabase()];
+            inicializarFiltros();
+            aplicarFiltros();
+            actualizarEstadisticas();
+            if (vistaActual === 'informes') generarTodosLosInformes();
+            renderLucideIcons();
+            // 4. Si Firestore está disponible, sincronizar con filtro anti-cache
+            if (db) {
+                actualizarIndicadorSincronización('sincronizando');
+                _jsonDatosEscritos = JSON.stringify(datosGlobales);
+                db.doc(FIRESTORE_DOC).set(datosGlobales, { merge: false })
+                    .then(function() {
+                        console.log('[Firestore] Datos borrados en la nube');
+                        firebaseConectado = true;
+                        actualizarIndicadorSincronización('conectado');
+                        _jsonDatosEscritos = null;
+                        conectarListenerFirestore();
+                    })
+                    .catch(function(err) {
+                        console.warn('[Firestore] Error al borrar en la nube:', err);
+                        _jsonDatosEscritos = null;
+                        conectarListenerFirestore();
+                        if (err.code === 'permission-denied') { actualizarIndicadorSincronización('error'); }
+                        else { actualizarIndicadorSincronización('offline'); }
+                    });
+            } else { conectarListenerFirestore(); }
         }
 
         // ==========================================
         // GESTIÓN DE AÑOS ESCOLARES
         // ==========================================
         function renderizarSelectorAño() {
-            const select = document.getElementById('selector-año');
-            if (!select) return;
-            select.innerHTML = '';
-            Object.keys(datosGlobales.años).sort().reverse().forEach(año => {
-                const opt = document.createElement('option');
-                opt.value = año;
-                opt.textContent = 'Curso ' + año;
-                if (año === datosGlobales.añoActivo) opt.selected = true;
-                select.appendChild(opt);
-            });
+            const el = document.getElementById('selector-año');
+            if (!el) return;
+            el.textContent = 'Curso ' + (datosGlobales.añoActivo || '—');
         }
 
-        // Cambio de año desde el selector desplegable (requiere clave admin)
-        function _cambiarAñoSelector(select) {
-            const nuevoAño = select.value;
-            if (datosGlobales.añoActivo === nuevoAño || !datosGlobales.años[nuevoAño]) return;
-            // Si ya autenticado, cambiar directamente
-            if (_adminAutenticado) {
-                _ejecutarCambioAño(nuevoAño);
-                return;
-            }
-            // Pedir clave: guardar valor pendiente y mostrar modal
-            _añoPendiente = nuevoAño;
-            const modalClave = document.getElementById('modal-clave-admin');
-            const inputClave = document.getElementById('input-clave-admin');
-            const errorMsg = document.getElementById('clave-admin-error');
-            if (modalClave && inputClave) {
-                inputClave.value = '';
-                if (errorMsg) errorMsg.classList.add('hidden');
-                modalClave.classList.remove('hidden');
-                renderLucideIcons();
-                setTimeout(() => inputClave.focus(), 100);
-            }
-        }
-
-        // Ejecuta el cambio de año (compartido: selector y modal de gestión)
+        // Ejecuta el cambio de año (compartido: modal de gestión y admin)
         function _ejecutarCambioAño(nuevoAño) {
             if (datosGlobales.añoActivo === nuevoAño || !datosGlobales.años[nuevoAño]) return;
             datosGlobales.añoActivo = nuevoAño;
@@ -1734,8 +1859,9 @@
             inicializarFiltros();
             aplicarFiltros();
             actualizarEstadisticas();
+            actualizarEstadoFase(true);
             if (vistaActual === 'informes') generarTodosLosInformes();
-            if (vistaActual === 'cuadrante') renderizarCuadrante();
+            if (vistaActual === 'cuadrante') { renderizarEncabezadosCuadrante(); renderizarUIFechaExpo(); renderizarCuadrante(); }
             renderLucideIcons();
         }
 
@@ -1775,10 +1901,11 @@
                 logoIcon.className = 'h-8 w-8 ' + pal.icon;
             }
 
-            // Botón principal del acordeón (Importar PDF) — asignar clases completas
-            var btnPdf = document.querySelector('button[onclick="abrirModalImportar()"]');
-            if (btnPdf) {
-                btnPdf.className = pal.badge + ' hover:opacity-90 text-white font-semibold px-4 py-2 rounded-xl transition-all flex items-center gap-2 text-sm active:scale-95';
+            // Botón Histórico en el banner — paleta del curso
+            var btnHist = document.getElementById('btn-historico-banner');
+            if (btnHist) {
+                // Mantener clases base (layout, transición, tipografía) y añadir paleta
+                btnHist.className = 'inline-flex items-center gap-2 text-white font-bold px-4 py-2 rounded-xl shadow-md text-xs sm:text-sm no-underline transition-all active:scale-95 shrink-0 hover:brightness-110 ' + pal.badge;
             }
         }
 
@@ -1790,50 +1917,39 @@
             const footer = document.getElementById('footer-texto');
             if (footer) footer.textContent = 'EXPOVILLADIEGO ' + finAño + ' \u2022 Aplicación cooperativa para la organización';
             document.title = 'ExpoVilladiego_' + finAño;
-        }
-
-        function abrirModalGestionAños() {
-            // Si ya se verificó la clave en esta sesión, abrir directamente
-            if (_adminAutenticado) {
-                _mostrarModalAños();
-                return;
-            }
-            // Mostrar modal de clave
-            const modalClave = document.getElementById('modal-clave-admin');
-            const inputClave = document.getElementById('input-clave-admin');
-            const errorMsg = document.getElementById('clave-admin-error');
-            if (modalClave && inputClave) {
-                inputClave.value = '';
-                if (errorMsg) errorMsg.classList.add('hidden');
-                modalClave.classList.remove('hidden');
-                renderLucideIcons();
-                setTimeout(() => inputClave.focus(), 100);
-            }
+            // Actualizar meta tags PWA dinámicamente
+            const metaApple = document.getElementById('meta-apple-title');
+            if (metaApple) metaApple.content = 'Expo ' + finAño;
+            const metaApp = document.getElementById('meta-app-name');
+            if (metaApp) metaApp.content = 'EXPOVILLADIEGO ' + finAño;
         }
 
         function cerrarModalClaveAdmin() {
             document.getElementById('modal-clave-admin').classList.add('hidden');
-            // Si se canceló y había un cambio pendiente, restaurar el selector al año activo
-            if (_añoPendiente) {
-                const select = document.getElementById('selector-año');
-                if (select) select.value = datosGlobales.añoActivo;
-                _añoPendiente = null;
-            }
+            _añoPendiente = null;
+        }
+
+        function getClaveAdmin() {
+            return (datosGlobales.claveAdmin && datosGlobales.claveAdmin.trim() !== '') ? datosGlobales.claveAdmin : 'admin';
         }
 
         function verificarClaveAdmin() {
             const inputClave = document.getElementById('input-clave-admin');
             const errorMsg = document.getElementById('clave-admin-error');
             const clave = inputClave ? inputClave.value.trim() : '';
-            if (clave === 'admin') {
+            if (clave === getClaveAdmin()) {
                 _adminAutenticado = true;
                 // Capturar _añoPendiente ANTES de cerrar el modal (cerrarModalClaveAdmin lo pone a null)
                 const pendiente = _añoPendiente;
+                const destino = _adminDestino;
                 cerrarModalClaveAdmin();
                 if (pendiente) {
                     _ejecutarCambioAño(pendiente);
+                } else if (destino === 'config') {
+                    _adminDestino = null;
+                    abrirAcordeonConAdmin();
                 } else {
-                    _mostrarModalAños();
+                    abrirAcordeonConAdmin();
                 }
             } else {
                 if (errorMsg) errorMsg.classList.remove('hidden');
@@ -1845,6 +1961,435 @@
                 }
                 renderLucideIcons();
             }
+        }
+
+        // ===== ADMINISTRACIÓN INTEGRADA EN ACORDEÓN DE CONFIGURACIÓN =====
+
+        // Abrir acordeón con privilegios de admin
+        function abrirAcordeonConAdmin() {
+            _acordeonConfigAbierto = false; // Forzar apertura
+            toggleAcordeonConfig();
+            mostrarSeccionesAdmin();
+            // Recalcular maxHeight tras añadir secciones de admin
+            var body = document.getElementById('acordeon-config-body');
+            if (body) body.style.maxHeight = body.scrollHeight + 'px';
+            renderLucideIcons();
+        }
+
+        // Mostrar/ocultar secciones de admin en el acordeón
+        function mostrarSeccionesAdmin() {
+            const secciones = document.getElementById('admin-secciones-config');
+            const iconLock = document.getElementById('icon-lock-config');
+            if (secciones) {
+                secciones.classList.remove('hidden');
+            }
+            if (iconLock) {
+                iconLock.setAttribute('data-lucide', 'lock-open');
+            }
+            renderizarRadioFases();
+            actualizarEstadoFase();
+            actualizarVisibilidadAdminCuadrante();
+        }
+
+        // Mostrar/ocultar botones exclusivos de admin en el Cuadrante Temporal
+        function actualizarVisibilidadAdminCuadrante() {
+            const ids = ['btn-importar-csv-cuadrante', 'btn-borrar-cuadrante'];
+            ids.forEach(id => {
+                const btn = document.getElementById(id);
+                if (!btn) return;
+                if (_adminAutenticado) {
+                    btn.classList.remove('hidden');
+                } else {
+                    btn.classList.add('hidden');
+                }
+            });
+        }
+
+        // Ocultar secciones de admin y cerrar sesión
+        function cerrarSesionAdmin() {
+            _adminAutenticado = false;
+            const secciones = document.getElementById('admin-secciones-config');
+            const iconLock = document.getElementById('icon-lock-config');
+            if (secciones) secciones.classList.add('hidden');
+            if (iconLock) iconLock.setAttribute('data-lucide', 'lock');
+            // Cerrar también el acordeón
+            if (_acordeonConfigAbierto) toggleAcordeonConfig();
+            actualizarVisibilidadAdminCuadrante();
+            actualizarEstadoFase();
+            renderLucideIcons();
+        }
+
+        // Cambiar la contraseña de administración
+        function cambiarClaveAdmin() {
+            const inputNueva = document.getElementById('input-nueva-clave');
+            const inputConfirmar = document.getElementById('input-confirmar-clave');
+            const msgDiv = document.getElementById('msg-clave-admin');
+            const nueva = inputNueva ? inputNueva.value.trim() : '';
+            const confirmar = inputConfirmar ? inputConfirmar.value.trim() : '';
+            if (!nueva) {
+                mostrarMsgClave(msgDiv, 'La nueva contraseña no puede estar vacía.', 'red');
+                return;
+            }
+            if (nueva.length < 3) {
+                mostrarMsgClave(msgDiv, 'La contraseña debe tener al menos 3 caracteres.', 'red');
+                return;
+            }
+            if (nueva !== confirmar) {
+                mostrarMsgClave(msgDiv, 'Las contraseñas no coinciden.', 'red');
+                return;
+            }
+            datosGlobales.claveAdmin = nueva;
+            guardarDatosEnStorage();
+            inputNueva.value = '';
+            inputConfirmar.value = '';
+            mostrarMsgClave(msgDiv, 'Contraseña actualizada correctamente.', 'emerald');
+            setTimeout(() => { if (msgDiv) msgDiv.classList.add('hidden'); }, 3000);
+        }
+
+        function mostrarMsgClave(msgDiv, texto, color) {
+            if (!msgDiv) return;
+            const esError = color === 'red';
+            msgDiv.innerHTML = '<i data-lucide="' + (esError ? 'alert-circle' : 'check-circle') + '" class="h-3.5 w-3.5"></i> <span class="text-' + color + '-600">' + texto + '</span>';
+            msgDiv.classList.remove('hidden');
+            renderLucideIcons();
+        }
+
+        // ===== SISTEMA DE FASES TEMPORALES =====
+        const FASES = {
+            ADICION: 1,
+            CUADRANTE: 2,
+            EN_MARCHA: 3,
+            EVIDENCIAS: 4,
+            CERRADA: 5
+        };
+
+        // Indica si el admin ha habilitado la edición total SOLO en fase CERRADA
+        // (checkbox "Habilitar edición en ExpoVilladiego cerrada")
+        // Concede control completo: añadir, editar todos los campos, borrar en todas las pantallas,
+        // pero NUNCA anula las restricciones de otras fases (EVIDENCIAS, CUADRANTE, EN_MARCHA)
+        function _esModoEdicionTotal() {
+            return _adminAutenticado && getFaseActual() === FASES.CERRADA && !!(datosGlobales.años[datosGlobales.añoActivo]?.editarCerrada);
+        }
+
+        const FASES_CONFIG = [
+            { id: FASES.ADICION, nombre: 'Adición de Proyectos', icono: 'clock', color: 'emerald' },
+            { id: FASES.CUADRANTE, nombre: 'Cumplimentación de Cuadrante Temporal', icono: 'clock', color: 'blue' },
+            { id: FASES.EN_MARCHA, nombre: 'ExpoVilladiego en marcha', icono: 'clock', color: 'violet', auto: true },
+            { id: FASES.EVIDENCIAS, nombre: 'Adición de Evidencias', icono: 'clock', color: 'teal', auto: true },
+            { id: FASES.CERRADA, nombre: 'cerrada', icono: 'clock', color: 'slate' }
+        ];
+
+        // Obtener la fase configurada manualmente para un año
+        function getFaseConfigurada(año) {
+            const a = año || datosGlobales.añoActivo;
+            if (!datosGlobales.años[a]) return FASES.ADICION;
+            return datosGlobales.años[a].fase || FASES.ADICION;
+        }
+
+        // Calcular la fase real (teniendo en cuenta auto-activación por fecha)
+        function getFaseActual() {
+            const faseConfig = getFaseConfigurada();
+            const fechaExpo = getFechaExpo();
+            if (!fechaExpo) return faseConfig;
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            const diaExpo = new Date(fechaExpo + 'T00:00:00');
+            const diaAnterior = new Date(diaExpo);
+            diaAnterior.setDate(diaAnterior.getDate() - 1);
+            const diaPosterior = new Date(diaExpo);
+            diaPosterior.setDate(diaPosterior.getDate() + 1);
+            if (hoy >= diaAnterior && hoy <= diaExpo) return FASES.EN_MARCHA;
+            if (hoy >= diaPosterior) {
+                // Si la fase configurada es EN_MARCHA o EVIDENCIAS y estamos después de la expo,
+                // quedarse en evidencias; si es CERRADA, respetar
+                if (faseConfig >= FASES.CERRADA) return FASES.CERRADA;
+                return FASES.EVIDENCIAS;
+            }
+            return faseConfig;
+        }
+
+        // Comprobar si la fase actual es auto-activada
+        function esFaseAutoActivada() {
+            const fechaExpo = getFechaExpo();
+            if (!fechaExpo) return false;
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            const diaExpo = new Date(fechaExpo + 'T00:00:00');
+            const diaAnterior = new Date(diaExpo);
+            diaAnterior.setDate(diaAnterior.getDate() - 1);
+            const diaPosterior = new Date(diaExpo);
+            diaPosterior.setDate(diaPosterior.getDate() + 1);
+            if (hoy >= diaAnterior && hoy <= diaExpo) return true;
+            if (hoy >= diaPosterior && getFaseConfigurada() < FASES.CERRADA) return true;
+            return false;
+        }
+
+        // Cambiar la fase manualmente
+        function setFaseManual(faseId) {
+            const año = datosGlobales.añoActivo;
+            if (!datosGlobales.años[año]) datosGlobales.años[año] = { proyectos: [], cuadrante: [] };
+            datosGlobales.años[año].fase = faseId;
+            guardarDatosEnStorage();
+            renderizarRadioFases();
+            actualizarEstadoFase();
+            renderLucideIcons();
+        }
+
+        // Toggle edición en fase cerrada
+        function toggleEditarFaseCerrada() {
+            const chk = document.getElementById('check-editar-cerrada');
+            if (!chk) return;
+            const año = datosGlobales.añoActivo;
+            if (!datosGlobales.años[año]) datosGlobales.años[año] = { proyectos: [], cuadrante: [] };
+            datosGlobales.años[año].editarCerrada = chk.checked;
+            guardarDatosEnStorage();
+            actualizarEstadoFase();
+        }
+
+        // Obtener año de celebración para la fase cerrada
+        function getAñoCelebracion() {
+            const año = datosGlobales.añoActivo || '';
+            return año.split('-')[1] || año.split('-')[0] || 'XXXX';
+        }
+
+        // Renderizar radio-buttons de fases
+        function renderizarRadioFases() {
+            const contenedor = document.getElementById('radio-fases');
+            if (!contenedor) return;
+            const faseActual = getFaseActual();
+            const faseConfig = getFaseConfigurada();
+            const añoCeleb = getAñoCelebracion();
+            const autoAct = esFaseAutoActivada();
+            let html = '';
+            FASES_CONFIG.forEach(f => {
+                const nombre = f.id === FASES.CERRADA ? 'ExpoVilladiego ' + añoCeleb + ' cerrada' : f.nombre;
+                const checked = (autoAct ? faseActual : faseConfig) === f.id;
+                const disabled = autoAct && (f.id === FASES.EN_MARCHA || f.id === FASES.EVIDENCIAS);
+                const colorMap = { emerald: 'emerald-600', blue: 'blue-600', violet: 'violet-600', teal: 'teal-600', slate: 'slate-600' };
+                const colorClass = colorMap[f.color] || 'slate-600';
+                html += '<label class="flex items-center gap-2 text-sm font-semibold cursor-pointer' + (disabled ? ' opacity-50 pointer-events-none' : '') + '">';
+                html += '<input type="radio" name="fase-temporal" value="' + f.id + '" ' + (checked ? 'checked' : '') + (disabled ? ' disabled' : '') + ' onchange="setFaseManual(' + f.id + ')" class="h-4 w-4 text-' + f.color + '-600 focus:ring-' + f.color + '-500 border-slate-300">';
+                html += '<i data-lucide="' + f.icono + '" class="h-4 w-4 text-' + colorClass + '"></i>';
+                html += '<span class="' + (checked ? 'text-' + colorClass + ' font-bold' : 'text-slate-600') + '">' + nombre + '</span>';
+                if (f.auto) html += '<i data-lucide="zap" class="h-3.5 w-3.5 text-violet-400" title="Se activa automáticamente"></i>';
+                html += '</label>';
+            });
+            contenedor.innerHTML = html;
+            // Mostrar/ocultar mensaje auto y checkbox cerrada
+            const msgAuto = document.getElementById('fase-auto-msg');
+            const textAuto = document.getElementById('fase-auto-text');
+            const chkRow = document.getElementById('check-fase-cerrada-row');
+            if (msgAuto && textAuto) {
+                if (autoAct) {
+                    msgAuto.classList.remove('hidden');
+                    if (faseActual === FASES.EN_MARCHA) textAuto.textContent = 'Fase activada automáticamente por la fecha de celebración.';
+                    else textAuto.textContent = 'Fase activada automáticamente (día posterior a la celebración).';
+                } else {
+                    msgAuto.classList.add('hidden');
+                }
+            }
+            if (chkRow) {
+                const editCerrada = !!(datosGlobales.años[datosGlobales.añoActivo]?.editarCerrada);
+                chkRow.classList.toggle('hidden', faseActual !== FASES.CERRADA);
+                const chk = document.getElementById('check-editar-cerrada');
+                if (chk) chk.checked = editCerrada;
+            }
+            renderLucideIcons();
+        }
+
+        // Renderizar banner de fase
+        function renderizarBannerFase() {
+            const banner = document.getElementById('banner-fase');
+            const inner = document.getElementById('banner-fase-inner');
+            const texto = document.getElementById('banner-fase-texto');
+            if (!banner || !inner || !texto) return;
+            const fase = getFaseActual();
+            const añoCeleb = getAñoCelebracion();
+            let label = '';
+            let bgClass = '';
+            let textClass = '';
+            let iconClass = '';
+            switch (fase) {
+                case FASES.ADICION:
+                    label = 'Fase de Adición de Proyectos';
+                    bgClass = 'bg-emerald-50 border border-emerald-200';
+                    textClass = 'text-emerald-700';
+                    iconClass = 'text-emerald-500';
+                    break;
+                case FASES.CUADRANTE:
+                    label = 'Fase de Cumplimentación del Cuadrante Temporal';
+                    bgClass = 'bg-blue-50 border border-blue-200';
+                    textClass = 'text-blue-700';
+                    iconClass = 'text-blue-500';
+                    break;
+                case FASES.EN_MARCHA:
+                    label = 'ExpoVilladiego en marcha';
+                    bgClass = 'bg-violet-50 border border-violet-200';
+                    textClass = 'text-violet-700';
+                    iconClass = 'text-violet-500';
+                    break;
+                case FASES.EVIDENCIAS:
+                    label = 'Fase de Adición de Evidencias';
+                    bgClass = 'bg-teal-50 border border-teal-200';
+                    textClass = 'text-teal-700';
+                    iconClass = 'text-teal-500';
+                    break;
+                case FASES.CERRADA:
+                    label = 'ExpoVilladiego ' + añoCeleb + ' cerrada';
+                    bgClass = 'bg-slate-100 border border-slate-300';
+                    textClass = 'text-slate-500';
+                    iconClass = 'text-slate-400';
+                    break;
+            }
+            banner.classList.remove('hidden');
+            inner.className = 'flex items-center justify-center gap-2 py-2.5 px-5 rounded-xl text-center ' + bgClass;
+            texto.className = 'text-sm sm:text-base font-extrabold uppercase tracking-wider ' + textClass;
+            texto.textContent = label;
+            const icono = inner.querySelector('[data-lucide]');
+            if (icono) icono.className = 'h-5 w-5 shrink-0 ' + iconClass;
+            renderLucideIcons();
+        }
+
+        // Actualizar estado de botones y vistas según la fase actual
+        function actualizarEstadoFase(desdeActualizarTodo) {
+            const fase = getFaseActual();
+            const modoTotal = _esModoEdicionTotal();
+            const btnAñadirTabla = document.getElementById('btn-añadir-tabla');
+            const btnBorrar = document.getElementById('btn-borrar-datos');
+
+            // Si edición total está activa, habilitar todo (comportamiento como ADICION)
+            if (modoTotal) {
+                habilitarBoton(btnAñadirTabla, true);
+                habilitarBoton(btnBorrar, true);
+                habilitarTab('tab-tabla', true);
+                habilitarTab('tab-informes', true);
+                habilitarTab('tab-cuadrante', true);
+                if (!desdeActualizarTodo) renderizarTabla();
+                renderizarBannerFase();
+                renderizarRadioFases();
+                return;
+            }
+
+            // Tab de informes: ocultar en fases EN_MARCHA y CERRADA
+            const tabInformes = document.getElementById('tab-informes');
+            if (tabInformes) {
+                if (fase === FASES.CERRADA) {
+                    tabInformes.classList.add('opacity-30', 'pointer-events-none');
+                } else {
+                    tabInformes.classList.remove('opacity-30', 'pointer-events-none');
+                }
+            }
+
+            // Si estamos en vista de informes y la fase la bloquea, cambiar a tabla
+            if (vistaActual === 'informes' && fase === FASES.CERRADA) {
+                cambiarVistaPrincipal('tabla');
+            }
+
+            // Restringir vistas según fase
+            switch (fase) {
+                case FASES.ADICION:
+                    // Todo disponible
+                    habilitarBoton(btnAñadirTabla, true);
+                    habilitarBoton(btnBorrar, true);
+                    habilitarTab('tab-tabla', true);
+                    habilitarTab('tab-informes', true);
+                    habilitarTab('tab-cuadrante', true);
+                    break;
+                case FASES.CUADRANTE:
+                    // Solo cuadrante: botones Exportar CSV y Exportar PDF
+                    habilitarBoton(btnAñadirTabla, false);
+                    habilitarBoton(btnBorrar, false);
+                    habilitarTab('tab-tabla', false);
+                    habilitarTab('tab-informes', true);
+                    habilitarTab('tab-cuadrante', true);
+                    if (vistaActual === 'tabla') cambiarVistaPrincipal('cuadrante');
+                    break;
+                case FASES.EN_MARCHA:
+                    // Solo lectura, cuadrante
+                    habilitarBoton(btnAñadirTabla, false);
+                    habilitarBoton(btnBorrar, false);
+                    habilitarTab('tab-tabla', false);
+                    habilitarTab('tab-informes', false);
+                    habilitarTab('tab-cuadrante', true);
+                    if (vistaActual === 'tabla' || vistaActual === 'informes') cambiarVistaPrincipal('cuadrante');
+                    break;
+                case FASES.EVIDENCIAS:
+                    // Editar solo URL de evidencia, no borrar
+                    habilitarBoton(btnAñadirTabla, false);
+                    habilitarBoton(btnBorrar, false);
+                    habilitarTab('tab-tabla', true);
+                    habilitarTab('tab-informes', true);
+                    habilitarTab('tab-cuadrante', true);
+                    break;
+                case FASES.CERRADA:
+                    // Nada editable
+                    habilitarBoton(btnAñadirTabla, false);
+                    habilitarBoton(btnBorrar, false);
+                    habilitarTab('tab-tabla', true);
+                    habilitarTab('tab-informes', false);
+                    habilitarTab('tab-cuadrante', true);
+                    break;
+            }
+
+            // Re-renderizar tabla para actualizar botones editar/eliminar (no si ya se renderizó en actualizarTodo)
+            if (!desdeActualizarTodo) renderizarTabla();
+            renderizarBannerFase();
+            renderizarRadioFases();
+        }
+
+        function habilitarBoton(btn, habilitado) {
+            if (!btn) return;
+            btn.disabled = !habilitado;
+            if (!habilitado) {
+                btn.classList.add('opacity-40', 'pointer-events-none', 'cursor-not-allowed');
+            } else {
+                btn.classList.remove('opacity-40', 'pointer-events-none', 'cursor-not-allowed');
+            }
+        }
+
+        function habilitarTab(tabId, habilitado) {
+            const tab = document.getElementById(tabId);
+            if (!tab) return;
+            if (!habilitado) {
+                tab.classList.add('opacity-30', 'pointer-events-none');
+                tab.title = 'No disponible en la fase actual';
+            } else {
+                tab.classList.remove('opacity-30', 'pointer-events-none');
+                tab.title = '';
+            }
+        }
+
+        // Helpers para mostrar/ocultar botones editar/eliminar en la tabla según fase
+        function _htmlBtnEditar(id, fase) {
+            // Modo edición total (admin + CERRADA + checkbox): permitir siempre
+            if (_esModoEdicionTotal()) {
+                return '<button onclick="editarProducto(' + id + ')" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Editar"><i data-lucide="edit-3" class="h-4 w-4"></i></button>';
+            }
+            // Admin puede editar en cualquier fase
+            if (_adminAutenticado) {
+                return '<button onclick="editarProducto(' + id + ')" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Editar"><i data-lucide="edit-3" class="h-4 w-4"></i></button>';
+            }
+            // Sin admin: solo se permite editar en ADICION y EVIDENCIAS
+            if (fase === FASES.CUADRANTE) return '';
+            if (fase === FASES.EN_MARCHA) return '';
+            if (fase === FASES.CERRADA) return '';
+            return '<button onclick="editarProducto(' + id + ')" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Editar"><i data-lucide="edit-3" class="h-4 w-4"></i></button>';
+        }
+        function _htmlBtnEliminar(id, fase) {
+            // Modo edición total (admin + CERRADA + checkbox): permitir siempre
+            if (_esModoEdicionTotal()) {
+                return '<button onclick="eliminarProducto(' + id + ')" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Eliminar"><i data-lucide="trash-2" class="h-4 w-4"></i></button>';
+            }
+            // Admin puede eliminar en cualquier fase
+            if (_adminAutenticado) {
+                return '<button onclick="eliminarProducto(' + id + ')" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Eliminar"><i data-lucide="trash-2" class="h-4 w-4"></i></button>';
+            }
+            // Sin admin: solo se permite eliminar en ADICION
+            if (fase === FASES.CUADRANTE) return '';
+            if (fase === FASES.EN_MARCHA) return '';
+            if (fase === FASES.EVIDENCIAS) return '';
+            if (fase === FASES.CERRADA) return '';
+            return '<button onclick="eliminarProducto(' + id + ')" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Eliminar"><i data-lucide="trash-2" class="h-4 w-4"></i></button>';
         }
 
         // Determina si un año escolar está en curso o ya fue pasado (protegido contra borrado)
@@ -1889,14 +2434,14 @@
                 const partes = ultimoAño.split('-');
                 nombre = (parseInt(partes[0]) + 1) + '-' + (parseInt(partes[1]) + 1);
             }
-            if (!/^\d{4}-\d{4}$/.test(nombre)) { alert('Formato: YYYY-YYYY (ej: 2026-2027)'); return; }
+            if (!/^\d{4}-\d{4}$/.test(nombre)) { alert('Formato: YYYY-YYYY (ej: 2025-2026)'); return; }
             if (datosGlobales.años[nombre]) { alert('El curso ' + nombre + ' ya existe.'); return; }
             datosGlobales.años[nombre] = { proyectos: [], cuadrante: [] };
             datosGlobales.añoActivo = nombre;
             guardarDatosEnStorage();
             input.value = '';
             actualizarTodo();
-            abrirModalGestionAños();
+            _mostrarModalAños();
         }
 
         function renombrarAño(añoViejo) {
@@ -1909,7 +2454,7 @@
             if (datosGlobales.añoActivo === añoViejo) datosGlobales.añoActivo = nuevoNombre;
             guardarDatosEnStorage();
             actualizarTodo();
-            abrirModalGestionAños();
+            _mostrarModalAños();
         }
 
         function eliminarAño(año) {
@@ -1920,7 +2465,7 @@
             if (datosGlobales.añoActivo === año) datosGlobales.añoActivo = Object.keys(datosGlobales.años)[0];
             guardarDatosEnStorage();
             actualizarTodo();
-            abrirModalGestionAños();
+            _mostrarModalAños();
         }
 
         // ==========================================
@@ -1934,27 +2479,14 @@
             aplicarPaletaCurso();
             inicializarFiltros();
             actualizarEstadisticas();
+            actualizarEstadoFase(true);
+            actualizarVisibilidadAdminCuadrante();
             renderizarTabla();
             generarTodosLosInformes();
+            renderizarBannerFase();
             renderLucideIcons();
-            // PDF.js: carga diferida — solo se carga cuando el usuario importa un PDF
-            window._pdfjsReady = false;
-            function cargarPDFjs() {
-                return new Promise((resolve, reject) => {
-                    if (window._pdfjsReady && typeof pdfjsLib !== 'undefined') { resolve(); return; }
-                    const s = document.createElement('script');
-                    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js';
-                    s.onload = () => {
-                        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-                        window._pdfjsReady = true;
-                        resolve();
-                    };
-                    s.onerror = () => reject(new Error('No se pudo cargar PDF.js'));
-                    document.head.appendChild(s);
-                });
-            }
             // Cerrar modales al hacer clic fuera del contenido (overlay)
-            document.querySelectorAll('[id^="modal-"], #overlay-analisis').forEach(function(modal) {
+            document.querySelectorAll('[id^="modal-"]').forEach(function(modal) {
                 modal.addEventListener('click', function(e) {
                     if (e.target === modal) {
                         modal.classList.add('hidden');
@@ -2071,6 +2603,21 @@
         // ==========================================
         var _acordeonConfigAbierto = false;
         function toggleAcordeonConfig() {
+            // Si no está autenticado y está cerrado, pedir clave
+            if (!_adminAutenticado && !_acordeonConfigAbierto) {
+                _adminDestino = 'config';
+                const modalClave = document.getElementById('modal-clave-admin');
+                const inputClave = document.getElementById('input-clave-admin');
+                const errorMsg = document.getElementById('clave-admin-error');
+                if (modalClave && inputClave) {
+                    inputClave.value = '';
+                    if (errorMsg) errorMsg.classList.add('hidden');
+                    modalClave.classList.remove('hidden');
+                    renderLucideIcons();
+                    setTimeout(() => inputClave.focus(), 100);
+                }
+                return;
+            }
             var body = document.getElementById('acordeon-config-body');
             var chevron = document.getElementById('chevron-config');
             _acordeonConfigAbierto = !_acordeonConfigAbierto;
@@ -2174,6 +2721,8 @@
                 sinResultados.classList.add('hidden');
             }
 
+            const fase = getFaseActual();
+
             productos.forEach(p => {
                 let badgeColor = "bg-slate-100 text-slate-700";
                 const tipoLower = (p.tipo || '').toLowerCase();
@@ -2209,8 +2758,7 @@
                         <td class="py-4 px-4 text-xs">${p.urlEvidencia ? `<a href="${p.urlEvidencia}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800 font-medium hover:underline transition"><i data-lucide="external-link" class="h-3.5 w-3.5 shrink-0"></i><span class="truncate max-w-[120px]">${p.urlEvidencia}</span></a>` : '<span class="text-slate-400">—</span>'}</td>
                         <td class="py-4 px-5 text-right whitespace-nowrap">
                             <div class="flex items-center justify-end gap-1.5 opacity-80 group-hover:opacity-100 transition">
-                                <button onclick="editarProducto(${p.id})" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Editar"><i data-lucide="edit-3" class="h-4 w-4"></i></button>
-                                <button onclick="eliminarProducto(${p.id})" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Eliminar"><i data-lucide="trash-2" class="h-4 w-4"></i></button>
+                                ${_htmlBtnEditar(p.id, fase)}${_htmlBtnEliminar(p.id, fase)}
                             </div>
                         </td>
                     </tr>`;
@@ -2220,335 +2768,10 @@
         }
 
         // CONTROLADORES DE INTERFAZ Y MODALES
-        function abrirModalImportar() { document.getElementById('modal-importar-pdf').classList.remove('hidden'); }
-        function cerrarModalImportar() { document.getElementById('modal-importar-pdf').classList.add('hidden'); }
         function abrirModalPDF() { document.getElementById('modal-pdf').classList.remove('hidden'); }
         function cerrarModalPDF() { document.getElementById('modal-pdf').classList.add('hidden'); }
-        function abrirOverlayAnalisis() { document.getElementById('overlay-analisis').classList.remove('hidden'); }
-        function cerrarOverlayAnalisis() { document.getElementById('overlay-analisis').classList.add('hidden'); }
-        function abrirExitoSincro(n, a) {
-            document.getElementById('sincro-nuevos').innerText = n;
-            document.getElementById('sincro-actualizados').innerText = a;
-            document.getElementById('modal-exito-sincro').classList.remove('hidden');
-        }
-        function cerrarExitoSincro() { document.getElementById('modal-exito-sincro').classList.add('hidden'); }
 
-        function actualizarPasoProgreso(idElement, estado) {
-            const el = document.getElementById(idElement);
-            if (!el) return;
-            if (estado === 'loading') {
-                el.className = "flex items-center gap-2 text-indigo-600 font-bold animate-pulse";
-                el.querySelector('.spinner-step').outerHTML = `<i data-lucide="loader-2" class="h-4 w-4 animate-spin spinner-step"></i>`;
-            } else if (estado === 'success') {
-                el.className = "flex items-center gap-2 text-emerald-600 font-bold";
-                el.querySelector('.spinner-step').outerHTML = `<i data-lucide="check" class="h-4 w-4 spinner-step"></i>`;
-            }
-            renderLucideIcons();
-        }
-
-        // PROCESAMIENTO LOCAL DE PDF MEDIANTE HEURÍSTICA Y EXPRESIONES REGULARES (SIN API EXTERNA PARA EVITAR ERROR 403)
-        async function procesarArchivoSeleccionado(input) {
-            const file = input.files[0];
-            if (!file) return;
-
-            cerrarModalImportar();
-            abrirOverlayAnalisis();
-            
-            // Paso 1: Cargar PDF.js (si aún no está cargado) y cambiar UI
-            actualizarPasoProgreso('step-lectura', 'loading');
-            try { await cargarPDFjs(); } catch (e) {
-                alert('No se pudo cargar la librería de procesamiento PDF. Verifica tu conexión a Internet e inténtalo de nuevo.');
-                cerrarOverlayAnalisis();
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = async function() {
-                try {
-                    const typedarray = new Uint8Array(this.result);
-                    
-                    // Cargar el documento PDF utilizando la librería PDF.js localmente
-                    const pdf = await pdfjsLib.getDocument(typedarray).promise;
-                    let allItems = [];
-                    
-                    // Extraer todos los items de texto CON SUS POSICIONES ESPACIALES (X, Y)
-                    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-                        const page = await pdf.getPage(pageNum);
-                        const textContent = await page.getTextContent();
-                        const viewport = page.getViewport({ scale: 1 });
-                        
-                        for (const item of textContent.items) {
-                            if (!item.str || !item.str.trim()) continue;
-                            allItems.push({
-                                str: item.str.trim(),
-                                x: item.transform[4],
-                                y: viewport.height - item.transform[5],
-                                w: item.width || 0,
-                                page: pageNum
-                            });
-                        }
-                    }
-                    console.log('[PDF Import] Items extraidos:', allItems.length, 'de', pdf.numPages, 'paginas');
-                    
-                    actualizarPasoProgreso('step-lectura', 'success');
-                    
-                    // Paso 2: Análisis Heurístico Local Robusto de Tablas
-                    actualizarPasoProgreso('step-envio', 'loading');
-                    const resultadoJSON = analizarTextoPDFPosicional(allItems);
-                    console.log('[PDF Import] Proyectos encontrados:', resultadoJSON.proyectos.length);
-                    
-                    await new Promise(r => setTimeout(r, 600));
-                    actualizarPasoProgreso('step-envio', 'success');
-
-                    // Paso 3: Sincronizar Base de Datos
-                    actualizarPasoProgreso('step-sincronizacion', 'loading');
-                    const resultadoSincronizacion = combinarDossierImportado(resultadoJSON);
-                    
-                    // CRITICAL: Persistir cambios en storage local y sincronizar con Firebase
-                    guardarDatosEnStorage();
-                    
-                    await new Promise(r => setTimeout(r, 400));
-                    actualizarPasoProgreso('step-sincronizacion', 'success');
-
-                    // Finalizar exitosamente
-                    setTimeout(() => {
-                        cerrarOverlayAnalisis();
-                        inicializarFiltros();
-                        aplicarFiltros();
-                        actualizarEstadisticas();
-                        if (vistaActual === 'informes') generarTodosLosInformes();
-                        abrirExitoSincro(resultadoSincronizacion.nuevos, resultadoSincronizacion.actualizados);
-                        input.value = '';
-                    }, 500);
-
-                } catch (error) {
-                    console.error("Fallo durante el análisis local:", error);
-                    cerrarOverlayAnalisis();
-                    alert("Fallo al sincronizar el documento PDF localmente.\nDetalle: " + error.message);
-                    input.value = '';
-                }
-            };
-            reader.onerror = function() {
-                cerrarOverlayAnalisis();
-                alert("Fallo al leer el archivo PDF en el navegador.");
-                input.value = '';
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        // =====================================================================
-        // MOTOR POSICIONAL V3: USA ORDINALES (Nº) COMO DELIMITADORES DE FILA
-        // No depende de agrupamiento Y (los PDFs del dossier tienen Y-plano)
-        // =====================================================================
-        function analizarTextoPDFPosicional(allItems) {
-            if (!allItems || allItems.length === 0) return { proyectos: [] };
-
-            // === PASO 1: Agrupar items por página ===
-            let pageMap = {};
-            for (let item of allItems) {
-                if (!pageMap[item.page]) pageMap[item.page] = [];
-                pageMap[item.page].push(item);
-            }
-
-            let proyectos = [];
-
-            // Definición de las columnas por rango de coordenadas X (absolutas de la página en pt)
-            function getColumn(x) {
-                if (50 <= x && x < 80) return "nº";
-                if (80 <= x && x < 160) return "nombre";
-                if (160 <= x && x < 210) return "tipo";
-                if (210 <= x && x < 300) return "materia";
-                if (300 <= x && x < 390) return "profesor";
-                if (390 <= x && x < 500) return "espacioNecesario";
-                if (500 <= x && x < 620) return "espacioExposicion";
-                if (620 <= x && x < 710) return "alumnado";
-                if (710 <= x && x < 810) return "clase";
-                return null;
-            }
-
-            const ignoreTerms = new Set([
-                'preinscripción', 'preinscripcion', 'productos', 'finales', 'expovilladiego', '2026',
-                'nº', 'nombre', 'del', 'producto', 'final', 'tipo', 'materia', 'materias',
-                'profesorado', 'responsable', 'espacio', 'necesario', 'lugar', 'de', 'exposición', 'exposicion',
-                'se', 'ubicará', 'ubicara', 'al', 'final,', 'cuando', 'tengamos', 'todos)', '(se', 'alumnado', 'clase',
-                'preinscripciôn', 'preinscripción', 'exposicióón', 'exposicion', 'ubicará', 'mesa,', 'cm…', 'cm…)'
-            ]);
-
-            function shouldIgnore(text) {
-                let t = text.toLowerCase().trim();
-                return ignoreTerms.has(t);
-            }
-
-            // Procesar cada página
-            const totalPages = Object.keys(pageMap).length;
-            for (let p = 1; p <= totalPages; p++) {
-                let items = pageMap[p] || [];
-
-                let currentProject = null;
-                let alumnadoList = [];
-                let claseList = [];
-
-                for (let item of items) {
-                    let text = item.str;
-                    let x = item.x;
-                    let y = item.y;
-
-                    // Ignorar cabeceras y pies de página usando límites de Y (PDF.js invertido)
-                    // Cabecera superior suele tener Y pequeña, pie de página Y muy grande.
-                    // Para ser seguros, filtramos también por los términos conocidos.
-                    if (y < 90 || y > 780) continue;
-
-                    let cleanText = normalizarTexto(text);
-                    if (!cleanText || shouldIgnore(cleanText)) continue;
-
-                    let col = getColumn(x);
-                    if (!col) continue;
-
-                    // Si es un número en la columna Nº, comenzamos un nuevo proyecto
-                    if (col === "nº" && /^\d+$/.test(cleanText)) {
-                        if (currentProject) {
-                            currentProject.alumnado = alumnadoList.filter(Boolean).map(a => a.trim()).join('/');
-                            currentProject.clase = claseList.filter(Boolean).map(c => c.trim()).join('/');
-                            proyectos.push(currentProject);
-                        }
-                        currentProject = {
-                            id: Date.now() + Math.floor(Math.random() * 100000) + proyectos.length,
-                            nombre: "",
-                            tipo: "Sin definir",
-                            materia: "",
-                            profesor: "",
-                            espacioNecesario: "N/A",
-                            espacioExposicion: "Por asignar",
-                            alumnado: "",
-                            clase: "N/A"
-                        };
-                        alumnadoList = [];
-                        claseList = [];
-                        continue;
-                    }
-
-                    if (!currentProject) continue;
-
-                    if (col === "nombre") {
-                        currentProject.nombre = (currentProject.nombre + " " + cleanText).trim();
-                    } else if (col === "tipo") {
-                        let normalizedTipo = normalizarTipo(cleanText);
-                        if (normalizedTipo) {
-                            currentProject.tipo = normalizedTipo;
-                        }
-                    } else if (col === "materia") {
-                        currentProject.materia = (currentProject.materia + " " + cleanText).trim();
-                    } else if (col === "profesor") {
-                        currentProject.profesor = (currentProject.profesor + " " + cleanText).trim();
-                    } else if (col === "espacioNecesario") {
-                        if (currentProject.espacioNecesario === "N/A") currentProject.espacioNecesario = "";
-                        currentProject.espacioNecesario = (currentProject.espacioNecesario + " " + cleanText).trim();
-                    } else if (col === "espacioExposicion") {
-                        if (currentProject.espacioExposicion === "Por asignar") currentProject.espacioExposicion = "";
-                        currentProject.espacioExposicion = (currentProject.espacioExposicion + " " + cleanText).trim();
-                    } else if (col === "alumnado") {
-                        alumnadoList.push(cleanText);
-                    } else if (col === "clase") {
-                        claseList.push(cleanText);
-                    }
-                }
-
-                // Guardar el último proyecto de la página
-                if (currentProject) {
-                    currentProject.alumnado = alumnadoList.filter(Boolean).map(a => a.trim()).join('/');
-                    currentProject.clase = claseList.filter(Boolean).map(c => c.trim()).join('/');
-                    proyectos.push(currentProject);
-                }
-            }
-
-            // Normalización final y limpieza de campos por defecto
-            proyectos.forEach(p => {
-                if (!p.nombre) p.nombre = "Proyecto sin nombre";
-                if (!p.tipo) p.tipo = "Sin definir";
-                if (!p.materia) p.materia = "No especificada";
-                if (!p.profesor) p.profesor = "No especificado";
-                if (!p.espacioNecesario) p.espacioNecesario = "N/A";
-                if (!p.espacioExposicion) p.espacioExposicion = "Por asignar";
-
-                if (p.espacioExposicion.toLowerCase().includes("escoge una opc")) {
-                    p.espacioExposicion = "Por asignar";
-                }
-                
-                // Normalizar profesor: limpiar espacios, normalizar a Title Case
-                // y deduplicar por comparación case-insensitive (Celia = CELIA)
-                if (p.profesor && p.profesor !== "No especificado") {
-                    p.profesor = normalizarProfesores(p.profesor);
-                }
-
-                // Limpiar alumnado y clase con interrogaciones o solapes
-                if (p.alumnado === "?" || p.alumnado === "??" || p.alumnado === "¿?") {
-                    p.alumnado = "";
-                }
-                // Si la clase contiene "N/A/N/A" u otras uniones vacías
-                p.clase = p.clase.split('/').map(c => c.trim()).filter(c => c && c !== "N/A").join('/');
-                if (!p.clase) p.clase = "N/A";
-            });
-
-            console.log('[PDF Import] Total proyectos extraídos:', proyectos.length);
-            return { proyectos };
-        }
-
-
-
-        function normalizarTexto(t) {
-            if (!t) return "";
-            return t
-                // Corregir mojibake común de codificaciones de caracteres en PDFs
-                .replace(/├│/g, 'ó').replace(/├│/g, 'ó')
-                .replace(/├í/g, 'á').replace(/├¡/g, 'í')
-                .replace(/├║/g, 'ú').replace(/├®/g, 'é')
-                .replace(/├▒/g, 'ñ').replace(/├æ/g, 'Ñ')
-                .replace(/├ü/g, 'Á').replace(/├ë/g, 'É')
-                .replace(/├ì/g, 'Í').replace(/├ô/g, 'Ó')
-                .replace(/├ﾚ/g, 'Ú')
-                .replace(/├┬/g, 'Â')
-                .replace(/┬║/g, 'º')
-                .replace(/┬¼/g, '¼')
-                .replace(/┬½/g, '½')
-                .replace(/┬░/g, 'º')
-                .replace(/┬¢/g, '½')
-                .replace(/┬┐/g, '¿')
-                .replace(/ÔÇª/g, '...')
-                .replace(/\\u2026/g, '...')
-                // LaTeX y limpieza de formato
-                .replace(/\$4\^\{\\circ\}\$/g, '4º')
-                .replace(/\$3\^\{\\circ\}\$/g, '3º')
-                .replace(/\$2\^\{\\circ\}\$/g, '2º')
-                .replace(/\$1\^\{\\circ\}\$/g, '1º')
-                .replace(/\\frac\{1\}\{2\}/g, '½')
-                .replace(/\\/g, '')
-                // Corregir separaciones de palabras causadas por PDF.js:
-                // "Expresi ón" → "Expresión", "organi zación" → "organización"
-                // Une fragmentos cuando un espacio precede a vocal con tilde/ñ/ü al inicio de fragmento
-                .replace(/([a-záéíóúñüA-ZÁÉÍÓÚÑÜ])\s+([áéíóúÁÉÍÓÚÚ])/g, '$1$2')
-                .replace(/([a-záéíóúñüA-ZÁÉÍÓÚÑÜ])\s+([ñÑ])/g, '$1$2')
-                .replace(/([a-záéíóúñüA-ZÁÉÍÓÚÑÜ])\s+([ü])/g, '$1$2')
-                .replace(/\s+/g, ' ')
-                .trim();
-        }
-
-        function normalizarTipo(tipo) {
-            if (!tipo) return "Sin definir";
-            let t = tipo.toLowerCase().trim();
-            if (t.includes("maqu")) return "Maqueta";
-            if (t.includes("mural")) return "Mural";
-            if (t.includes("demo")) return "Demostración";
-            if (t.includes("esco") || t.includes("sin defin")) return "Sin definir";
-            if (t.includes("víd") || t.includes("vid")) return "Vídeo";
-            if (t.includes("pág") || t.includes("web") || t.includes("pagin")) return "Página Web";
-            if (t.includes("libro") || t.includes("revist")) return "Libro/revista";
-            return "Sin definir";
-        }
-
-        // Normaliza un nombre de profesor/a a formato Title Case
-        // para evitar duplicados como "Celia" vs "CELIA" vs "celia"
-        // NOTA: No se usa \b porque JavaScript no considera vocales acentuadas
-        // como \w, así que \b rompe "ÁNGEL" → "Á" + "NGEL" = "ÁNgel" (incorrecto).
+        // Funciones auxiliares de normalización de texto (reutilizadas por CSV y guardado)
         function normalizarNombreProfesor(nombre) {
             if (!nombre) return nombre;
             return nombre.replace(/\s+/g, ' ').trim().split(' ').map(function(word) {
@@ -2557,7 +2780,6 @@
             }).join(' ');
         }
 
-        // Función auxiliar: normaliza y deduplica profesorado separado por coma/barra
         function normalizarProfesores(profesorStr) {
             if (!profesorStr || profesorStr === 'No especificado') return profesorStr;
             var vistos = {};
@@ -2570,45 +2792,12 @@
                 })
                 .filter(function(nombre) {
                     if (!nombre) return false;
-                    // Deduplicar por comparación case-insensitive
                     var key = nombre.toLowerCase();
                     if (vistos[key]) return false;
                     vistos[key] = true;
                     return true;
                 })
                 .join(', ');
-        }
-
-        // ALGORITMO INTELIGENTE DE FUSIÓN (MERGE) PARA EVITAR DUPLICADOS
-        function combinarDossierImportado(jsonImport) {
-            let nuevos = 0, actualizados = 0;
-            if (!jsonImport || !Array.isArray(jsonImport.proyectos)) return { nuevos, actualizados };
-            const database = datosGlobales.años[datosGlobales.añoActivo].proyectos;
-
-            jsonImport.proyectos.forEach(proyectoImportado => {
-                const tituloImportadoNormalizado = (proyectoImportado.nombre || '').toLowerCase().replace(/[^a-z0-9áéíóúñ]/gi, '').trim();
-                const indexCoincidente = database.findIndex(p => {
-                    return p.nombre.toLowerCase().replace(/[^a-z0-9áéíóúñ]/gi, '').trim() === tituloImportadoNormalizado;
-                });
-
-                if (indexCoincidente !== -1) {
-                    // Ya existe, no se incorpora ni se modifica nada de este producto
-                } else {
-                    database.push({
-                        id: Date.now() + Math.floor(Math.random() * 1000) + nuevos,
-                        nombre: proyectoImportado.nombre,
-                        tipo: proyectoImportado.tipo || "No especificado",
-                        materia: proyectoImportado.materia,
-                        profesor: proyectoImportado.profesor,
-                        espacioNecesario: proyectoImportado.espacioNecesario || "N/A",
-                        espacioExposicion: proyectoImportado.espacioExposicion || "Por asignar",
-                        alumnado: proyectoImportado.alumnado || "",
-                        clase: proyectoImportado.clase || "N/A"
-                    });
-                    nuevos++;
-                }
-            });
-            return { nuevos, actualizados };
         }
 
         // GESTIÓN DE VISTAS, FILTROS Y ORDENACIÓN
@@ -2636,6 +2825,8 @@
             } else if (vista === 'cuadrante') {
                 tabCuadrante.className = activeClass;
                 vistaCuadrante.classList.remove('hidden');
+                renderizarEncabezadosCuadrante();
+                renderizarUIFechaExpo();
                 renderizarCuadrante();
             }
         }
@@ -2706,9 +2897,37 @@
 
         // ACCIONES CRUD (AÑADIR, EDITAR, GUARDAR, ELIMINAR, CSV)
         function abrirModalNuevo() {
+            if (_esModoEdicionTotal()) {
+                document.getElementById('modal-titulo').innerText = "Añadir Producto Final";
+                document.getElementById('form-id').value = "";
+                document.getElementById('form-producto').reset();
+                _renderizarSelectTipos('');
+                document.getElementById('btn-guardar').disabled = false;
+                document.getElementById('btn-guardar').classList.remove('opacity-50', 'cursor-not-allowed');
+                document.getElementById('modal-producto').classList.remove('hidden');
+                return;
+            }
+            const fase = getFaseActual();
+            if (fase === FASES.CUADRANTE) {
+                alert('En la fase de Cuadrante Temporal no se pueden añadir productos nuevos desde esta vista.');
+                return;
+            }
+            if (fase === FASES.EN_MARCHA) {
+                alert('La ExpoVilladiego está en marcha. No se puede añadir en esta fase.');
+                return;
+            }
+            if (fase === FASES.EVIDENCIAS) {
+                alert('En la fase de Evidencias no se pueden añadir productos nuevos.');
+                return;
+            }
+            if (fase === FASES.CERRADA) {
+                alert('La ExpoVilladiego está cerrada. No se pueden añadir productos.');
+                return;
+            }
             document.getElementById('modal-titulo').innerText = "Añadir Producto Final";
             document.getElementById('form-id').value = "";
             document.getElementById('form-producto').reset();
+            _renderizarSelectTipos('');
             document.getElementById('btn-guardar').disabled = false;
             document.getElementById('btn-guardar').classList.remove('opacity-50', 'cursor-not-allowed');
             document.getElementById('modal-producto').classList.remove('hidden');
@@ -2718,7 +2937,7 @@
             document.getElementById('modal-titulo').innerText = "Editar Producto Final";
             document.getElementById('form-id').value = p.id;
             document.getElementById('form-nombre').value = p.nombre;
-            document.getElementById('form-tipo').value = p.tipo;
+            _renderizarSelectTipos(p.tipo || '');
             document.getElementById('form-materia').value = p.materia;
             document.getElementById('form-profesor').value = p.profesor;
             document.getElementById('form-espacioNecesario').value = p.espacioNecesario;
@@ -2729,48 +2948,239 @@
             document.getElementById('btn-guardar').disabled = false;
             document.getElementById('btn-guardar').classList.remove('opacity-50', 'cursor-not-allowed');
             document.getElementById('modal-producto').classList.remove('hidden');
+            aplicarBloqueoFormulario();
         }
 
-        function cerrarModal() { document.getElementById('modal-producto').classList.add('hidden'); }
+        // Aplica bloqueo visual a los campos del formulario según la fase
+        function aplicarBloqueoFormulario() {
+            const fase = getFaseActual();
+            const modoTotal = _esModoEdicionTotal();
+            const camposEdicion = ['form-nombre', 'form-tipo', 'form-materia', 'form-profesor', 'form-espacioNecesario', 'form-espacioExposicion', 'form-alumnado', 'form-clase'];
+            const campoUrl = 'form-urlEvidencia';
+
+            // Edición total: no bloquear nada
+            if (modoTotal) {
+                camposEdicion.forEach(id => {
+                    var el = document.getElementById(id);
+                    if (!el) return;
+                    el.disabled = false;
+                    el.readOnly = false;
+                    el.removeAttribute('tabindex');
+                    el.classList.remove('bg-slate-100', 'opacity-60', 'cursor-not-allowed');
+                });
+                var urlEl = document.getElementById(campoUrl);
+                if (urlEl) {
+                    urlEl.disabled = false;
+                    urlEl.readOnly = false;
+                    urlEl.removeAttribute('tabindex');
+                    urlEl.classList.remove('bg-slate-100', 'opacity-60', 'cursor-not-allowed');
+                }
+                var btnGuardar = document.getElementById('btn-guardar');
+                if (btnGuardar) { btnGuardar.disabled = false; btnGuardar.classList.remove('opacity-50', 'cursor-not-allowed'); }
+                return;
+            }
+
+            // Fase de Evidencias: bloquear todos los campos excepto URL
+            const soloUrl = (fase === FASES.EVIDENCIAS);
+            // Fase cerrada: bloquear todo
+            const todoBloqueado = (fase === FASES.CERRADA);
+
+            camposEdicion.forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                const bloquear = soloUrl || todoBloqueado;
+                el.disabled = bloquear;
+                el.readOnly = bloquear;
+                if (bloquear) {
+                    el.setAttribute('tabindex', '-1');
+                    el.classList.add('bg-slate-100', 'opacity-60', 'cursor-not-allowed');
+                } else {
+                    el.removeAttribute('tabindex');
+                    el.classList.remove('bg-slate-100', 'opacity-60', 'cursor-not-allowed');
+                }
+            });
+
+            urlEl = document.getElementById(campoUrl);
+            if (urlEl) {
+                var urlDisabled = todoBloqueado;
+                urlEl.disabled = urlDisabled;
+                urlEl.readOnly = urlDisabled;
+                if (urlDisabled) {
+                    urlEl.setAttribute('tabindex', '-1');
+                    urlEl.classList.add('bg-slate-100', 'opacity-60', 'cursor-not-allowed');
+                } else {
+                    urlEl.removeAttribute('tabindex');
+                    urlEl.classList.remove('bg-slate-100', 'opacity-60', 'cursor-not-allowed');
+                }
+            }
+
+            // Deshabilitar guardar si todo está bloqueado
+            btnGuardar = document.getElementById('btn-guardar');
+            if (btnGuardar && todoBloqueado) {
+                btnGuardar.disabled = true;
+                btnGuardar.classList.add('opacity-50', 'cursor-not-allowed');
+            } else if (btnGuardar) {
+                btnGuardar.disabled = false;
+                btnGuardar.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        function cerrarModal() {
+            document.getElementById('modal-producto').classList.add('hidden');
+            // Limpiar readonly/tabindex al cerrar para que el siguiente modal funcione correctamente
+            var campos = ['form-nombre', 'form-tipo', 'form-materia', 'form-profesor', 'form-espacioNecesario', 'form-espacioExposicion', 'form-alumnado', 'form-clase', 'form-urlEvidencia'];
+            campos.forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) { el.readOnly = false; el.disabled = false; el.removeAttribute('tabindex'); el.classList.remove('bg-slate-100', 'opacity-60', 'cursor-not-allowed'); }
+            });
+        }
+
+        // Validar que cada docente tenga al menos nombre y apellido
+        function _validarProfesorado() {
+            var raw = document.getElementById('form-profesor').value.trim();
+            var aviso = document.getElementById('aviso-profesor-nombre');
+            if (!aviso) return true;
+            if (!raw) { aviso.classList.add('hidden'); aviso.classList.remove('flex'); return true; }
+            var nombres = raw.split(/[,\/]/).map(function(n) { return n.trim(); }).filter(function(n) { return n.length > 0 && n.toLowerCase() !== 'no especificado'; });
+            var incompletos = nombres.filter(function(n) { return n.split(/\s+/).length < 2; });
+            if (incompletos.length > 0) {
+                aviso.querySelector('span').textContent = 'El docente "' + incompletos[0] + '" solo tiene un elemento. Se requieren nombre y apellido.';
+                aviso.classList.remove('hidden');
+                aviso.classList.add('flex');
+                return false;
+            }
+            aviso.classList.add('hidden');
+            aviso.classList.remove('flex');
+            return true;
+        }
+
+        // Validar que cada alumno tenga al menos nombre y apellido
+        function _validarAlumnado() {
+            var raw = document.getElementById('form-alumnado').value.trim();
+            var aviso = document.getElementById('aviso-alumnado-nombre');
+            if (!aviso) return true;
+            if (!raw) { aviso.classList.add('hidden'); aviso.classList.remove('flex'); return true; }
+            var nombres = raw.split(',').map(function(n) { return n.trim(); }).filter(function(n) { return n.length > 0; });
+            var incompletos = nombres.filter(function(n) { return n.split(/\s+/).length < 2; });
+            if (incompletos.length > 0) {
+                aviso.querySelector('span').textContent = 'El alumno "' + incompletos[0] + '" solo tiene un elemento. Se requieren nombre y apellido.';
+                aviso.classList.remove('hidden');
+                aviso.classList.add('flex');
+                return false;
+            }
+            aviso.classList.add('hidden');
+            aviso.classList.remove('flex');
+            return true;
+        }
 
         function guardarProducto(event) {
             event.preventDefault();
             const id = document.getElementById('form-id').value;
             const database = datosGlobales.años[datosGlobales.añoActivo].proyectos;
-            // Normalizar profesorado al guardar para evitar duplicados case-insensitive
-            var profesorValor = document.getElementById('form-profesor').value;
-            profesorValor = normalizarProfesores(profesorValor);
-            const nuevoProducto = {
-                id: id ? parseInt(id) : Date.now(),
-                nombre: document.getElementById('form-nombre').value,
-                tipo: document.getElementById('form-tipo').value || "No especificado",
-                materia: document.getElementById('form-materia').value,
-                profesor: profesorValor,
-                espacioNecesario: document.getElementById('form-espacioNecesario').value || "N/A",
-                espacioExposicion: document.getElementById('form-espacioExposicion').value || "Por asignar",
-                urlEvidencia: document.getElementById('form-urlEvidencia').value || "",
-                alumnado: document.getElementById('form-alumnado').value,
-                clase: document.getElementById('form-clase').value || "N/A"
-            };
+            const fase = getFaseActual();
+            const modoTotal = _esModoEdicionTotal();
+
+            // Validar profesorado y alumnado (nombre y apellido)
+            if (!_validarProfesorado()) return;
+            if (!_validarAlumnado()) return;
 
             if (id) {
+                // EDICIÓN
                 const index = database.findIndex(p => p.id === parseInt(id));
-                if (index !== -1) database[index] = nuevoProducto;
-            } else database.push(nuevoProducto);
+                if (index !== -1) {
+                    const original = database[index];
+                    // Normalizar profesorado
+                    var profesorValor = document.getElementById('form-profesor').value;
+                    profesorValor = normalizarProfesores(profesorValor);
+
+                    if (fase === FASES.EVIDENCIAS && !modoTotal) {
+                        // Solo permitir cambiar URL de evidencia (salvo si edición total)
+                        database[index] = {
+                            ...original,
+                            urlEvidencia: document.getElementById('form-urlEvidencia').value || ""
+                        };
+                    } else {
+                        database[index] = {
+                            id: original.id,
+                            nombre: document.getElementById('form-nombre').value,
+                            tipo: document.getElementById('form-tipo').value || "No especificado",
+                            materia: document.getElementById('form-materia').value,
+                            profesor: profesorValor,
+                            espacioNecesario: document.getElementById('form-espacioNecesario').value || "N/A",
+                            espacioExposicion: document.getElementById('form-espacioExposicion').value || "Por asignar",
+                            urlEvidencia: document.getElementById('form-urlEvidencia').value || "",
+                            alumnado: document.getElementById('form-alumnado').value,
+                            clase: document.getElementById('form-clase').value || "N/A"
+                        };
+                    }
+                }
+            } else {
+                // NUEVO PRODUCTO
+                var profesorValor = document.getElementById('form-profesor').value;
+                profesorValor = normalizarProfesores(profesorValor);
+                const nuevoProducto = {
+                    id: Date.now(),
+                    nombre: document.getElementById('form-nombre').value,
+                    tipo: document.getElementById('form-tipo').value || "No especificado",
+                    materia: document.getElementById('form-materia').value,
+                    profesor: profesorValor,
+                    espacioNecesario: document.getElementById('form-espacioNecesario').value || "N/A",
+                    espacioExposicion: document.getElementById('form-espacioExposicion').value || "Por asignar",
+                    urlEvidencia: document.getElementById('form-urlEvidencia').value || "",
+                    alumnado: document.getElementById('form-alumnado').value,
+                    clase: document.getElementById('form-clase').value || "N/A"
+                };
+                database.push(nuevoProducto);
+            }
 
             cerrarModal(); inicializarFiltros();
-            productos = [...getDatabase()]; // actualizar antes de aplicar filtros
+            productos = [...getDatabase()];
             aplicarFiltros(); actualizarEstadisticas();
             if (vistaActual === 'informes') generarTodosLosInformes();
             guardarDatosEnStorage();
         }
 
         function editarProducto(id) {
+            if (_esModoEdicionTotal()) {
+                const prod = getDatabase().find(p => p.id === id);
+                if (prod) abrirModalEdicion(prod);
+                return;
+            }
+            const fase = getFaseActual();
+            if (fase === FASES.CERRADA) {
+                alert('La ExpoVilladiego está cerrada. La edición no está habilitada.');
+                return;
+            }
+            if (fase === FASES.EN_MARCHA) {
+                alert('La ExpoVilladiego está en marcha. No se puede editar en esta fase.');
+                return;
+            }
             const prod = getDatabase().find(p => p.id === id);
             if (prod) abrirModalEdicion(prod);
         }
 
         function eliminarProducto(id) {
+            if (_esModoEdicionTotal()) {
+                _ejecutarEliminacion(id);
+                return;
+            }
+            const fase = getFaseActual();
+            if (fase === FASES.EN_MARCHA) {
+                alert('La ExpoVilladiego está en marcha. No se puede eliminar en esta fase.');
+                return;
+            }
+            if (fase === FASES.EVIDENCIAS) {
+                alert('En la fase de Evidencias no se pueden eliminar proyectos.');
+                return;
+            }
+            if (fase === FASES.CERRADA) {
+                alert('La ExpoVilladiego está cerrada. La eliminación no está habilitada.');
+                return;
+            }
+            _ejecutarEliminacion(id);
+        }
+
+        function _ejecutarEliminacion(id) {
             if (confirm("¿Estás seguro de que deseas eliminar este producto preinscrito?")) {
                 const database = datosGlobales.años[datosGlobales.añoActivo].proyectos;
                 const index = database.findIndex(p => p.id === id);
@@ -2809,6 +3219,18 @@
         // IMPORTACIÓN CSV
         // ==========================================
         function abrirModalImportarCSV() {
+            if (_esModoEdicionTotal()) {
+                document.getElementById('modal-importar-csv').classList.remove('hidden');
+                var inputFile = document.getElementById('file-csv-import');
+                if (inputFile) inputFile.value = '';
+                renderLucideIcons();
+                return;
+            }
+            const fase = getFaseActual();
+            if (fase === FASES.EN_MARCHA || fase === FASES.EVIDENCIAS || fase === FASES.CERRADA) {
+                alert('La importación de productos no está disponible en la fase actual.');
+                return;
+            }
             document.getElementById('modal-importar-csv').classList.remove('hidden');
             // Resetear el input de archivo para permitir seleccionar el mismo fichero
             var inputFile = document.getElementById('file-csv-import');
@@ -3299,7 +3721,304 @@
         // ==========================================
         // CUADRANTE TEMPORAL
         // ==========================================
-        const FRANJAS_HORARIAS = ['M3', 'X1', 'X2', 'X3', 'X4', 'X5', 'X6', 'XT1', 'XT2', 'XT3'];
+
+        // Franjas por defecto (cuando no hay fecha de celebración configurada)
+        const FRANJAS_POR_DEFECTO = ['M3', 'X1', 'X2', 'X3', 'X4', 'X5', 'X6', 'XT1', 'XT2', 'XT3'];
+        const DESCRIPCION_FRANJAS_POR_DEFECTO = {
+            'M3':  { larga: 'martes, 3\u00aa hora',           cabecera1: 'martes',    cabecera2: '3\u00aa hora' },
+            'X1':  { larga: 'mi\u00e9rcoles, 1\u00aa hora',    cabecera1: 'mi\u00e9rcoles', cabecera2: '1\u00aa hora' },
+            'X2':  { larga: 'mi\u00e9rcoles, 2\u00aa hora',    cabecera1: 'mi\u00e9rcoles', cabecera2: '2\u00aa hora' },
+            'X3':  { larga: 'mi\u00e9rcoles, 3\u00aa hora',    cabecera1: 'mi\u00e9rcoles', cabecera2: '3\u00aa hora' },
+            'X4':  { larga: 'mi\u00e9rcoles, 4\u00aa hora',    cabecera1: 'mi\u00e9rcoles', cabecera2: '4\u00aa hora' },
+            'X5':  { larga: 'mi\u00e9rcoles, 5\u00aa hora',    cabecera1: 'mi\u00e9rcoles', cabecera2: '5\u00aa hora' },
+            'X6':  { larga: 'mi\u00e9rcoles, 6\u00aa hora',    cabecera1: 'mi\u00e9rcoles', cabecera2: '6\u00aa hora' },
+            'XT1': { larga: 'mi\u00e9rcoles, tarde, 1\u00aa hora', cabecera1: 'mi\u00e9rcoles, tarde', cabecera2: '1\u00aa hora' },
+            'XT2': { larga: 'mi\u00e9rcoles, tarde, 2\u00aa hora', cabecera1: 'mi\u00e9rcoles, tarde', cabecera2: '2\u00aa hora' },
+            'XT3': { larga: 'mi\u00e9rcoles, tarde, 3\u00aa hora', cabecera1: 'mi\u00e9rcoles, tarde', cabecera2: '3\u00aa hora' }
+        };
+
+        // Mapa de abreviaturas de día de la semana
+        const ABREVIATURA_DIA = ['D', 'L', 'M', 'X', 'J', 'V', 'S']; // 0=domingo, 1=lunes...
+        const NOMBRE_DIA = ['domingo', 'lunes', 'martes', 'mi\u00e9rcoles', 'jueves', 'viernes', 's\u00e1bado'];
+
+        // Genera las franjas horarias dinámicamente a partir de una fecha de celebración
+        // Día anterior: única franja a 3ª hora. Día de celebración: mañana (1-6) + tarde (T1-T3)
+        function generarFranjasDesdeFecha(fechaStr) {
+            const fecha = new Date(fechaStr + 'T12:00:00');
+            if (isNaN(fecha.getTime())) return { franjas: FRANJAS_POR_DEFECTO, descripciones: DESCRIPCION_FRANJAS_POR_DEFECTO };
+
+            const diaCelebracion = fecha.getDay(); // 0=dom, 1=lun, ..., 6=sáb
+            const diaAnterior = fecha;
+            diaAnterior.setDate(diaAnterior.getDate() - 1);
+            const diaAntNum = diaAnterior.getDay();
+
+            const abrAnt = ABREVIATURA_DIA[diaAntNum];
+            const abrCeleb = ABREVIATURA_DIA[diaCelebracion];
+            const nomAnt = NOMBRE_DIA[diaAntNum];
+            const nomCeleb = NOMBRE_DIA[diaCelebracion];
+
+            const franjas = [];
+            const descripciones = {};
+
+            // Día anterior: solo 3ª hora
+            franjas.push(abrAnt + '3');
+            descripciones[abrAnt + '3'] = { larga: nomAnt + ', 3\u00aa hora', cabecera1: nomAnt, cabecera2: '3\u00aa hora' };
+
+            // Día de celebración: mañana 1-6
+            for (let h = 1; h <= 6; h++) {
+                const code = abrCeleb + h;
+                franjas.push(code);
+                descripciones[code] = { larga: nomCeleb + ', ' + h + '\u00aa hora', cabecera1: nomCeleb, cabecera2: h + '\u00aa hora' };
+            }
+
+            // Día de celebración: tarde T1-T3
+            for (let t = 1; t <= 3; t++) {
+                const code = abrCeleb + 'T' + t;
+                franjas.push(code);
+                descripciones[code] = { larga: nomCeleb + ', tarde, ' + t + '\u00aa hora', cabecera1: nomCeleb + ', tarde', cabecera2: t + '\u00aa hora' };
+            }
+
+            return { franjas: franjas, descripciones: descripciones };
+        }
+
+        // Obtiene las franjas horarias del curso activo (dinámico o por defecto)
+        function getFranjasHorariasActual() {
+            const fechaExpo = getFechaExpo();
+            if (fechaExpo) {
+                return generarFranjasDesdeFecha(fechaExpo).franjas;
+            }
+            return FRANJAS_POR_DEFECTO;
+        }
+
+        // Obtiene las descripciones de franjas del curso activo
+        function getDescripcionFranjasActual() {
+            const fechaExpo = getFechaExpo();
+            if (fechaExpo) {
+                return generarFranjasDesdeFecha(fechaExpo).descripciones;
+            }
+            return DESCRIPCION_FRANJAS_POR_DEFECTO;
+        }
+
+        // Alias de compatibilidad (código existente usa FRANJAS_HORARIAS)
+        // NO redefinimos la const, sino que las funciones que la usan llamarán a getFranjasHorariasActual()
+        // Para la compatibilidad con imports/exports CSV que leen la const original:
+        function getFranjasHorariasParaCSV() { return FRANJAS_POR_DEFECTO; }
+
+        // Obtener fecha de celebración de la expo para un año
+        function getFechaExpo(año) {
+            const a = año || datosGlobales.añoActivo;
+            if (!datosGlobales.años[a]) return null;
+            return datosGlobales.años[a].fechaExpo || null;
+        }
+
+        // Borrar fecha de celebración
+        function borrarFechaExpo() {
+            if (!confirm('¿Borrar la fecha de celebración? Se usarán los tramos horarios por defecto.')) return;
+            guardarFechaExpo('');
+        }
+
+        // Guardar fecha de celebración
+        function guardarFechaExpo(fechaStr) {
+            const año = datosGlobales.añoActivo;
+            if (!datosGlobales.años[año]) datosGlobales.años[año] = { proyectos: [], cuadrante: [] };
+            datosGlobales.años[año].fechaExpo = fechaStr;
+            guardarDatosEnStorage();
+            // Reiniciar franjas marcadas al cambiar la fecha (porque las franjas cambian)
+            datosGlobales.años[año].franjasMarcadas = [...getFranjasHorariasActual()];
+            guardarDatosEnStorage();
+            renderizarUIFechaExpo();
+            renderizarEncabezadosCuadrante();
+            renderizarCuadrante();
+            actualizarEspaciosCuadranteUI();
+        }
+
+        // Verifica si el año activo permite configuración dinámica (siempre true)
+        function esAñoConfigurable() {
+            return !!datosGlobales.añoActivo;
+        }
+
+        // Renderizar la UI del selector de fecha de celebración
+        function renderizarUIFechaExpo() {
+            const contenedor = document.getElementById('contenedor-fecha-expo');
+            if (!contenedor) return;
+            if (!esAñoConfigurable() || !_adminAutenticado) {
+                contenedor.innerHTML = '';
+                contenedor.classList.add('hidden');
+                return;
+            }
+            contenedor.classList.remove('hidden');
+            const fechaExpo = getFechaExpo();
+            const año = datosGlobales.añoActivo;
+            const inicioAño = parseInt(año.split('-')[0]);
+
+            let textoFranjas = '';
+            if (fechaExpo) {
+                const resultado = generarFranjasDesdeFecha(fechaExpo);
+                textoFranjas = resultado.franjas.join(', ');
+            }
+
+            contenedor.innerHTML = '<div class="mt-3 p-3 bg-violet-50 rounded-xl border border-violet-200">' +
+                '<div class="flex flex-wrap gap-3 items-center">' +
+                '<span class="inline-flex items-center gap-1.5 bg-violet-100 text-violet-700 px-2.5 py-1 rounded-lg border border-violet-200 font-semibold text-xs"><i data-lucide="calendar-days" class="h-3.5 w-3.5"></i> Fecha de celebraci\u00f3n</span>' +
+                '<input type="date" id="input-fecha-expo" value="' + (fechaExpo || '') + '" ' +
+                'min="' + inicioAño + '-09-01" max="' + (inicioAño + 1) + '-08-31" ' +
+                'onchange="guardarFechaExpo(this.value)" ' +
+                'class="text-xs px-3 py-1.5 border border-violet-300 rounded-lg bg-white text-slate-700 focus:border-violet-500 focus:ring-1 focus:ring-violet-300 outline-none transition-all">' +
+                (fechaExpo
+                    ? '<button onclick="borrarFechaExpo()" class="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 hover:border-red-300 transition-all active:scale-95" title="Borrar fecha"><i data-lucide="x-circle" class="h-3.5 w-3.5"></i> Borrar</button>'
+                    : '') +
+                '</div>' +
+                (fechaExpo
+                    ? '<p class="text-[11px] text-violet-500 mt-2 font-medium">Tramos generados: <strong class="text-violet-700">' + textoFranjas + '</strong></p>'
+                    : '<p class="text-[11px] text-violet-400 mt-2 italic">Selecciona la fecha del d\u00eda de la Expo para generar los tramos horarios autom\u00e1ticamente.</p>') +
+                '</div>';
+            renderLucideIcons();
+        }
+
+        // Renderizar los encabezados de la tabla del cuadrante de forma dinámica
+        function renderizarEncabezadosCuadrante() {
+            const thead = document.getElementById('thead-cuadrante');
+            if (!thead) return;
+
+            const franjas = getFranjasHorariasActual();
+            const marcadas = getFranjasMarcadas();
+            const setMarcadas = new Set(marcadas);
+
+            let html = '<tr class="bg-gradient-to-r from-slate-100 to-slate-50">';
+            html += '<th class="py-3 px-4 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200 sticky left-0 bg-gradient-to-r from-slate-100 to-slate-50 z-10 min-w-[200px]">Producto Final</th>';
+
+            franjas.forEach(f => {
+                const marcada = setMarcadas.has(f);
+                const claseBase = 'franja-header py-3 px-2 text-center text-xs font-bold uppercase tracking-wider border-b-2 cursor-pointer select-none transition-all';
+                const claseActiva = marcada ? 'border-indigo-600 bg-indigo-600 text-white hover:bg-indigo-500' : 'border-slate-200 bg-slate-50 text-slate-400 hover:bg-slate-100 opacity-60';
+                html += '<th class="' + claseBase + ' ' + claseActiva + '" onclick="toggleMarcaFranja(\'' + f + '\')" data-franja="' + f + '" title="Clic para incluir/excluir del PDF">' + f + '\u00aa</th>';
+            });
+
+            html += '<th class="py-3 px-3 text-center text-xs font-bold uppercase tracking-wider text-slate-600 border-b-2 border-slate-200 min-w-[50px]"></th>';
+            html += '</tr>';
+            thead.innerHTML = html;
+        }
+
+        // Gestión de franjas marcadas (para selección de columnas en el PDF)
+        function getFranjasMarcadas() {
+            const año = datosGlobales.añoActivo;
+            if (!datosGlobales.años[año]) datosGlobales.años[año] = { proyectos: [], cuadrante: [] };
+            if (!datosGlobales.años[año].franjasMarcadas) {
+                datosGlobales.años[año].franjasMarcadas = [...getFranjasHorariasActual()];
+            }
+            return datosGlobales.años[año].franjasMarcadas;
+        }
+
+        function toggleMarcaFranja(franja) {
+            const marcadas = getFranjasMarcadas();
+            const idx = marcadas.indexOf(franja);
+            if (idx === -1) {
+                marcadas.push(franja);
+            } else {
+                marcadas.splice(idx, 1);
+            }
+            actualizarMarcasFranjasUI();
+            guardarDatosEnStorage();
+        }
+
+        function toggleTodasFranjas(marcarTodas) {
+            datosGlobales.años[datosGlobales.añoActivo].franjasMarcadas = marcarTodas ? [...getFranjasHorariasActual()] : [];
+            actualizarMarcasFranjasUI();
+            guardarDatosEnStorage();
+        }
+
+        function actualizarMarcasFranjasUI() {
+            const marcadas = getFranjasMarcadas();
+            const setMarcadas = new Set(marcadas);
+            const franjasActuales = getFranjasHorariasActual();
+            franjasActuales.forEach(f => {
+                const th = document.querySelector('[data-franja="' + f + '"]');
+                if (!th) return;
+                if (setMarcadas.has(f)) {
+                    th.className = 'franja-header py-3 px-2 text-center text-xs font-bold uppercase tracking-wider border-b-2 border-indigo-600 bg-indigo-600 text-white cursor-pointer select-none transition-all hover:bg-indigo-500';
+                } else {
+                    th.className = 'franja-header py-3 px-2 text-center text-xs font-bold uppercase tracking-wider border-b-2 border-slate-200 bg-slate-50 text-slate-400 cursor-pointer select-none transition-all hover:bg-slate-100 opacity-60';
+                }
+            });
+            const contador = document.getElementById('contador-franjas-marcadas');
+            if (contador) contador.textContent = marcadas.length + '/' + franjasActuales.length;
+        }
+
+        // Gestión de espacios marcados para exportación PDF del cuadrante
+        function getEspaciosCuadrante() {
+            const cuadrante = getCuadrante();
+            const db = getDatabase();
+            const setEspacios = new Set();
+            cuadrante.forEach(fila => {
+                const proyecto = db.find(p => mismoId(p.id, fila.proyectoId));
+                if (proyecto) {
+                    const espacio = (proyecto.espacioExposicion || proyecto.espacioNecesario || '—').trim();
+                    if (espacio && espacio !== '—' && espacio !== 'N/A' && espacio !== 'Por asignar') {
+                        setEspacios.add(espacio);
+                    }
+                }
+            });
+            return Array.from(setEspacios).sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
+        }
+
+        function getEspaciosMarcadosCuadrante() {
+            const año = datosGlobales.añoActivo;
+            if (!datosGlobales.años[año]) datosGlobales.años[año] = { proyectos: [], cuadrante: [] };
+            if (!datosGlobales.años[año].espaciosMarcadosCuadrante) {
+                // Por defecto, marcar todos los espacios disponibles
+                datosGlobales.años[año].espaciosMarcadosCuadrante = [];
+            }
+            return datosGlobales.años[año].espaciosMarcadosCuadrante;
+        }
+
+        function toggleMarcaEspacioCuadrante(espacio) {
+            const marcados = getEspaciosMarcadosCuadrante();
+            const idx = marcados.indexOf(espacio);
+            if (idx === -1) {
+                marcados.push(espacio);
+            } else {
+                marcados.splice(idx, 1);
+            }
+            actualizarEspaciosCuadranteUI();
+            guardarDatosEnStorage();
+        }
+
+        function toggleTodasEspaciosCuadrante(marcarTodas) {
+            const espacios = getEspaciosCuadrante();
+            datosGlobales.años[datosGlobales.añoActivo].espaciosMarcadosCuadrante = marcarTodas ? [...espacios] : [];
+            actualizarEspaciosCuadranteUI();
+            guardarDatosEnStorage();
+        }
+
+        function actualizarEspaciosCuadranteUI() {
+            const contenedor = document.getElementById('contenedor-espacios-cuadrante');
+            const contador = document.getElementById('contador-espacios-marcados');
+            if (!contenedor) return;
+
+            const espacios = getEspaciosCuadrante();
+            const marcados = getEspaciosMarcadosCuadrante();
+            const setMarcados = new Set(marcados);
+
+            if (espacios.length === 0) {
+                contenedor.innerHTML = '<span class="text-slate-400 italic">No hay espacios asignados en el cuadrante.</span>';
+                if (contador) contador.textContent = '0/0';
+                return;
+            }
+
+            let html = '';
+            espacios.forEach(espacio => {
+                const bgChip = setMarcados.has(espacio)
+                    ? 'bg-emerald-600 text-white border-emerald-600'
+                    : 'bg-white text-slate-500 border-slate-200 hover:border-emerald-300';
+                const icon = setMarcados.has(espacio) ? '✓ ' : '';
+                html += `<button type="button" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border select-none transition-all text-xs font-medium ${bgChip}" onclick="toggleMarcaEspacioCuadrante('${espacio.replace(/'/g, "\\'")}')">
+                    ${icon}${espacio}
+                </button>`;
+            });
+            contenedor.innerHTML = html;
+
+            if (contador) contador.textContent = marcados.length + '/' + espacios.length;
+        }
 
         // Comparación flexible de IDs (string vs number tras JSON)
         function mismoId(a, b) { return String(a) === String(b); }
@@ -3389,7 +4108,14 @@
         }
 
         // Añade una nueva fila al cuadrante
+        // Indica si el cuadrante es editable (solo en fase CUADRANTE, o admin con edición total en CERRADA)
+        function _esCuadranteEditable() {
+            if (_esModoEdicionTotal()) return true;
+            return getFaseActual() === FASES.CUADRANTE;
+        }
+
         function añadirFilaCuadrante() {
+            if (!_esCuadranteEditable()) { alert('El cuadrante no es editable en la fase actual.'); return; }
             const disponibles = getProyectosDisponiblesCuadrante();
             if (disponibles.length === 0) {
                 alert('No hay proyectos disponibles. Todos los proyectos ya están en el cuadrante.');
@@ -3406,6 +4132,7 @@
 
         // Elimina una fila del cuadrante
         function eliminarFilaCuadrante(index) {
+            if (!_esCuadranteEditable()) { alert('El cuadrante no es editable en la fase actual.'); return; }
             if (!confirm('¿Eliminar este proyecto del cuadrante?')) return;
             const cuadrante = getCuadrante();
             cuadrante.splice(index, 1);
@@ -3417,6 +4144,7 @@
 
         // Cambia el proyecto de una fila
         function cambiarProyectoCuadrante(index, nuevoId) {
+            if (!_esCuadranteEditable()) return;
             const cuadrante = getCuadrante();
             cuadrante[index].proyectoId = parseInt(nuevoId);
             datosGlobales.años[datosGlobales.añoActivo].cuadrante = cuadrante;
@@ -3436,6 +4164,7 @@
 
         // Asigna un alumno a una celda, verificando conflictos
         function asignarAlumnoCuadrante(filaIndex, franja, alumnoNombre) {
+            if (!_esCuadranteEditable()) return;
             const cuadrante = getCuadrante();
             datosGlobales.años[datosGlobales.añoActivo].cuadrante = cuadrante;
             if (!cuadrante[filaIndex].asignaciones) cuadrante[filaIndex].asignaciones = {};
@@ -3467,7 +4196,7 @@
         // Verifica y limpia conflictos (por ejemplo, al cambiar de proyecto)
         function verificarConflictosCuadrante() {
             const cuadrante = getCuadrante();
-            FRANJAS_HORARIAS.forEach(franja => {
+            getFranjasHorariasActual().forEach(franja => {
                 const usados = {};
                 cuadrante.forEach((fila, i) => {
                     if (!fila.asignaciones) return;
@@ -3550,6 +4279,7 @@
             const msgVacio = document.getElementById('cuadrante-vacio');
             if (!tbody) return;
 
+            const editable = _esCuadranteEditable();
             const cuadrante = getCuadrante();
             const db = getDatabase();
             const todosAlumnos = getTodosAlumnos();
@@ -3558,6 +4288,8 @@
                 tbody.innerHTML = '';
                 if (msgVacio) msgVacio.classList.remove('hidden');
                 renderLucideIcons();
+                actualizarMarcasFranjasUI();
+                actualizarEspaciosCuadranteUI();
                 return;
             }
             if (msgVacio) msgVacio.classList.add('hidden');
@@ -3566,10 +4298,10 @@
             const usadosIds = new Set(cuadrante.map(f => String(f.proyectoId)));
             // Construir mapas: qué alumnos están ya usados en cada franja (para deshabilitarlos en los selects)
             const usadosPorFranja = {};
-            FRANJAS_HORARIAS.forEach(f => { usadosPorFranja[f] = new Set(); });
+            getFranjasHorariasActual().forEach(f => { usadosPorFranja[f] = new Set(); });
             cuadrante.forEach(fila => {
                 if (!fila.asignaciones) return;
-                FRANJAS_HORARIAS.forEach(f => {
+                getFranjasHorariasActual().forEach(f => {
                     const al = fila.asignaciones[f];
                     if (al) usadosPorFranja[f].add(al.toLowerCase());
                 });
@@ -3589,50 +4321,59 @@
                 const nombreProyecto = proyecto ? proyecto.nombre : '(proyecto eliminado)';
 
                 // Select de proyecto (ordenado alfabéticamente, solo candidatos no usados)
-                const dbOrdenado = [...db].sort((a, b) => (a.nombre || '').localeCompare(b.nombre || '', 'es', { sensitivity: 'base' }));
-                let opcionesProyecto = '';
-                dbOrdenado.forEach(p => {
-                    if (usadosIds.has(String(p.id)) && !mismoId(p.id, fila.proyectoId)) return; // ocultar proyectos ya usados
-                    const selected = mismoId(p.id, fila.proyectoId) ? 'selected' : '';
-                    opcionesProyecto += `<option value="${p.id}" ${selected}>${p.nombre || 'Sin nombre'}</option>`;
-                });
+                let celdaProyectoHtml;
+                if (editable) {
+                    const dbOrdenado = [...db].sort((a, b) => (a.nombre || '').localeCompare(b.nombre || '', 'es', { sensitivity: 'base' }));
+                    let opcionesProyecto = '';
+                    dbOrdenado.forEach(p => {
+                        if (usadosIds.has(String(p.id)) && !mismoId(p.id, fila.proyectoId)) return;
+                        const selected = mismoId(p.id, fila.proyectoId) ? 'selected' : '';
+                        opcionesProyecto += `<option value="${p.id}" ${selected}>${p.nombre || 'Sin nombre'}</option>`;
+                    });
+                    celdaProyectoHtml = `<select onchange="cambiarProyectoCuadrante(${idxReal}, this.value)"
+                        class="w-full text-xs font-semibold px-2 py-2 border border-slate-200 rounded-lg bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-200 outline-none transition-all text-slate-800">
+                        ${opcionesProyecto}
+                    </select>`;
+                } else {
+                    celdaProyectoHtml = `<span class="text-xs font-semibold text-slate-800 block px-2 py-2">${nombreProyecto}</span>`;
+                }
 
                 // Celdas de franjas horarias
                 let celdasHtml = '';
-                FRANJAS_HORARIAS.forEach(franja => {
+                getFranjasHorariasActual().forEach(franja => {
                     const alumnoActual = fila.asignaciones && fila.asignaciones[franja] ? fila.asignaciones[franja] : '';
-
-                    // Opciones del select: opción vacía + solo alumnos NO usados en esta franja en otras filas
-                    let optsAlumno = '<option value="">—</option>';
-                    todosAlumnos.forEach(al => {
-                        const alKey = al.toLowerCase();
-                        if (usadosPorFranja[franja].has(alKey) && alKey !== alumnoActual.toLowerCase()) return; // omitir, no mostrar
-                        const selected = alKey === alumnoActual.toLowerCase() ? 'selected' : '';
-                        optsAlumno += `<option value="${al}" ${selected}>${al}</option>`;
-                    });
-
                     const tieneAlumno = alumnoActual.length > 0;
                     const bgCell = tieneAlumno ? 'bg-indigo-50' : '';
 
-                    celdasHtml += `<td class="py-2 px-1 text-center ${bgCell} transition-colors">
-                        <select onchange="asignarAlumnoCuadrante(${idxReal}, '${franja}', this.value)"
-                            class="w-full text-xs px-1.5 py-1.5 border border-slate-200 rounded-lg bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-200 outline-none transition-all ${tieneAlumno ? 'font-semibold text-indigo-700 border-indigo-300' : 'text-slate-500'}">
-                            ${optsAlumno}
-                        </select>
-                    </td>`;
+                    if (editable) {
+                        let optsAlumno = '<option value="">—</option>';
+                        todosAlumnos.forEach(al => {
+                            const alKey = al.toLowerCase();
+                            if (usadosPorFranja[franja].has(alKey) && alKey !== alumnoActual.toLowerCase()) return;
+                            const selected = alKey === alumnoActual.toLowerCase() ? 'selected' : '';
+                            optsAlumno += `<option value="${al}" ${selected}>${al}</option>`;
+                        });
+                        celdasHtml += `<td class="py-2 px-1 text-center ${bgCell} transition-colors">
+                            <select onchange="asignarAlumnoCuadrante(${idxReal}, '${franja}', this.value)"
+                                class="w-full text-xs px-1.5 py-1.5 border border-slate-200 rounded-lg bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-200 outline-none transition-all ${tieneAlumno ? 'font-semibold text-indigo-700 border-indigo-300' : 'text-slate-500'}">
+                                ${optsAlumno}
+                            </select>
+                        </td>`;
+                    } else {
+                        celdasHtml += `<td class="py-2 px-1 text-center ${bgCell}">
+                            <span class="text-xs ${tieneAlumno ? 'font-semibold text-indigo-700' : 'text-slate-400'}">${tieneAlumno ? alumnoActual : '—'}</span>
+                        </td>`;
+                    }
                 });
 
-                // Botón eliminar
-                const btnEliminar = `<button onclick="eliminarFilaCuadrante(${idxReal})" class="text-red-400 hover:text-red-600 hover:bg-red-50 p-1.5 rounded-lg transition" title="Eliminar fila">
+                // Botón eliminar (solo si editable)
+                const btnEliminar = editable ? `<button onclick="eliminarFilaCuadrante(${idxReal})" class="text-red-400 hover:text-red-600 hover:bg-red-50 p-1.5 rounded-lg transition" title="Eliminar fila">
                     <i data-lucide="trash-2" class="h-4 w-4"></i>
-                </button>`;
+                </button>` : '';
 
                 html += `<tr class="hover:bg-slate-50/50 transition-colors group">
                     <td class="py-2 px-3 sticky left-0 bg-white z-10 group-hover:bg-slate-50/50 transition-colors">
-                        <select onchange="cambiarProyectoCuadrante(${idxReal}, this.value)"
-                            class="w-full text-xs font-semibold px-2 py-2 border border-slate-200 rounded-lg bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-200 outline-none transition-all text-slate-800">
-                            ${opcionesProyecto}
-                        </select>
+                        ${celdaProyectoHtml}
                     </td>
                     ${celdasHtml}
                     <td class="py-2 px-2 text-center">${btnEliminar}</td>
@@ -3641,6 +4382,15 @@
 
             tbody.innerHTML = html;
             renderLucideIcons();
+            actualizarMarcasFranjasUI();
+            actualizarEspaciosCuadranteUI();
+
+            // Mostrar/ocultar botón "Añadir Proyecto" según editabilidad
+            var btnAñadir = document.getElementById('btn-añadir-fila-cuadrante');
+            if (btnAñadir) {
+                if (editable) btnAñadir.classList.remove('hidden');
+                else btnAñadir.classList.add('hidden');
+            }
         }
 
         // Exportar Cuadrante a CSV
@@ -3649,13 +4399,13 @@
             const db = getDatabase();
             if (cuadrante.length === 0) { alert('No hay datos en el cuadrante para exportar.'); return; }
 
-            const headers = ['Proyecto', 'M3ª', 'X1ª', 'X2ª', 'X3ª', 'X4ª', 'X5ª', 'X6ª', 'XT1ª', 'XT2ª', 'XT3ª'];
+            const headers = ['Producto Final', 'M3ª', 'X1ª', 'X2ª', 'X3ª', 'X4ª', 'X5ª', 'X6ª', 'XT1ª', 'XT2ª', 'XT3ª'];
             let csvContent = "data:text/csv;charset=utf-8," + headers.map(h => `"${h}"`).join(',') + "\n";
 
             cuadrante.forEach(fila => {
                 const proyecto = db.find(p => mismoId(p.id, fila.proyectoId));
                 const nombre = proyecto ? (proyecto.nombre || '').replace(/"/g, '""') : '(proyecto eliminado)';
-                const valores = FRANJAS_HORARIAS.map(f => {
+                const valores = getFranjasHorariasActual().map(f => {
                     const al = fila.asignaciones && fila.asignaciones[f] ? fila.asignaciones[f].replace(/"/g, '""') : '';
                     return `"${al}"`;
                 });
@@ -3694,8 +4444,10 @@
                         const headers = parsearLineaCSV(headerRaw);
                         // Limpiar posible BOM UTF-8 del primer header
                         headers[0] = headers[0].replace(/^\uFEFF/, '');
-                        if (headers.length < 2 || headers[0].replace(/ª/g, '').trim().toLowerCase() !== 'proyecto') {
-                            alert('El formato del CSV no es válido. La primera columna debe ser "Proyecto" y las siguientes las franjas horarias (M3ª, X1ª, etc.).');
+                        // Validar primer header: aceptar 'proyecto' y 'producto final' (compatibilidad hacia atrás)
+                        const primerHeader = headers[0].replace(/ª/g, '').trim().toLowerCase();
+                        if (headers.length < 2 || (primerHeader !== 'proyecto' && primerHeader !== 'producto final')) {
+                            alert('El formato del CSV no es válido. La primera columna debe ser "Producto Final" (o "Proyecto") y las siguientes las franjas horarias (M3ª, X1ª, etc.).');
                             document.body.removeChild(input);
                             return;
                         }
@@ -3705,7 +4457,7 @@
                             return h.replace(/ª/g, '').trim();
                         });
                         // Verificar que las franjas del CSV coinciden con las del sistema
-                        const franjasSistema = FRANJAS_HORARIAS.slice();
+                        const franjasSistema = getFranjasHorariasActual().slice();
                         const franjasOk = franjasCSV.every(function(f) { return franjasSistema.indexOf(f) !== -1; });
                         if (!franjasOk) {
                             alert('Las franjas horarias del CSV no coinciden con las del sistema. Se esperan: ' + franjasSistema.join(', '));
@@ -3842,48 +4594,147 @@
         }
 
         // Exportar Cuadrante a PDF (vía impresión)
+        // Exportar Cuadrante a PDF (vía impresión)
         function exportarPDFCuadrante() {
             const cuadrante = getCuadrante();
             const db = getDatabase();
             if (cuadrante.length === 0) { alert('No hay datos en el cuadrante para exportar.'); return; }
 
+            const marcadas = getFranjasMarcadas();
+            if (marcadas.length === 0) { alert('No hay franjas horarias marcadas. Marca al menos una franja clicando en los encabezados de la tabla.'); return; }
+
+            const espaciosMarcados = getEspaciosMarcadosCuadrante();
+            const espaciosDisponibles = getEspaciosCuadrante();
+            if (espaciosDisponibles.length > 0 && espaciosMarcados.length === 0) {
+                alert('No hay espacios marcados. Marca al menos un espacio para exportar.');
+                return;
+            }
+
             const printContainer = document.getElementById('print-section');
-            const añoFin = (datosGlobales.añoActivo || '2025-2026').split('-')[1] || datosGlobales.añoActivo;
-            const añoCurso = datosGlobales.añoActivo || '2025-2026';
+            const a\u00f1oFin = (datosGlobales.a\u00f1oActivo || '2025-2026').split('-')[1] || datosGlobales.a\u00f1oActivo;
+            const a\u00f1oCurso = datosGlobales.a\u00f1oActivo || '2025-2026';
+            const setEspaciosMarcados = new Set(espaciosMarcados);
 
-            let html = `<div class="border-b-2 border-slate-800 pb-4 mb-6">
-                <h1 class="text-2xl font-black text-slate-900 uppercase tracking-tight">EXPOVILLADIEGO ${añoFin}</h1>
-                <p class="text-sm font-bold text-slate-600 uppercase tracking-wider">Curso escolar ${añoCurso} · IES Peñaflor, Sevilla</p>
-                <p class="text-xs text-slate-400 mt-0.5">Cuadrante Temporal — Asignación de alumnado por franja horaria</p>
-                <p class="text-xs text-slate-400 mt-1">Generado el: <strong>${new Date().toLocaleDateString('es-ES')}</strong></p>
-            </div>`;
-
-            // Cabecera de tabla
-            html += '<table class="w-full text-left text-xs border-collapse border-t-2 border-slate-300"><thead><tr class="bg-slate-100 text-slate-600 font-bold uppercase text-[10px]"><th class="py-2 px-3 border-b border-slate-200">Proyecto</th>';
-            FRANJAS_HORARIAS.forEach(f => {
-                html += `<th class="py-2 px-3 border-b border-slate-200 text-center">${f}ª</th>`;
+            // Leyenda con las franjas seleccionadas descritas
+            let leyendaFranjas = '';
+            marcadas.forEach((f, i) => {
+                const desc = getDescripcionFranjasActual()[f] || { larga: f };
+                leyendaFranjas += '<strong>' + f + '</strong> (' + desc.larga + ')';
+                if (i < marcadas.length - 2) leyendaFranjas += '; ';
+                else if (i === marcadas.length - 2) leyendaFranjas += ' y ';
             });
-            html += '</tr></thead><tbody class="divide-y divide-slate-100">';
 
-            cuadrante.forEach(fila => {
-                const proyecto = db.find(p => String(p.id) === String(fila.proyectoId));
-                const nombre = proyecto ? proyecto.nombre : '(proyecto eliminado)';
-                html += '<tr class="print-card"><td class="py-2 px-3 font-bold text-slate-800">' + (nombre || '') + '</td>';
-                FRANJAS_HORARIAS.forEach(f => {
-                    const al = fila.asignaciones && fila.asignaciones[f] ? fila.asignaciones[f] : '';
-                    if (al) {
-                        html += `<td class="py-2 px-3 text-center font-semibold" style="color:#4f46e5;">${al}</td>`;
-                    } else {
-                        html += '<td class="py-2 px-3 text-center" style="color:#cbd5e1;">—</td>';
-                    }
+            let html = '<div class="border-b-2 border-slate-800 pb-4 mb-6">' +
+                '<h1 class="text-2xl font-black text-slate-900 uppercase tracking-tight">EXPOVILLADIEGO ' + a\u00f1oFin + '</h1>' +
+                '<p class="text-sm font-bold text-slate-600 uppercase tracking-wider">Curso escolar ' + a\u00f1oCurso + ' \u00b7 IES Pe\u00f1aflor, Sevilla</p>' +
+                '<p class="text-xs text-slate-400 mt-0.5">Cuadrante Temporal \u2014 Asignaci\u00f3n de alumnado por franja horaria</p>' +
+                '<p class="text-xs text-slate-400 mt-1">Generado el: <strong>' + new Date().toLocaleDateString('es-ES') + '</strong> \u00b7 Franjas seleccionadas: <strong>' + marcadas.length + '</strong> \u00b7 Espacios seleccionados: <strong>' + espaciosMarcados.length + '</strong></p>' +
+                '<div class="mt-3 p-3 bg-indigo-50 rounded-lg border border-indigo-200 text-xs text-slate-600">' +
+                '<span class="font-bold text-indigo-700 uppercase tracking-wider text-[10px]">Franjas horarias incluidas:</span><br>' +
+                '<span class="leading-relaxed">' + leyendaFranjas + '</span>' +
+                '</div>' +
+                '</div>';
+
+            // Filtrar por espacios seleccionados
+            const cuadrantePorEspacio = cuadrante.filter(fila => {
+                const proyecto = db.find(p => mismoId(p.id, fila.proyectoId));
+                if (!proyecto) return false;
+                const ubicacion = (proyecto.espacioExposicion || proyecto.espacioNecesario || '').trim();
+                if (espaciosDisponibles.length === 0) return true;
+                return setEspaciosMarcados.has(ubicacion);
+            });
+
+            // Filtrar: solo productos finales que tienen alumnado asignado en al menos una franja marcada
+            const cuadranteFiltrado = cuadrantePorEspacio.filter(fila => {
+                if (!fila.asignaciones) return false;
+                return marcadas.some(f => {
+                    const al = fila.asignaciones[f];
+                    return al && al.trim() !== '';
                 });
-                html += '</tr>';
             });
 
-            html += '</tbody></table>';
+            // Ordenar: por espacio (alfab\u00e9tico) y luego por nombre de producto (alfab\u00e9tico)
+            cuadranteFiltrado.sort((a, b) => {
+                const pa = db.find(p => mismoId(p.id, a.proyectoId));
+                const pb = db.find(p => mismoId(p.id, b.proyectoId));
+                const espA = pa ? (pa.espacioExposicion || pa.espacioNecesario || '').trim() : '';
+                const espB = pb ? (pb.espacioExposicion || pb.espacioNecesario || '').trim() : '';
+                const cmpEsp = espA.localeCompare(espB, 'es', { sensitivity: 'base' });
+                if (cmpEsp !== 0) return cmpEsp;
+                const nomA = pa ? (pa.nombre || '') : '';
+                const nomB = pb ? (pb.nombre || '') : '';
+                return nomA.localeCompare(nomB, 'es', { sensitivity: 'base' });
+            });
+
+            // Agrupar por espacio y generar una tabla con sub-encabezado por cada espacio
+            const espaciosEnResultado = [];
+            cuadranteFiltrado.forEach(fila => {
+                const proyecto = db.find(p => mismoId(p.id, fila.proyectoId));
+                const ubicacion = proyecto ? (proyecto.espacioExposicion || proyecto.espacioNecesario || '\u2014') : '\u2014';
+                if (!espaciosEnResultado.includes(ubicacion)) {
+                    espaciosEnResultado.push(ubicacion);
+                }
+            });
+
+            if (espaciosEnResultado.length === 0) {
+                html += '<div class="py-4 px-3 text-center text-slate-400 italic print-card">No hay productos finales con alumnado asignado en las franjas y espacios seleccionados.</div>';
+            }
+
+            // Determinar anchura de columnas seg\u00fan n\u00famero de franjas
+            const colWidth = marcadas.length <= 3 ? 'px-4 min-w-[120px]' : marcadas.length <= 6 ? 'px-3 min-w-[90px]' : 'px-2 min-w-[70px]';
+
+            espaciosEnResultado.forEach((espacio, espIdx) => {
+                const pageBreak = espIdx > 0 ? ' page-break' : '';
+
+                // Sub-encabezado del espacio
+                html += '<div class="' + pageBreak + '"><h2 class="text-sm font-extrabold text-emerald-700 uppercase tracking-wider ' + (espIdx > 0 ? 'mt-8' : 'mt-4') + ' mb-3 pb-2 border-b-2 border-emerald-400 flex items-center gap-2"><span class="inline-block w-2 h-2 bg-emerald-500 rounded-full"></span>' + espacio + '</h2>';
+
+                // Cabecera de tabla: Producto Final + franjas marcadas con descripci\u00f3n legible
+                html += '<table class="w-full text-left text-xs border-collapse border-t-2 border-slate-300"><thead><tr class="bg-slate-100 text-slate-600 font-bold uppercase text-[10px]"><th class="py-2 px-3 border-b border-slate-200 text-center">Producto Final</th>';
+                marcadas.forEach(f => {
+                    const desc = getDescripcionFranjasActual()[f] || { cabecera1: f, cabecera2: '' };
+                    html += '<th class="py-2 ' + colWidth + ' border-b border-slate-200 text-center leading-tight"><span class="block font-semibold text-slate-700 text-[9px] normal-case tracking-normal">' + desc.cabecera1 + '</span><span class="block text-indigo-600 text-[11px]">' + desc.cabecera2 + '</span></th>';
+                });
+                html += '</tr></thead><tbody class="divide-y divide-slate-100">';
+
+                const filasEspacio = cuadranteFiltrado.filter(fila => {
+                    const proyecto = db.find(p => mismoId(p.id, fila.proyectoId));
+                    const ub = proyecto ? (proyecto.espacioExposicion || proyecto.espacioNecesario || '\u2014') : '\u2014';
+                    return ub === espacio;
+                });
+
+                filasEspacio.forEach(fila => {
+                    const proyecto = db.find(p => mismoId(p.id, fila.proyectoId));
+                    const nombre = proyecto ? proyecto.nombre : '(proyecto eliminado)';
+                    html += '<tr class="print-card"><td class="py-2 px-3 font-bold text-slate-800">' + (nombre || '') + '</td>';
+                    marcadas.forEach(f => {
+                        const al = fila.asignaciones && fila.asignaciones[f] ? fila.asignaciones[f] : '';
+                        if (al) {
+                            html += '<td class="py-2 text-center font-semibold" style="color:#4f46e5;">' + al + '</td>';
+                        } else {
+                            html += '<td class="py-2 text-center" style="color:#cbd5e1;">\u2014</td>';
+                        }
+                    });
+                    html += '</tr>';
+                });
+
+                html += '</tbody></table></div>';
+            });
+
             printContainer.innerHTML = html;
-            setTimeout(() => window.print(), 300);
+
+            // Establecer nombre de archivo: EV202x + franjas exportadas
+            const añoExpo = añoFin || '26';
+            const franjasStr = marcadas.join('_');
+            const tituloPDF = 'EV' + añoExpo + '_Cuadrante_' + franjasStr;
+            const tituloOriginal = document.title;
+            document.title = tituloPDF;
+            setTimeout(() => {
+                window.print();
+                setTimeout(() => { document.title = tituloOriginal; }, 1000);
+            }, 300);
         }
+
 
         // EXPORTACIÓN A PDF / IMPRESIÓN
         function generarYImprimirPDF() {
@@ -4103,7 +4954,7 @@
                     pasos: [
                         { icono: 'info', texto: 'Si no aparece el banner de instalación automáticamente, asegúrate de que la página está servida con <b>HTTPS</b>.' },
                         { icono: 'mouse-pointer-click', texto: 'Busca el <b>icono de instalación</b> en la barra de direcciones del navegador (a la derecha de la URL) o en el menú (tres puntos).' },
-                        { icono: 'plus-circle', texto: 'Haz clic en <b>"Instalar aplicación"</b> o <b>"Instalar EXPOVILLADIEGO 2026"</b>.' },
+                        { icono: 'plus-circle', texto: 'Haz clic en <b>"Instalar aplicación"</b> o <b>"Instalar EXPOVILLADIEGO ' + (datosGlobales.añoActivo ? datosGlobales.añoActivo.split('-')[1] : '') + '"</b>.' },
                         { icono: 'check-circle', texto: 'Confirma la instalación. La app se abrirá en su propia ventana.' }
                     ]
                 });
