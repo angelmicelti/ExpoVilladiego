@@ -1,6 +1,6 @@
 // Service Worker for ExpoVilladiego PWA
-const APP_VERSION = '5.0';
-const CACHE_NAME = 'expovilladiego-cache-v2';
+const APP_VERSION = '5.1';
+const CACHE_NAME = 'expovilladiego-cache-v3';
 const ASSETS = [
   '/',
   'index.html',
