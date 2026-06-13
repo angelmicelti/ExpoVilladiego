@@ -1015,7 +1015,7 @@
         ];
 
         function _cargarTiposPersonalizados() {
-            return (datosGlobales.tiposPersonalizados || []).slice();
+            return (typeof datosGlobales !== 'undefined' && datosGlobales.tiposPersonalizados || []).slice();
         }
 
         function _guardarTiposPersonalizados(lista) {
@@ -1505,7 +1505,9 @@
                     .catch(function(err) {
                         _syncEnCurso = false;
                         console.warn('[Firestore] Error al sincronizar:', err);
-                        _jsonDatosEscritos = null; // Limpiar para aceptar datos remotos
+                        // NO limpiar _jsonDatosEscritos en caso de error: si la escritura falló,
+                        // los datos en Firestore están obsoletos y aceptar el siguiente snapshot
+                        // sobrescribiría los cambios locales. El setInterval de seguridad (8s) lo limpiará.
                         conectarListenerFirestore();
 
                         if (err.code === 'permission-denied') {
@@ -2127,6 +2129,10 @@
         // Cambiar la fase manualmente
         function setFaseManual(faseId) {
             const año = datosGlobales.añoActivo;
+            if (!año) {
+                console.warn('[Fase] No hay año activo para establecer la fase');
+                return;
+            }
             if (!datosGlobales.años[año]) datosGlobales.años[año] = { proyectos: [], cuadrante: [] };
             datosGlobales.años[año].fase = faseId;
             guardarDatosEnStorage();
@@ -2140,6 +2146,7 @@
             const chk = document.getElementById('check-editar-cerrada');
             if (!chk) return;
             const año = datosGlobales.añoActivo;
+            if (!año) return;
             if (!datosGlobales.años[año]) datosGlobales.años[año] = { proyectos: [], cuadrante: [] };
             datosGlobales.años[año].editarCerrada = chk.checked;
             guardarDatosEnStorage();
@@ -2156,6 +2163,8 @@
         function renderizarRadioFases() {
             const contenedor = document.getElementById('radio-fases');
             if (!contenedor) return;
+            // Salir silenciosamente si los datos aún no están inicializados
+            if (typeof datosGlobales === 'undefined' || !datosGlobales.añoActivo) return;
             const faseActual = getFaseActual();
             const faseConfig = getFaseConfigurada();
             const añoCeleb = getAñoCelebracion();
@@ -2189,7 +2198,8 @@
                 }
             }
             if (chkRow) {
-                const editCerrada = !!(datosGlobales.años[datosGlobales.añoActivo]?.editarCerrada);
+                const añoActivo = datosGlobales.añoActivo;
+                const editCerrada = !!(añoActivo && datosGlobales.años[añoActivo] && datosGlobales.años[añoActivo].editarCerrada);
                 chkRow.classList.toggle('hidden', faseActual !== FASES.CERRADA);
                 const chk = document.getElementById('check-editar-cerrada');
                 if (chk) chk.checked = editCerrada;
@@ -3076,6 +3086,10 @@
         function guardarProducto(event) {
             event.preventDefault();
             const id = document.getElementById('form-id').value;
+            // Garantizar que existe el año activo antes de acceder a sus proyectos
+            if (!datosGlobales.años[datosGlobales.añoActivo]) {
+                datosGlobales.años[datosGlobales.añoActivo] = { proyectos: [], cuadrante: [] };
+            }
             const database = datosGlobales.años[datosGlobales.añoActivo].proyectos;
             const fase = getFaseActual();
             const modoTotal = _esModoEdicionTotal();
