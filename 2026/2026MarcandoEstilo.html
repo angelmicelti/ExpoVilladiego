@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marcando estilo — IES Virgen de Villadiego</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tailwind Config for Theme Colors -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fdf4f5',
+              100: '#fbe8eb',
+              200: '#f7d5da',
+              300: '#f0b4be',
+              400: '#e5879a',
+              500: '#d55b77',
+              600: '#c03c5d',
+              700: '#a12d4b',
+              800: '#862941',
+              900: '#71263a',
+              950: '#3f101d',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* Custom segment glow effects */
+    .seg-glow {
+      filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.8));
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #1f2937;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #4b5563;
+      border-radius: 3px;
+    }
+    /* Pulse glow effect for infographic path */
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 0.9; transform: scale(1.05); }
+    }
+    .pulse-path {
+      animation: pulse-glow 3s infinite;
+    }
+
+    /* PANTALLA DE BIENVENIDA (ESTILOS SÓLIDOS) */
+    #welcome-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #020617; /* Slate 950 absoluto */
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0; /* Empieza en 0 para hacer fade in suave */
+        transition: opacity 0.6s ease-in-out;
+    }
+
+    /* CONTENIDO PRINCIPAL: Oculto por defecto para evitar parpadeos */
+    #main-content {
+        opacity: 0;
+        transition: opacity 0.8s ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans antialiased">
+
+  <!-- PANTALLA DE BIENVENIDA -->
+  <div id="welcome-overlay">
+      <img src="2026MarcandoEstilo.png" alt="Marcando Estilo 2026" class="max-w-[90%] max-h-[90vh] object-contain rounded-2xl shadow-2xl transition-transform duration-300 hover:scale-[1.01]">
+  </div>
+
+  <!-- CONTENIDO PRINCIPAL DE LA APLICACIÓN -->
+  <div id="main-content">
+
+    <!-- ================= HEADER / HERO ================= -->
+    <header class="relative overflow-hidden bg-slate-950 border-b border-slate-800 py-16 lg:py-24">
+      <!-- Background glow pattern -->
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-brand-950/40 via-transparent to-transparent opacity-70"></div>
+      <div class="absolute -top-40 -left-40 w-96 h-96 bg-blue-900/20 rounded-full blur-3xl"></div>
+      
+      <div class="max-w-6xl mx-auto px-4 relative z-10">
+        <div class="flex flex-col items-center text-center">
+          <!-- Badge -->
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-semibold mb-6 tracking-wider uppercase">
+            <i data-lucide="cpu" class="w-4 h-4"></i> Tecnología 4º ESO
+          </div>
+          
+          <h1 class="text-4xl md:text-6xl font-black tracking-tight text-white max-w-4xl leading-tight">
+            Proyecto <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-orange-400 to-brand-400">Marcando estilo</span>
+          </h1>
+          <p class="text-brand-400 text-xs md:text-sm uppercase font-bold tracking-widest mt-3">Sincronización de Display de 7 Segmentos</p>
+          
+          <p class="mt-6 text-lg md:text-xl text-slate-300 max-w-2xl leading-relaxed">
+            Proyecto integrador de electrónica digital, programación en C++ (Arduino) y desarrollo web bidireccional usando la tecnología <strong>Web Serial API</strong>.
+          </p>
+
+          <!-- School Info Card -->
+          <div class="mt-8 p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center gap-4 text-left max-w-md">
+            <div class="p-3 bg-brand-500/10 rounded-lg text-brand-400 shrink-0">
+              <i data-lucide="school" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-white text-sm">IES Virgen de Villadiego</h3>
+              <p class="text-xs text-slate-400">Peñaflor, Sevilla · Andalucía (España)</p>
+            </div>
+          </div>
+
+          <div class="mt-10 flex flex-wrap justify-center gap-4">
+            <a href="#infografia" class="px-6 py-3 rounded-lg bg-brand-600 hover:bg-brand-500 text-white font-medium shadow-lg shadow-brand-950/40 transition-all flex items-center gap-2">
+              Ver Infografía <i data-lucide="map" class="w-4 h-4"></i>
+            </a>
+            <a href="#concepto" class="px-6 py-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium border border-slate-700 transition-all flex items-center gap-2">
+              Simulador <i data-lucide="sliders" class="w-4 h-4"></i>
+            </a>
+            <a href="#recursos" class="px-6 py-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 font-medium border border-slate-800 transition-all flex items-center gap-2">
+              <i data-lucide="download" class="w-4 h-4"></i> Códigos
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="max-w-6xl mx-auto px-4 py-12 space-y-20">
+
+      <!-- ================= INTRODUCTORY SUMMARY ================= -->
+      <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <div class="lg:col-span-7 space-y-6">
+          <h2 class="text-2xl md:text-3xl font-bold text-white flex items-center gap-3">
+            <span class="text-brand-400">01.</span> ¿En qué consiste el proyecto?
+          </h2>
+          <p class="text-slate-300 leading-relaxed">
+            Este proyecto ha sido desarrollado como una práctica avanzada para la materia de <strong>Tecnología de 4º de la ESO</strong>. El objetivo es crear un puente de comunicación directa entre el mundo físico (un chip microcontrolador Arduino con un display de 7 segmentos real) y el mundo digital (un navegador web interactivo).
+          </p>
+          <p class="text-slate-300 leading-relaxed">
+            En lugar de requerir software adicional o drivers complejos, el proyecto hace uso del estándar moderno <strong>Web Serial API</strong>, permitiendo al ordenador enviar y recibir comandos binarios directamente desde el navegador de internet con solo pulsar un botón en pantalla o en el teclado.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+            <div class="p-4 rounded-lg bg-slate-950 border border-slate-800/80">
+              <div class="text-brand-400 font-bold text-lg mb-1 flex items-center gap-2">
+                <i data-lucide="repeat" class="w-4 h-4"></i> Bidireccional
+              </div>
+              <p class="text-xs text-slate-400">Si pulsas en la web, el Arduino físico cambia. Si el Arduino cambia mediante un botón físico, la web se actualiza al instante.</p>
+            </div>
+            <div class="p-4 rounded-lg bg-slate-950 border border-slate-800/80">
+              <div class="text-emerald-400 font-bold text-lg mb-1 flex items-center gap-2">
+                <i data-lucide="binary" class="w-4 h-4"></i> Hexadecimal (0-F)
+              </div>
+              <p class="text-xs text-slate-400">El contador abarca desde el número 0 hasta el 15, permitiendo al alumnado entender de forma práctica la notación Hexadecimal (0 a F).</p>
+            </div>
+          </div>
+        </div>
+        <div class="lg:col-span-5 bg-gradient-to-br from-slate-950 to-slate-900 border border-slate-800 p-6 rounded-2xl relative">
+          <div class="absolute top-4 right-4 text-slate-700 font-mono text-xs select-none">ARQUITECTURA</div>
+          <h3 class="text-sm font-semibold tracking-wider uppercase text-slate-400 mb-6 flex items-center gap-2">
+            <i data-lucide="git-commit" class="w-4 h-4 text-brand-400"></i> Flujo de Comunicación
+          </h3>
+          <div class="space-y-4">
+            <!-- Step 1 -->
+            <div class="flex gap-4 items-start">
+              <div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-mono font-bold text-slate-300 shrink-0">1</div>
+              <div>
+                <h4 class="text-sm font-semibold text-white">Interfaz Web (HTML/JS)</h4>
+                <p class="text-xs text-slate-400 mt-1">El usuario pulsa el botón de incrementar "U", decrementar "D" o reset "R".</p>
+              </div>
+            </div>
+            <!-- Line -->
+            <div class="w-0.5 h-6 bg-slate-800 ml-4"></div>
+            <!-- Step 2 -->
+            <div class="flex gap-4 items-start">
+              <div class="w-8 h-8 rounded-full bg-brand-950 border border-brand-800 flex items-center justify-center text-xs font-mono font-bold text-brand-400 shrink-0">2</div>
+              <div>
+                <h4 class="text-sm font-semibold text-white">Web Serial API</h4>
+                <p class="text-xs text-slate-400 mt-1">El navegador traduce la interacción en un byte serie que viaja por el puerto USB.</p>
+              </div>
+            </div>
+            <!-- Line -->
+            <div class="w-0.5 h-6 bg-slate-800 ml-4"></div>
+            <!-- Step 3 -->
+            <div class="flex gap-4 items-start">
+              <div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-mono font-bold text-slate-300 shrink-0">3</div>
+              <div>
+                <h4 class="text-sm font-semibold text-white">Arduino (Microcontrolador)</h4>
+                <p class="text-xs text-slate-400 mt-1">Recibe el caracter, actualiza el contador interno y aplica la máscara de bits a los pines digitales (D2 a D8).</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= INTERACTIVE INFOGRAPHIC SECTION ================= -->
+      <section id="infografia" class="bg-slate-950 border-2 border-brand-500/20 rounded-3xl p-6 md:p-10 space-y-10 relative overflow-hidden">
+        <!-- Glow effect inside -->
+        <div class="absolute -top-24 -right-24 w-80 h-80 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -left-24 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- Section Title -->
+        <div class="text-center max-w-3xl mx-auto space-y-3 relative z-10">
+          <span class="text-xs font-mono font-bold tracking-widest text-brand-400 uppercase bg-brand-500/10 px-3 py-1 rounded-full border border-brand-500/20">
+            Infografía del Proyecto
+          </span>
+          <h2 class="text-3xl md:text-4xl font-black text-white">El Viaje de la Información</h2>
+          <p class="text-slate-400 text-sm md:text-base leading-relaxed">
+            ¿Cómo se transforma un clic en la pantalla en una señal eléctrica real? Sigue el flujo del dato a través de las 4 etapas tecnológicas del proyecto:
+          </p>
+        </div>
+
+        <!-- Interactive Infographic Flow Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 relative z-10">
+          
+          <!-- Stage 1 -->
+          <div class="bg-slate-900/80 border border-slate-800 hover:border-brand-500/40 p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 group hover:-translate-y-1">
+            <div class="space-y-4">
+              <div class="flex justify-between items-start">
+                <span class="text-3xl font-black text-slate-800 group-hover:text-brand-500/20 font-mono transition-colors">01</span>
+                <div class="p-2.5 bg-brand-500/10 rounded-xl text-brand-400">
+                  <i data-lucide="monitor" class="w-6 h-6"></i>
+                </div>
+              </div>
+              <div class="space-y-1">
+                <span class="text-[10px] font-mono font-bold text-slate-500 tracking-wider uppercase">Origen (Software)</span>
+                <h3 class="text-base font-bold text-white group-hover:text-brand-400 transition-colors">La Interfaz de Usuario</h3>
+              </div>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                El alumno interacciona con la web (HTML/CSS) pulsando <strong>'U' (Arriba)</strong>, <strong>'D' (Abajo)</strong> o <strong>'R' (Reset)</strong>. JavaScript captura este evento de forma asíncrona.
+              </p>
+            </div>
+            <div class="pt-6 border-t border-slate-800/80 mt-4 flex justify-between items-center text-[10px] font-mono text-slate-500">
+              <span>Dato Generado:</span>
+              <span class="bg-brand-500/20 text-brand-300 px-1.5 py-0.5 rounded font-bold">Byte ASCII</span>
+            </div>
+          </div>
+
+          <!-- Stage 2 -->
+          <div class="bg-slate-900/80 border border-slate-800 hover:border-blue-500/40 p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 group hover:-translate-y-1">
+            <div class="space-y-4">
+              <div class="flex justify-between items-start">
+                <span class="text-3xl font-black text-slate-800 group-hover:text-blue-500/20 font-mono transition-colors">02</span>
+                <div class="p-2.5 bg-blue-500/10 rounded-xl text-blue-400">
+                  <i data-lucide="cable" class="w-6 h-6"></i>
+                </div>
+              </div>
+              <div class="space-y-1">
+                <span class="text-[10px] font-mono font-bold text-slate-500 tracking-wider uppercase">Canal de Enlace</span>
+                <h3 class="text-base font-bold text-white group-hover:text-blue-400 transition-colors">Web Serial API & USB</h3>
+              </div>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                El navegador usa la Web Serial API para abrir un puerto de comunicación directa COM. El byte se transmite serialmente a través del cable USB a una velocidad de <strong>9600 baudios</strong>.
+              </p>
+            </div>
+            <div class="pt-6 border-t border-slate-800/80 mt-4 flex justify-between items-center text-[10px] font-mono text-slate-500">
+              <span>Velocidad:</span>
+              <span class="bg-blue-500/20 text-blue-300 px-1.5 py-0.5 rounded font-bold">9600 bps</span>
+            </div>
+          </div>
+
+          <!-- Stage 3 -->
+          <div class="bg-slate-900/80 border border-slate-800 hover:border-emerald-500/40 p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 group hover:-translate-y-1">
+            <div class="space-y-4">
+              <div class="flex justify-between items-start">
+                <span class="text-3xl font-black text-slate-800 group-hover:text-emerald-500/20 font-mono transition-colors">03</span>
+                <div class="p-2.5 bg-emerald-500/10 rounded-xl text-emerald-400">
+                  <i data-lucide="cpu" class="w-6 h-6"></i>
+                </div>
+              </div>
+              <div class="space-y-1">
+                <span class="text-[10px] font-mono font-bold text-slate-500 tracking-wider uppercase">Cerebro (Proceso)</span>
+                <h3 class="text-base font-bold text-white group-hover:text-emerald-400 transition-colors">Procesamiento Arduino</h3>
+              </div>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                El microcontrolador **ATmega328P** lee el búfer serie. Incrementa o decrementa la variable <code class="text-emerald-300 font-mono bg-slate-950 px-1 rounded">count</code> y busca en su memoria la máscara de bits para el dígito.
+              </p>
+            </div>
+            <div class="pt-6 border-t border-slate-800/80 mt-4 flex justify-between items-center text-[10px] font-mono text-slate-500">
+              <span>Hardware:</span>
+              <span class="bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded font-bold">ATmega328P</span>
+            </div>
+          </div>
+
+          <!-- Stage 4 -->
+          <div class="bg-slate-900/80 border border-slate-800 hover:border-orange-500/40 p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 group hover:-translate-y-1">
+            <div class="space-y-4">
+              <div class="flex justify-between items-start">
+                <span class="text-3xl font-black text-slate-800 group-hover:text-orange-500/20 font-mono transition-colors">04</span>
+                <div class="p-2.5 bg-orange-500/10 rounded-xl text-orange-400">
+                  <i data-lucide="binary" class="w-6 h-6"></i>
+                </div>
+              </div>
+              <div class="space-y-1">
+                <span class="text-[10px] font-mono font-bold text-slate-500 tracking-wider uppercase">Destino (Físico)</span>
+                <h3 class="text-base font-bold text-white group-hover:text-orange-400 transition-colors">Señales en Display</h3>
+              </div>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                Arduino pone los pines digitales del **D2 al D8** en estado HIGH o LOW. Los electrones fluyen a través de las resistencias de 220Ω, encendiendo los LEDs del display de cátodo común.
+              </p>
+            </div>
+            <div class="pt-6 border-t border-slate-800/80 mt-4 flex justify-between items-center text-[10px] font-mono text-slate-500">
+              <span>Voltajes:</span>
+              <span class="bg-orange-500/20 text-orange-300 px-1.5 py-0.5 rounded font-bold">0V - 5V</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Quick Summary Visual Map (Flow Lines) -->
+        <div class="hidden lg:flex items-center justify-between px-12 py-4 bg-slate-900/40 border border-slate-800/60 rounded-xl relative overflow-hidden">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-brand-500 pulse-path"></div>
+            <span class="text-[11px] font-mono text-slate-400">Clic en Web</span>
+          </div>
+          <div class="flex-1 h-0.5 border-t-2 border-dashed border-slate-800 mx-4 relative">
+            <div class="absolute inset-0 bg-gradient-to-r from-brand-500 to-blue-500 h-0.5 pulse-path w-1/3"></div>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+            <span class="text-[11px] font-mono text-slate-400">Puerto Serie USB</span>
+          </div>
+          <div class="flex-1 h-0.5 border-t-2 border-dashed border-slate-800 mx-4 relative">
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-emerald-500 h-0.5 pulse-path w-1/3"></div>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+            <span class="text-[11px] font-mono text-slate-400">Procesado en C++</span>
+          </div>
+          <div class="flex-1 h-0.5 border-t-2 border-dashed border-slate-800 mx-4 relative">
+            <div class="absolute inset-0 bg-gradient-to-r from-emerald-500 to-orange-500 h-0.5 pulse-path w-1/3"></div>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-orange-500 pulse-path"></div>
+            <span class="text-[11px] font-mono text-slate-400">Luz en Display</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= CONCEPT & LIVE DEMO ================= -->
+      <section id="concepto" class="space-y-8">
+        <div class="text-center max-w-3xl mx-auto space-y-4">
+          <h2 class="text-3xl font-bold text-white">
+            <span class="text-brand-400">02.</span> El Concepto de 7 Segmentos
+          </h2>
+          <p class="text-slate-400 text-sm md:text-base leading-relaxed">
+            Un display de 7 segmentos consta de 7 diodos LED alargados (rotulados de la <strong>A</strong> a la <strong>G</strong>) dispuestos en forma de ocho. Encendiendo combinaciones específicas de estos segmentos podemos representar dígitos. Experimenta en nuestro simulador interactivo educativo:
+          </p>
+        </div>
+
+        <!-- INTERACTIVE SIMULATOR CARD -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 bg-slate-950 border border-slate-800 p-6 md:p-8 rounded-2xl">
+          <!-- Simulator Left Control panel -->
+          <div class="lg:col-span-4 flex flex-col justify-between gap-6">
+            <div class="space-y-4">
+              <span class="text-xs font-mono font-semibold text-brand-400 tracking-wider uppercase">Simulador de Aula</span>
+              <h3 class="text-xl font-bold text-white">Panel de Experimentación</h3>
+              <p class="text-xs text-slate-400">
+                Selecciona cualquier número en el contador inferior para ver qué segmentos deben encenderse, su representación binaria y hexadecimal correspondiente.
+              </p>
+            </div>
+
+            <!-- Quick Selector (0-F) -->
+            <div class="space-y-2">
+              <label class="text-xs font-mono text-slate-400 uppercase tracking-wider block">Selector Rápido (Dígito Hex):</label>
+              <div class="grid grid-cols-4 gap-2">
+                <template id="btn-hex-template">
+                  <button class="py-2 text-xs font-bold font-mono rounded bg-slate-900 border border-slate-800 hover:border-brand-500 hover:text-white transition-colors"></button>
+                </template>
+                <div id="hex-buttons-container" class="grid grid-cols-4 gap-1.5 col-span-4"></div>
+              </div>
+            </div>
+
+            <!-- Controls row -->
+            <div class="flex gap-2">
+              <button onclick="simStepDown()" class="flex-1 py-3 px-4 rounded-lg bg-slate-900 hover:bg-slate-850 border border-slate-800 text-sm font-bold flex items-center justify-center gap-2 transition-all">
+                <i data-lucide="minus" class="w-4 h-4 text-orange-400"></i> Decrementar
+              </button>
+              <button onclick="simStepUp()" class="flex-1 py-3 px-4 rounded-lg bg-slate-900 hover:bg-slate-850 border border-slate-800 text-sm font-bold flex items-center justify-center gap-2 transition-all">
+                <i data-lucide="plus" class="w-4 h-4 text-emerald-400"></i> Incrementar
+              </button>
+            </div>
+          </div>
+
+          <!-- Simulator Center SVG Display -->
+          <div class="lg:col-span-4 flex flex-col items-center justify-center py-4 bg-slate-900/60 rounded-xl border border-slate-800/50">
+            <div class="w-44 aspect-[70/120] bg-slate-950 border-2 border-slate-800 rounded-xl p-6 shadow-inner relative flex items-center justify-center">
+              <svg id="sim-svg" viewBox="0 0 70 120" class="w-full h-full block">
+                <defs>
+                  <filter id="sim-glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+                    <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                  </filter>
+                </defs>
+                <!-- Segments rendered in JS -->
+              </svg>
+            </div>
+            <!-- Legend of segments -->
+            <div class="mt-4 flex gap-2 text-xs font-mono text-slate-500">
+              <span class="px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800">Segmentos: A - G</span>
+            </div>
+          </div>
+
+          <!-- Simulator Right Stats (Binary/Hex/Decimal) -->
+          <div class="lg:col-span-4 flex flex-col justify-between bg-slate-900/40 p-6 rounded-xl border border-slate-800/40 space-y-6">
+            <div class="space-y-4">
+              <h4 class="text-xs font-semibold text-slate-400 tracking-wider uppercase">Lectura de Datos Sincronizados</h4>
+              
+              <!-- Hex Value -->
+              <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+                <span class="text-xs text-slate-400 font-medium">Representación HEX</span>
+                <span id="sim-val-hex" class="text-xl font-mono font-black text-red-400">0x0</span>
+              </div>
+
+              <!-- Dec Value -->
+              <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+                <span class="text-xs text-slate-400 font-medium">Representación DECIMAL</span>
+                <span id="sim-val-dec" class="text-xl font-mono font-black text-emerald-400">0</span>
+              </div>
+
+              <!-- Bin Value -->
+              <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+                <span class="text-xs text-slate-400 font-medium">Código Binario (D8 - D2)</span>
+                <span id="sim-val-bin" class="text-xl font-mono font-black text-yellow-400">0000 0000</span>
+              </div>
+
+              <!-- Custom Bitmask visualization -->
+              <div class="space-y-1.5 pt-1">
+                <span class="text-[10px] text-slate-400 font-mono block uppercase">Estado de Pines de Segmentos (a-g):</span>
+                <div class="grid grid-cols-7 gap-1">
+                  <template id="seg-pin-badge-template">
+                    <div class="text-center py-1 rounded text-[10px] font-mono font-bold border transition-all"></div>
+                  </template>
+                  <div id="pin-badges-container" class="grid grid-cols-7 gap-1 col-span-7"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-3 bg-slate-950 rounded border border-slate-800 text-[11px] text-slate-400 leading-relaxed flex items-start gap-2">
+              <i data-lucide="info" class="w-4 h-4 text-brand-400 shrink-0 mt-0.5"></i>
+              <span>En electrónica digital, enviamos un estado lógico <strong>HIGH (1)</strong> para encender un segmento en nuestro display de cátodo común.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= HARDWARE CONNECTIONS ================= -->
+      <section id="hardware" class="space-y-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div class="space-y-2">
+            <h2 class="text-3xl font-bold text-white">
+              <span class="text-brand-400">03.</span> Conexiones y Electrónica
+            </h2>
+            <p class="text-slate-400 text-sm max-w-2xl leading-relaxed">
+              El conexionado de un display de 7 segmentos requiere especial atención al uso de resistencias limitadoras para proteger cada diodo LED de sobrecorrientes.
+            </p>
+          </div>
+          <!-- Diagram badge -->
+          <span class="px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono text-slate-400 flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-orange-400"></span> Resistencia recomendada: 220Ω
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+          <!-- Connections Table -->
+          <div class="lg:col-span-7 bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden flex flex-col justify-between">
+            <div class="p-6">
+              <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <i data-lucide="table-properties" class="w-5 h-5 text-brand-400"></i> Tabla de Correspondencias Arduino
+              </h3>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs md:text-sm font-mono border-collapse">
+                  <thead>
+                    <tr class="border-b border-slate-800 text-slate-400">
+                      <th class="py-3 px-4 font-semibold uppercase">Segmento</th>
+                      <th class="py-3 px-4 font-semibold uppercase">Pin Digital Arduino</th>
+                      <th class="py-3 px-4 font-semibold uppercase">Resistencia</th>
+                      <th class="py-3 px-4 font-semibold uppercase">Función Física</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-800/60 text-slate-300">
+                    <tr class="hover:bg-slate-900/30">
+                      <td class="py-3 px-4 font-bold text-brand-400">a</td>
+                      <td class="py-3 px-4">D2</td>
+                      <td class="py-3 px-4">220 Ω</td>
+                      <td class="py-3 px-4 text-xs">Segmento superior horizontal</td>
+                    </tr>
+                    <tr class="hover:bg-slate-900/30">
+                      <td class="py-3 px-4 font-bold text-brand-400">b</td>
+                      <td class="py-3 px-4">D3</td>
+                      <td class="py-3 px-4">220 Ω</td>
+                      <td class="py-3 px-4 text-xs">Segmento superior derecho vertical</td>
+                    </tr>
+                    <tr class="hover:bg-slate-900/30">
+                      <td class="py-3 px-4 font-bold text-brand-400">c</td>
+                      <td class="py-3 px-4">D4</td>
+                      <td class="py-3 px-4">220 Ω</td>
+                      <td class="py-3 px-4 text-xs">Segmento inferior derecho vertical</td>
+                    </tr>
+                    <tr class="hover:bg-slate-900/30">
+                      <td class="py-3 px-4 font-bold text-brand-400">d</td>
+                      <td class="py-3 px-4">D5</td>
+                      <td class="py-3 px-4">220 Ω</td>
+                      <td class="py-3 px-4 text-xs">Segmento inferior horizontal</td>
+                    </tr>
+                    <tr class="hover:bg-slate-900/30">
+                      <td class="py-3 px-4 font-bold text-brand-400">e</td>
+                      <td class="py-3 px-4">D6</td>
+                      <td class="py-3 px-4">220 Ω</td>
+                      <td class="py-3 px-4 text-xs">Segmento inferior izquierdo vertical</td>
+                    </tr>
+                    <tr class="hover:bg-slate-900/30">
+                      <td class="py-3 px-4 font-bold text-brand-400">f</td>
+                      <td class="py-3 px-4">D7</td>
+                      <td class="py-3 px-4">220 Ω</td>
+                      <td class="py-3 px-4 text-xs">Segmento superior izquierdo vertical</td>
+                    </tr>
+                    <tr class="hover:bg-slate-900/30">
+                      <td class="py-3 px-4 font-bold text-brand-400">g</td>
+                      <td class="py-3 px-4">D8</td>
+                      <td class="py-3 px-4">220 Ω</td>
+                      <td class="py-3 px-4 text-xs">Segmento central horizontal</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="bg-slate-900/80 p-4 border-t border-slate-800 text-xs text-slate-400 flex items-center gap-3">
+              <i data-lucide="shield-alert" class="w-5 h-5 text-orange-400 shrink-0"></i>
+              <span><strong>¡Atención!</strong> Nunca omitas las resistencias en los displays de 7 segmentos. Sin ellas, puedes dañar permanentemente el pin del microcontrolador o quemar los filamentos del display.</span>
+            </div>
+          </div>
+
+          <!-- Hardware Theory Card (Simplified) -->
+          <div class="lg:col-span-5 flex flex-col justify-between gap-6 bg-slate-950 border border-slate-800 p-6 rounded-2xl">
+            <div class="space-y-4">
+              <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <i data-lucide="toggle-left" class="w-5 h-5 text-brand-400"></i> La Electrónica del Cátodo Común
+              </h3>
+              <p class="text-xs md:text-sm text-slate-300 leading-relaxed">
+                En este proyecto de aula trabajamos exclusivamente con displays de tipo <strong>Cátodo Común</strong>:
+              </p>
+              <div class="space-y-3 pt-2">
+                <div class="p-4 rounded-lg bg-slate-900 border border-slate-850">
+                  <h4 class="text-xs font-bold text-emerald-400 font-mono mb-1.5">¿Cómo funciona internamente?</h4>
+                  <p class="text-xs text-slate-400 leading-relaxed">
+                    Todos los terminales negativos (cátodos) de los 7 diodos LED internos están soldados juntos en una sola patilla común. Esta patilla común se conecta directamente al terminal de tierra o **GND (0V)** de la placa Arduino.
+                  </p>
+                </div>
+                <div class="p-4 rounded-lg bg-slate-900 border border-slate-850">
+                  <h4 class="text-xs font-bold text-sky-400 font-mono mb-1.5">Lógica de Activación Directa</h4>
+                  <p class="text-xs text-slate-400 leading-relaxed">
+                    Para encender cualquier segmento (A, B, C, D, E, F, G), simplemente enviamos una señal de **HIGH (5V)** desde su pin digital correspondiente en el Arduino. Al enviar **LOW (0V)**, el segmento se apaga.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-3 bg-brand-950/20 border border-brand-900/30 rounded-lg text-xs text-slate-300">
+              <span class="font-bold text-brand-400">Nota didáctica:</span> Al unificar nuestro hardware bajo el estándar de cátodo común, el código fuente de Arduino se simplifica enormemente, eliminando la necesidad de aplicar lógica inversa o invertir máscaras de bits.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= PROTOCOLO WEB SERIAL ================= -->
+      <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <div class="lg:col-span-5 bg-gradient-to-br from-slate-950 to-slate-900 border border-slate-800 p-6 rounded-2xl relative order-last lg:order-first">
+          <!-- SVG diagram simple representing browser communication -->
+          <div class="h-64 flex flex-col justify-around items-center font-mono relative bg-slate-950/80 p-4 rounded-xl border border-slate-850">
+            <div class="flex items-center gap-2 text-xs bg-slate-900 px-3 py-1.5 rounded border border-slate-800 w-full justify-between">
+              <span class="flex items-center gap-1.5"><i data-lucide="globe" class="w-3.5 h-3.5 text-blue-400"></i> Navegador Web</span>
+              <span class="text-[10px] text-slate-500">API Web Serial</span>
+            </div>
+
+            <div class="w-full flex justify-between px-6 relative">
+              <!-- Connection lines representing TX/RX -->
+              <div class="absolute inset-x-8 top-1/2 -translate-y-1/2 h-0.5 border-t border-dashed border-brand-500/50 flex justify-between"></div>
+              <!-- Tx -->
+              <div class="bg-slate-900 py-1 px-2.5 rounded border border-slate-800 text-[10px] z-10 text-brand-400 flex items-center gap-1">
+                <span>TX:</span> <strong>'U'</strong> <i data-lucide="arrow-right" class="w-3 h-3"></i>
+              </div>
+              <!-- Rx -->
+              <div class="bg-slate-900 py-1 px-2.5 rounded border border-slate-800 text-[10px] z-10 text-emerald-400 flex items-center gap-1">
+                <i data-lucide="arrow-left" class="w-3 h-3"></i> <span>RX:</span> <strong>"E\n"</strong>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 text-xs bg-slate-900 px-3 py-1.5 rounded border border-slate-800 w-full justify-between">
+              <span class="flex items-center gap-1.5"><i data-lucide="cpu" class="w-3.5 h-3.5 text-orange-400"></i> Arduino UNO / Nano</span>
+              <span class="text-[10px] text-slate-500">USB Serial Port</span>
+            </div>
+          </div>
+        </div>
+        <div class="lg:col-span-7 space-y-6">
+          <h2 class="text-2xl md:text-3xl font-bold text-white flex items-center gap-3">
+            <span class="text-brand-400">05.</span> Protocolo de Comunicación Web Serial
+          </h2>
+          <p class="text-slate-300 leading-relaxed">
+            La <strong>Web Serial API</strong> permite que páginas web seguras (HTTPS) abran directamente la comunicación serie asíncrona del puerto USB local del usuario. Es una de las tecnologías más disruptivas para el aprendizaje de la robótica y la electrónica escolar, ya que elimina barreras de instalación de software pesado.
+          </p>
+          
+          <!-- Details of the custom protocol -->
+          <div class="space-y-3 font-mono text-xs bg-slate-950 p-5 rounded-xl border border-slate-850">
+            <h4 class="text-sm font-semibold font-sans text-white mb-2">Protocolo del proyecto (9600 Baudios):</h4>
+            <div class="flex items-start gap-2 text-slate-400 border-b border-slate-850 pb-2">
+              <span class="text-brand-400 font-bold shrink-0">Web -> Arduino:</span>
+              <span>Envía un solo carácter sin retorno de carro para realizar una acción directa. <br>
+              <strong class="text-white">'U'</strong> para Incrementar (Up), <strong class="text-white">'D'</strong> para Decrementar (Down), <strong class="text-white">'R'</strong> para Restablecer (Reset).</span>
+            </div>
+            <div class="flex items-start gap-2 text-slate-400 pt-1">
+              <span class="text-emerald-400 font-bold shrink-0">Arduino -> Web:</span>
+              <span>Cada vez que el contador cambia, Arduino responde enviando el valor del contador actual en notación hexadecimal (un carácter de '0' a 'F') seguido de un salto de línea (<strong class="text-white">\n</strong>).</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= EDUCATIONAL COMPETENCES ================= -->
+      <section id="competencias" class="space-y-8">
+        <div class="text-center max-w-3xl mx-auto space-y-3">
+          <h2 class="text-3xl font-bold text-white">Competencias Educativas Clave (ESO)</h2>
+          <p class="text-slate-400 text-sm">
+            Este proyecto abarca múltiples áreas curriculares de la asignatura de Tecnología y Digitalización en Educación Secundaria Obligatoria.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Competencia 1 -->
+          <div class="p-6 rounded-2xl bg-slate-950 border border-slate-800 space-y-4">
+            <div class="w-10 h-10 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center font-bold">
+              <i data-lucide="binary" class="w-6 h-6"></i>
+            </div>
+            <div class="text-lg font-bold text-white">Pensamiento Computacional</div>
+            <p class="text-slate-400 text-xs md:text-sm leading-relaxed">
+              Sistemas de numeración (Binario, Decimal, Hexadecimal) y su traducción. Mapeo de variables numéricas a estados físicos lógicos (máscara de bits).
+            </p>
+          </div>
+          <!-- Competencia 2 -->
+          <div class="p-6 rounded-2xl bg-slate-950 border border-slate-800 space-y-4">
+            <div class="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold">
+              <i data-lucide="cable" class="w-6 h-6"></i>
+            </div>
+            <div class="text-lg font-bold text-white">Electrónica & Control</div>
+            <p class="text-slate-400 text-xs md:text-sm leading-relaxed">
+              Comprensión y montaje físico en protoboard utilizando componentes optoelectrónicos (diodos LED del display), cálculo de resistencias limitadoras y señales digitales.
+            </p>
+          </div>
+          <!-- Competencia 3 -->
+          <div class="p-6 rounded-2xl bg-slate-950 border border-slate-800 space-y-4">
+            <div class="w-10 h-10 rounded-lg bg-orange-500/10 text-orange-400 flex items-center justify-center font-bold">
+              <i data-lucide="code-xml" class="w-6 h-6"></i>
+            </div>
+            <div class="text-lg font-bold text-white">Desarrollo de Software</div>
+            <p class="text-slate-400 text-xs md:text-sm leading-relaxed">
+              Programación en C++ aplicada a sistemas embebidos mediante la IDE de Arduino y desarrollo frontend usando lenguajes web modernos interactivos (HTML5, CSS y JavaScript).
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= RESOURCES / DOWNLOADS ================= -->
+      <section id="recursos" class="bg-slate-950 border border-slate-800 rounded-3xl p-6 md:p-10 space-y-8 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-80 h-80 bg-brand-500/5 rounded-full blur-3xl"></div>
+        
+        <div class="max-w-3xl space-y-3">
+          <h2 class="text-2xl md:text-3xl font-bold text-white flex items-center gap-3">
+            <i data-lucide="folder-git-2" class="w-8 h-8 text-brand-400"></i> Recursos para Alumnado y Docentes
+          </h2>
+          <p class="text-slate-400 text-sm md:text-base leading-relaxed">
+            A continuación, puedes examinar o descargar directamente de forma gratuita todos los recursos y códigos de este proyecto para replicarlo en tu centro escolar o en tu hogar.
+          </p>
+        </div>
+
+        <!-- Tab Buttons -->
+        <div class="flex border-b border-slate-800 gap-2">
+          <button id="tab-btn-arduino" onclick="switchTab('arduino')" class="px-4 py-2.5 text-xs md:text-sm font-bold border-b-2 border-brand-500 text-white flex items-center gap-2 transition-all">
+            <i data-lucide="cpu" class="w-4 h-4"></i> Código Arduino (.ino)
+          </button>
+          <button id="tab-btn-html" onclick="switchTab('html')" class="px-4 py-2.5 text-xs md:text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2 transition-all">
+            <i data-lucide="html5" class="w-4 h-4"></i> Interfaz Web (.html)
+          </button>
+        </div>
+
+        <!-- File Containers -->
+        <div class="space-y-4">
+          <!-- Arduino Tab Content -->
+          <div id="tab-content-arduino" class="block space-y-4">
+            <div class="flex justify-between items-center text-xs text-slate-400 px-1">
+              <span>Nombre de archivo: <strong class="text-slate-200">display_7seg_arduino.ino</strong></span>
+              <button onclick="downloadResource('arduino')" class="px-3 py-1 rounded bg-slate-900 border border-slate-800 hover:border-brand-500 hover:text-white transition-all flex items-center gap-1.5">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i> Descargar .ino
+              </button>
+            </div>
+            <div class="relative bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+              <pre class="p-5 font-mono text-xs text-emerald-400 overflow-x-auto max-h-[420px] custom-scrollbar" id="code-block-arduino">
+  // Cargando código de Arduino...</pre>
+            </div>
+          </div>
+
+          <!-- HTML Tab Content -->
+          <div id="tab-content-html" class="hidden space-y-4">
+            <div class="flex justify-between items-center text-xs text-slate-400 px-1">
+              <span>Nombre de archivo: <strong class="text-slate-200">display_7segmentos.html</strong></span>
+              <button onclick="downloadResource('html')" class="px-3 py-1 rounded bg-slate-900 border border-slate-800 hover:border-brand-500 hover:text-white transition-all flex items-center gap-1.5">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i> Descargar .html
+              </button>
+            </div>
+            <div class="relative bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+              <pre class="p-5 font-mono text-xs text-slate-300 overflow-x-auto max-h-[420px] custom-scrollbar" id="code-block-html">
+  // Cargando código HTML...</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="bg-slate-950 border-t border-slate-800 mt-20 py-12 text-center text-slate-500 text-xs">
+      <div class="max-w-6xl mx-auto px-4 space-y-4">
+        <div class="flex justify-center gap-6 text-slate-400 font-medium">
+          <span>Tecnología 4º de la ESO</span>
+          <span>&middot;</span>
+          <span>IES Virgen de Villadiego</span>
+          <span>&middot;</span>
+          <span>Peñaflor, Sevilla</span>
+        </div>
+        <p class="max-w-xl mx-auto text-slate-500 leading-relaxed">
+          Página de divulgación educativa para proyectos STEM desarrollados en el marco de la educación pública de la Junta de Andalucía.
+        </p>
+        <div class="pt-4 text-[10px] text-slate-600">
+          &copy; 2026 IES Virgen de Villadiego. Todos los derechos de código fuente abiertos y distribuidos bajo licencia MIT.
+        </div>
+      </div>
+    </footer>
+
+  </div> <!-- FIN DE #MAIN-CONTENT -->
+
+  <!-- ================= JAVASCRIPT O RIGINAL Y CONTROL DE BIENVENIDA ================= -->
+  <script>
+    // Ejecución inmediata del preloader para evitar parpadeos visuales
+    const overlay = document.getElementById('welcome-overlay');
+    const mainContent = document.getElementById('main-content');
+    let timerToken = null;
+
+    // 1. Forzar Fade-In de la imagen justo al arrancar la ventana
+    window.setTimeout(() => {
+        if (overlay) overlay.style.opacity = '1';
+    }, 50);
+
+    // 2. Función controladora para realizar el desvanecimiento cruzado
+    function triggerCrossfade() {
+        if (!overlay) return;
+        
+        // Cancelamos el temporizador por si fue accionado por un clic rápido
+        if (timerToken) clearTimeout(timerToken);
+
+        // Desvanecer cartel de bienvenida
+        overlay.style.opacity = '0';
+        
+        // Aparecer el contenido web principal a la par
+        if (mainContent) mainContent.style.opacity = '1';
+
+        // Remover el cartel por completo del DOM tras finalizar la transición (600ms)
+        setTimeout(() => {
+            overlay.style.display = 'none';
+        }, 600);
+    }
+
+    // Evento A: Interrupción inmediata por clic del usuario
+    overlay.addEventListener('click', triggerCrossfade);
+
+    // Evento B: Transición automática tras el ciclo completo de 5 segundos
+    timerToken = setTimeout(triggerCrossfade, 4400);
+
+    // =================================================───────
+    // LÓGICA ORIGINAL DE LA APLICACIÓN
+    // =================================================───────
+    const CODE_ARDUINO = `// ============================================================
+// Display 7 Segmentos — Control via Web Serial
+// ============================================================
+//
+// CONEXIONES:
+//   Cada segmento → resistencia 220Ω → pin Arduino
+//     a → D2    b → D3    c → D4    d → D5
+//     e → D6    f → D7    g → D8
+//
+// TIPO DE DISPLAY:
+//   - Cátodo común (Common Cathode): El pin común va conectado a GND.
+//
+// PROTOCOLO SERIE (9600 baud, 8N1):
+//   Recibe : 'U' = incrementar, 'D' = decrementar, 'R' = reset
+//   Envía  : valor actual en hexadecimal (0-F) + \\n
+//
+// COMPATIBLE CON: Web Serial API (Chrome 89+, Edge 89+)
+// ============================================================
+
+const int segPins[7] = {2, 3, 4, 5, 6, 7, 8};  // a, b, c, d, e, f, g
+
+// Tabla de segmentos para dígitos hex 0-F (Cátodo Común)
+// Bit 0=a  Bit 1=b  Bit 2=c  Bit 3=d  Bit 4=e  Bit 5=f  Bit 6=g
+const byte segData[16] = {
+  0x3F,  // 0: a b c d e f       →  0011 1111
+  0x06,  // 1: b c               →  0000 0110
+  0x5B,  // 2: a b d e g         →  0101 1011
+  0x4F,  // 3: a b c d g         →  0100 1111
+  0x66,  // 4: b c f g           →  0110 0110
+  0x6D,  // 5: a c d f g         →  0110 1101
+  0x7D,  // 6: a c d e f g       →  0111 1101
+  0x07,  // 7: a b c             →  0000 0111
+  0x7F,  // 8: a b c d e f g     →  0111 1111
+  0x6F,  // 9: a b c d f g       →  0110 1111
+  0x77,  // A: a b c e f g       →  0111 0111
+  0x7C,  // B: c d e f g         →  0111 1100
+  0x39,  // C: a d e f           →  0011 1001
+  0x5E,  // D: b c d e g         →  0101 1110
+  0x79,  // E: a d e f g         →  0111 1001
+  0x71,  // F: a e f g           →  0111 0001
+};
+
+int count = 0;
+
+void setup() {
+  // Configurar los pines de los segmentos como salidas digitales
+  for (int i = 0; i < 7; i++) {
+    pinMode(segPins[i], OUTPUT);
+    digitalWrite(segPins[i], LOW);  // Todos los segmentos apagados al inicio
+  }
+
+  Serial.begin(9600);
+  while (!Serial) {
+    ; // Esperar conexión del puerto serie
+  }
+
+  displayDigit(count);
+  Serial.println(count, HEX);
+}
+
+void loop() {
+  if (Serial.available() > 0) {
+    char cmd = Serial.read();
+
+    switch (cmd) {
+      case 'U':
+      case 'u':
+        if (count < 15) count++;
+        break;
+
+      case 'D':
+      case 'd':
+        if (count > 0) count--;
+        break;
+
+      case 'R':
+      case 'r':
+        count = 0;
+        break;
+
+      default:
+        break;  // Ignorar comandos desconocidos
+    }
+
+    displayDigit(count);
+    Serial.println(count, HEX);
+  }
+}
+
+// Enciende los segmentos correspondientes al valor dado (0-15) en Cátodo Común
+void displayDigit(int value) {
+  value = constrain(value, 0, 15);
+  byte segs = segData[value];
+
+  for (int i = 0; i < 7; i++) {
+    // HIGH enciende el LED, LOW lo apaga
+    digitalWrite(segPins[i], (segs >> i) & 0x01 ? HIGH : LOW);
+  }
+}`;
+
+    const CODE_HTML = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Display 7 Segmentos — Control Arduino via Web Serial</title>
+  <!-- [Estilos e interfaz del control de visualización de segmentos] -->
+</head>
+<body>
+  <!-- [Secciones del control de visualización] -->
+</body>
+</html>`;
+
+    // ────────────────────────────────────────────────────────
+    // SIMULATOR STATE
+    // ────────────────────────────────────────────────────────
+    const HEX_CHARS = '0123456789ABCDEF';
+    const SEGS_COORDS = {
+      a: '10,6 13,2 57,2 60,6 57,10 13,10',
+      f: '6,12 10,16 10,50 6,54 2,50 2,16',
+      b: '64,12 68,16 68,50 64,54 60,50 60,16',
+      g: '10,60 13,56 57,56 60,60 57,64 13,64',
+      e: '6,66 10,70 10,104 6,108 2,104 2,70',
+      c: '64,66 68,70 68,104 64,108 60,104 60,70',
+      d: '10,114 13,110 57,110 60,114 57,118 13,118',
+    };
+
+    const DIG_BITS = {
+      '0':[1,1,1,1,1,1,0], '1':[0,1,1,0,0,0,0], '2':[1,1,0,1,1,0,1],
+      '3':[1,1,1,1,0,0,1], '4':[0,1,1,0,0,1,1], '5':[1,0,1,1,0,1,1],
+      '6':[1,0,1,1,1,1,1], '7':[1,1,1,0,0,0,0], '8':[1,1,1,1,1,1,1],
+      '9':[1,1,1,1,0,1,1], 'A':[1,1,1,0,1,1,1], 'B':[0,0,1,1,1,1,1],
+      'C':[1,0,0,1,1,1,0], 'D':[0,1,1,1,1,0,1], 'E':[1,0,0,1,1,1,1],
+      'F':[1,0,0,0,1,1,1],
+    };
+
+    const SEGS_KEYS = ['a','b','c','d','e','f','g'];
+    let simCounterValue = 0;
+
+    // ────────────────────────────────────────────────────────
+    // INITIALIZATION
+    // ────────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize Lucide Icons
+      lucide.createIcons();
+      
+      // Inject codes into DOM UI
+      document.getElementById('code-block-arduino').textContent = CODE_ARDUINO;
+      document.getElementById('code-block-html').textContent = CODE_HTML;
+      
+      // Render Simulator display segments
+      initSimulatorDisplay();
+      updateSimulatorUI();
+    });
+
+    // ────────────────────────────────────────────────────────
+    // SIMULATOR CORE LOGIC
+    // ────────────────────────────────────────────────────────
+    function initSimulatorDisplay() {
+      const svg = document.getElementById('sim-svg');
+      
+      // Draw segment polygons inside the SVG
+      SEGS_KEYS.forEach(name => {
+        const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+        poly.setAttribute('points', SEGS_COORDS[name]);
+        poly.setAttribute('id', 'sim-seg-' + name);
+        poly.setAttribute('stroke-width', '0.5');
+        poly.style.transition = 'all 0.15s ease';
+        svg.appendChild(poly);
+      });
+
+      // Dec point dot
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('cx', '65');
+      circle.setAttribute('cy', '112');
+      circle.setAttribute('r', '3');
+      circle.setAttribute('fill', '#1e293b');
+      circle.setAttribute('stroke', '#334155');
+      circle.setAttribute('stroke-width', '0.4');
+      svg.appendChild(circle);
+
+      // Render Hex digits buttons (0-F)
+      const btnContainer = document.getElementById('hex-buttons-container');
+      const templateBtn = document.getElementById('btn-hex-template');
+      
+      for (let i = 0; i < 16; i++) {
+        const clone = templateBtn.content.cloneNode(true);
+        const button = clone.querySelector('button');
+        button.textContent = HEX_CHARS[i];
+        button.id = 'sim-btn-hex-' + i;
+        button.addEventListener('click', () => {
+          simCounterValue = i;
+          updateSimulatorUI();
+        });
+        btnContainer.appendChild(clone);
+      }
+
+      // Render Bitmask badges
+      const badgeContainer = document.getElementById('pin-badges-container');
+      const templateBadge = document.getElementById('seg-pin-badge-template');
+      
+      SEGS_KEYS.forEach((name, i) => {
+        const clone = templateBadge.content.cloneNode(true);
+        const badge = clone.querySelector('div');
+        badge.id = 'sim-badge-seg-' + name;
+        badge.textContent = name.toUpperCase();
+        badgeContainer.appendChild(clone);
+      });
+    }
+
+    function updateSimulatorUI() {
+      const activeChar = HEX_CHARS[simCounterValue];
+      const bitsArr = DIG_BITS[activeChar]; // format: [a,b,c,d,e,f,g]
+
+      // Update Segments
+      SEGS_KEYS.forEach((name, idx) => {
+        const segmentPoly = document.getElementById('sim-seg-' + name);
+        const pinBadge = document.getElementById('sim-badge-seg-' + name);
+        const isSegmentOn = bitsArr[idx] === 1;
+
+        if (isSegmentOn) {
+          // Glow effect Red on SVG
+          segmentPoly.setAttribute('fill', '#ef4444');
+          segmentPoly.setAttribute('stroke', '#fca5a5');
+          segmentPoly.setAttribute('stroke-width', '0.8');
+          segmentPoly.classList.add('seg-glow');
+          
+          // Badge ON state styling
+          pinBadge.className = 'text-center py-1 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border-emerald-500/30';
+        } else {
+          // Off state styling SVG
+          segmentPoly.setAttribute('fill', '#0f172a');
+          segmentPoly.setAttribute('stroke', '#1e293b');
+          segmentPoly.setAttribute('stroke-width', '0.4');
+          segmentPoly.classList.remove('seg-glow');
+
+          // Badge OFF state styling
+          pinBadge.className = 'text-center py-1 rounded text-[10px] font-mono font-bold bg-slate-900 text-slate-500 border-slate-800';
+        }
+      });
+
+      // Update textual readouts
+      document.getElementById('sim-val-hex').textContent = '0x' + activeChar;
+      document.getElementById('sim-val-dec').textContent = simCounterValue;
+      
+      // Binary Representation: Bit values 
+      const binStr = bitsArr.join('');
+      document.getElementById('sim-val-bin').textContent = binStr;
+
+      // Update the selected button class in grid
+      for (let i = 0; i < 16; i++) {
+        const btn = document.getElementById('sim-btn-hex-' + i);
+        if (i === simCounterValue) {
+          btn.className = 'py-2 text-xs font-bold font-mono rounded bg-brand-500 text-white border-brand-500 shadow-md transition-colors shadow-brand-950/40';
+        } else {
+          btn.className = 'py-2 text-xs font-bold font-mono rounded bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white transition-colors';
+        }
+      }
+    }
+
+    function simStepUp() {
+      if (simCounterValue < 15) {
+        simCounterValue++;
+        updateSimulatorUI();
+      }
+    }
+
+    function simStepDown() {
+      if (simCounterValue > 0) {
+        simCounterValue--;
+        updateSimulatorUI();
+      }
+    }
+
+    // ────────────────────────────────────────────────────────
+    // TABS MANAGEMENT (Arduino / HTML resources view)
+    // ────────────────────────────────────────────────────────
+    function switchTab(type) {
+      const btnHtml = document.getElementById('tab-btn-html');
+      const contentArduino = document.getElementById('tab-content-arduino');
+      const contentHtml = document.getElementById('tab-content-html');
+      const btnArduinoElem = document.getElementById('tab-btn-arduino');
+
+      if (type === 'arduino') {
+        if(btnArduinoElem) btnArduinoElem.className = 'px-4 py-2.5 text-xs md:text-sm font-bold border-b-2 border-brand-500 text-white flex items-center gap-2 transition-all';
+        btnHtml.className = 'px-4 py-2.5 text-xs md:text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2 transition-all';
+        contentArduino.className = 'block space-y-4';
+        contentHtml.className = 'hidden space-y-4';
+      } else {
+        if(btnArduinoElem) btnArduinoElem.className = 'px-4 py-2.5 text-xs md:text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2 transition-all';
+        btnHtml.className = 'px-4 py-2.5 text-xs md:text-sm font-bold border-b-2 border-brand-500 text-white flex items-center gap-2 transition-all';
+        contentArduino.className = 'hidden space-y-4';
+        contentHtml.className = 'block space-y-4';
+      }
+    }
+
+    // ────────────────────────────────────────────────────────
+    // FILE DOWNLOAD TRIGGER
+    // ────────────────────────────────────────────────────────
+    function downloadResource(type) {
+      let code = '';
+      let filename = '';
+      
+      if (type === 'arduino') {
+        code = CODE_ARDUINO;
+        filename = 'display_7seg_arduino.ino';
+      } else {
+        code = CODE_HTML;
+        filename = 'display_7segmentos.html';
+      }
+
+      const blob = new Blob([code], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
