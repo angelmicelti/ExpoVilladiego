@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casa Domótica - IES Virgen de Villadiego</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .code-font {
+            font-family: 'Space Mono', monospace;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+        .glass {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .card-glow:hover {
+            box-shadow: 0 10px 30px -10px rgba(56, 189, 248, 0.3);
+            transform: translateY(-4px);
+            transition: all 0.3s ease;
+        }
+
+        /* PANTALLA DE BIENVENIDA (ESTILOS SÓLIDOS) */
+        #welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #020617; /* Slate 950 absoluto */
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0; /* Empieza en 0 para hacer fade in suave */
+            transition: opacity 0.6s ease-in-out;
+        }
+
+        /* CONTENIDO PRINCIPAL: Oculto por defecto para evitar parpadeos */
+        #main-content {
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+
+    <div id="welcome-overlay">
+        <img src="2026CasaDomotica.png" alt="Casa Domótica 2026" class="max-w-[90%] max-h-[90vh] object-contain rounded-2xl shadow-2xl transition-transform duration-300 hover:scale-[1.01]">
+    </div>
+
+    <div id="main-content">
+        <header class="sticky top-0 z-50 glass border-b border-slate-800">
+            <div class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center space-x-3">
+                    <span class="text-3xl">🏠</span>
+                    <div>
+                        <h1 class="text-xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-400">Casa Domótica</h1>
+                        <p class="text-xs text-slate-400">4º ESO • IES Virgen de Villadiego</p>
+                    </div>
+                </div>
+                <nav class="flex items-center space-x-1 md:space-x-6 text-sm font-semibold">
+                    <a href="#proyecto" class="hover:text-sky-400 px-3 py-2 rounded-lg transition">Proyecto</a>
+                    <a href="#hardware" class="hover:text-sky-400 px-3 py-2 rounded-lg transition">Hardware</a>
+                    <a href="#software" class="hover:text-sky-400 px-3 py-2 rounded-lg transition">Software</a>
+                    <a href="#competencias" class="hover:text-sky-400 px-3 py-2 rounded-lg transition">Aprendizaje</a>
+                </nav>
+            </div>
+        </header>
+
+        <section class="relative py-20 overflow-hidden gradient-bg border-b border-slate-900">
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(14,165,233,0.1),transparent)] pointer-events-none"></div>
+            <div class="max-w-5xl mx-auto px-6 text-center relative z-10">
+                <h2 class="text-4xl md:text-6xl font-black mt-6 tracking-tight leading-tight">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-teal-300 to-indigo-400">Casa domótica 2026</span>
+                </h2>
+                <p class="text-lg md:text-xl text-slate-300 mt-6 max-w-3xl mx-auto font-light leading-relaxed">
+                    Proyecto de domótica real desarrollado por el alumnado de <strong class="text-slate-100 font-semibold">4º de ESO del IES Virgen de Villadiego</strong> (Peñaflor, Sevilla). Una solución que comunica el navegador web con hardware real mediante puertos de comunicación serie modernos (Web Serial API).
+                </p>
+                <div class="mt-10 flex flex-wrap justify-center gap-4">
+                    <a href="#proyecto" class="bg-sky-500 hover:bg-sky-600 text-slate-950 font-bold px-8 py-3.5 rounded-xl shadow-lg shadow-sky-500/20 transition flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info"></i> Explorar Proyecto
+                    </a>
+                    <a href="#software" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold px-8 py-3.5 rounded-xl transition flex items-center gap-2">
+                        <i class="fa-solid fa-code"></i> Ver Código
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="proyecto" class="py-20 max-w-6xl mx-auto px-6">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h3 class="text-3xl font-extrabold">¿Cómo funciona nuestra Casa Domótica?</h3>
+                <p class="text-slate-400 mt-4 text-lg">La perfecta combinación entre desarrollo de software web frontend y programación de microcontroladores.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="glass p-8 rounded-2xl card-glow">
+                    <div class="w-12 h-12 bg-sky-500/10 text-sky-400 rounded-xl flex items-center justify-center text-xl font-bold mb-6">
+                        <i class="fa-solid fa-laptop-code"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-3">1. Interfaz Web (UI)</h4>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Un panel interactivo diseñado con HTML y CSS que emula el plano de la casa. Permite encender o apagar habitaciones de manera individual, o realizar acciones conjuntas, usando el ratón o teclas de atajo rápidas.
+                    </p>
+                </div>
+
+                <div class="glass p-8 rounded-2xl card-glow">
+                    <div class="w-12 h-12 bg-amber-500/10 text-amber-400 rounded-xl flex items-center justify-center text-xl font-bold mb-6">
+                        <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-3">2. Canal de Comunicación</h4>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        A través de la tecnología <strong class="text-slate-300">Web Serial API</strong>, el navegador web se conecta directamente de forma física al puerto serie USB del ordenador, enviando caracteres simplificados como comandos instantáneos a Arduino.
+                    </p>
+                </div>
+
+                <div class="glass p-8 rounded-2xl card-glow">
+                    <div class="w-12 h-12 bg-emerald-500/10 text-emerald-400 rounded-xl flex items-center justify-center text-xl font-bold mb-6">
+                        <i class="fa-solid fa-microchip"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-3">3. Procesador y Actuadores</h4>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Una placa <strong class="text-slate-300">Arduino Uno</strong> lee estos caracteres a 9600 baudios y conmuta el estado lógico de los pines digitales D2 a D5, los cuales activan relés físicos con lógica inversa.
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-12 glass p-8 rounded-2xl border border-sky-500/20 bg-sky-950/20 flex flex-col md:flex-row gap-6 items-center">
+                <div class="text-4xl text-sky-400">💡</div>
+                <div>
+                    <h4 class="text-lg font-bold text-sky-300">La solución inteligente: El auto-apagado</h4>
+                    <p class="text-sm text-slate-300 mt-1 leading-relaxed">
+                        Un aspecto crítico de este sistema es la seguridad. El código web de control está programado con un mecanismo de <strong>auto-reseteo</strong>. En el momento en que se pierde la conexión o el usuario pulsa "Desconectar", la interfaz de la web apaga inmediatamente todas las bombillas virtuales por seguridad, sincronizándose con la desactivación física del circuito de relés.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="hardware" class="py-20 bg-slate-900 border-y border-slate-800">
+            <div class="max-w-6xl mx-auto px-6">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h3 class="text-3xl font-extrabold">Componentes de Hardware</h3>
+                    <p class="text-slate-400 mt-4 text-lg">Los elementos electrónicos que dan vida y materializan las órdenes que viajan desde la pantalla.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    <div class="space-y-6">
+                        <div class="flex gap-4 items-start">
+                            <div class="w-10 h-10 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center flex-shrink-0 mt-1">
+                                <i class="fa-solid fa-microchip"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-semibold text-slate-200">Placa compatible con Arduino UNO</h4>
+                                <p class="text-slate-400 text-sm mt-1">
+                                    Actúa como cerebro principal. Escucha constantemente el puerto de comunicaciones por si entra algún comando emitido desde la interfaz web de la casa.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4 items-start">
+                            <div class="w-10 h-10 rounded-lg bg-sky-500/10 text-sky-400 flex items-center justify-center flex-shrink-0 mt-1">
+                                <i class="fa-solid fa-toggle-on"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-semibold text-slate-200">Módulo de 4 Relés de Nivel Bajo (Low Active)</h4>
+                                <p class="text-slate-400 text-sm mt-1">
+                                    Permite aislar y conmutar de forma segura circuitos independientes de corriente. Al funcionar a nivel bajo (LOW), se activan cuando reciben un '0' lógico en su correspondiente pin de control (D2-D5).
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4 items-start">
+                            <div class="w-10 h-10 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center flex-shrink-0 mt-1">
+                                <i class="fa-solid fa-lightbulb"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-semibold text-slate-200">Lámparas / LEDs (Emuladores de iluminación)</h4>
+                                <p class="text-slate-400 text-sm mt-1">
+                                    Representan la iluminación física real de las cuatro dependencias del plano de la vivienda.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass p-6 rounded-2xl border border-slate-700/50">
+                        <h4 class="text-lg font-bold text-slate-100 mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-circle-nodes text-emerald-400"></i> Tabla de Conexiones
+                        </h4>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm text-slate-300">
+                                <thead class="bg-slate-800 text-slate-200 text-xs uppercase font-bold">
+                                    <tr>
+                                        <th class="p-3 rounded-l-lg">Pin Arduino</th>
+                                        <th class="p-3">Componente / Relé</th>
+                                        <th class="p-3 rounded-r-lg">Dependencia Doméstica</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800">
+                                    <tr>
+                                        <td class="p-3 font-semibold text-sky-400 code-font">Digital D2</td>
+                                        <td class="p-3">Entrada IN1</td>
+                                        <td class="p-3">🛏️ Habitación 1</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-3 font-semibold text-sky-400 code-font">Digital D3</td>
+                                        <td class="p-3">Entrada IN2</td>
+                                        <td class="p-3">🛋️ Habitación 2</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-3 font-semibold text-sky-400 code-font">Digital D4</td>
+                                        <td class="p-3">Entrada IN3</td>
+                                        <td class="p-3">📚 Habitación 3</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-3 font-semibold text-sky-400 code-font">Digital D5</td>
+                                        <td class="p-3">Entrada IN4</td>
+                                        <td class="p-3">🍽️ Habitación 4</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-3 font-semibold text-slate-500 code-font">GND</td>
+                                        <td class="p-3">GND (Módulo Relés)</td>
+                                        <td class="p-3">Tierra Común</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-3 font-semibold text-rose-400 code-font">5V</td>
+                                        <td class="p-3">VCC (Módulo Relés)</td>
+                                        <td class="p-3">Alimentación eléctrica</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="software" class="py-20 max-w-6xl mx-auto px-6">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h3 class="text-3xl font-extrabold">Planificación del Software</h3>
+                <p class="text-slate-400 mt-4 text-lg">El sistema se compone de dos programas coordinados que se comunican mediante protocolo serie.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="flex flex-col h-full">
+                    <div class="glass p-6 rounded-t-2xl border-b border-slate-800 flex justify-between items-center bg-slate-900/40">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-teal-500"></span>
+                            <h4 class="font-bold text-slate-200">Programa de Arduino (.ino)</h4>
+                        </div>
+                        <span class="text-xs text-slate-400 code-font">InterfazCasa.ino</span>
+                    </div>
+                    <div class="glass p-6 rounded-b-2xl flex-grow overflow-auto max-h-[480px]">
+                        <p class="text-xs text-slate-400 mb-4">Se encarga de inicializar los pines D2 a D5 en modo de salida, apagar por defecto los relés (configurando el pin a HIGH), escuchar el puerto serie a 9600 baudios y aplicar los cambios lógicos en las salidas en base a los comandos recibidos.</p>
+                        <pre class="text-xs code-font text-emerald-400 bg-slate-950 p-4 rounded-xl overflow-x-auto"><code>// Pines D2, D3, D4, D5
+const int pins[] = {2, 3, 4, 5};
+bool estado[4] = {false, false, false, false};
+
+void setup() {
+  for (int i = 0; i < 4; i++) {
+    pinMode(pins[i], OUTPUT);
+    digitalWrite(pins[i], HIGH);  // Relé desactivado
+  }
+  Serial.begin(9600);
+}
+
+void loop() {
+  if (Serial.available()) {
+    char cmd = Serial.read();
+    if (cmd >= '1' && cmd <= '4') {
+      int idx = cmd - '1';
+      estado[idx] = !estado[idx];
+      digitalWrite(pins[idx], estado[idx] ? LOW : HIGH);
+    }
+    else if (cmd == 'A' || cmd == 'a') {
+      for (int i = 0; i < 4; i++) {
+        digitalWrite(pins[i], HIGH);
+        estado[i] = false;
+      }
+    }
+    else if (cmd == 'E' || cmd == 'e') {
+      for (int i = 0; i < 4; i++) {
+        digitalWrite(pins[i], LOW);
+        estado[i] = true;
+      }
+    }
+  }
+}</code></pre>
+                </div>
+            </div>
+
+            <div class="flex flex-col h-full">
+                <div class="glass p-6 rounded-t-2xl border-b border-slate-800 flex justify-between items-center bg-slate-900/40">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-sky-500"></span>
+                        <h4 class="font-bold text-slate-200">Interfaz de Usuario (.html)</h4>
+                    </div>
+                    <span class="text-xs text-slate-400 code-font">InterfazCasa.html</span>
+                </div>
+                <div class="glass p-6 rounded-b-2xl flex-grow overflow-auto max-h-[480px]">
+                    <p class="text-xs text-slate-400 mb-4">Implementa el framework nativo JavaScript <strong class="text-slate-300">Web Serial API</strong>. Permite interactuar con la placa desde el navegador web de forma directa a través de un botón de conexión, procesa teclas directas del teclado y ejecuta closures y reinicios seguros del puerto.</p>
+                    <pre class="text-xs code-font text-sky-400 bg-slate-950 p-4 rounded-xl overflow-x-auto"><code>// Conexión y Apertura del Puerto
+port = await navigator.serial.requestPort();
+await port.open({ baudRate: 9600 });
+writer = port.writable.getWriter();
+reader = port.readable.getReader();
+
+// Función de envío de comandos
+async function sendCommand(cmd) {
+    if (!connected || !writer) return;
+    const encoder = new TextEncoder();
+    await writer.write(encoder.encode(cmd + '\n'));
+}
+
+// Desconexión y reseteo de seguridad
+async function disconnect() {
+    // Apaga bombillas lógicas visualmente
+    setAllBulbs(false); 
+    // Libera los flujos y cierra puerto...
+}</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="competencias" class="py-20 bg-slate-900 border-t border-slate-800">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-indigo-400 text-xs font-bold uppercase tracking-wider">Metodología ABP (Aprendizaje Basado en Proyectos)</span>
+                <h3 class="text-3xl font-extrabold mt-3">Competencias y Aprendizajes Clave</h3>
+                <p class="text-slate-400 mt-4 text-base">¿Qué hemos aprendido los alumnos de 4º de la ESO diseñando e implementando la Casa Domótica?</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-slate-950 p-6 rounded-xl border border-slate-800">
+                    <div class="text-3xl mb-4">🔌</div>
+                    <h5 class="text-base font-bold text-slate-200 mb-2">Electricidad y Electrónica</h5>
+                    <p class="text-xs text-slate-400 leading-relaxed">Entender los circuitos de potencia mediante relés mecánicos de lógica inversa y control de alimentación continua.</p>
+                </div>
+
+                <div class="bg-slate-950 p-6 rounded-xl border border-slate-800">
+                    <div class="text-3xl mb-4">💻</div>
+                    <h5 class="text-base font-bold text-slate-200 mb-2">Desarrollo Web Frontend</h5>
+                    <p class="text-xs text-slate-400 leading-relaxed">Uso práctico de HTML, estilos dinámicos CSS y eventos interactivos controlados por el teclado en JavaScript.</p>
+                </div>
+
+                <div class="bg-slate-950 p-6 rounded-xl border border-slate-800">
+                    <div class="text-3xl mb-4">🤖</div>
+                    <h5 class="text-base font-bold text-slate-200 mb-2">Programación Embebida</h5>
+                    <p class="text-xs text-slate-400 leading-relaxed">Codificación en C++ (Arduino IDE) para procesar secuencias de datos, bucles condicionales y conmutación de pines de salida.</p>
+                </div>
+
+                <div class="bg-slate-950 p-6 rounded-xl border border-slate-800">
+                    <div class="text-3xl mb-4">🧠</div>
+                    <h5 class="text-base font-bold text-slate-200 mb-2">Resolución de Problemas</h5>
+                    <p class="text-xs text-slate-400 leading-relaxed">Depuración del flujo de comunicación Serie mediante consola de terminal y prevención de fallos al desconectar físicamente la placa.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-slate-950 py-12 border-t border-slate-900 text-center text-slate-500 text-sm">
+        <div class="max-w-6xl mx-auto px-6 space-y-4">
+            <p class="text-slate-300">🏢 <span class="font-semibold text-slate-100">IES Virgen de Villadiego</span> • Departamento de Tecnología</p>
+            <p class="text-xs">Peñaflor, Sevilla (España)</p>
+            <div class="pt-4 border-t border-slate-900 flex justify-between items-center flex-wrap gap-4 text-xs">
+                <span>© 2026 Alumnado de 4º de la ESO</span>
+                <span class="text-sky-400"><i class="fa-solid fa-code-branch"></i> Proyecto Casa Domótica en GitHub</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Ejecución inmediata para evitar parpadeos visuales
+        const overlay = document.getElementById('welcome-overlay');
+        const mainContent = document.getElementById('main-content');
+        let timerToken = null;
+
+        // 1. Forzar Fade-In de la imagen justo al arrancar la ventana
+        window.removeAttribute = window.setTimeout(() => {
+            overlay.style.opacity = '1';
+        }, 50);
+
+        // 2. Función controladora para realizar el desvanecimiento cruzado
+        function triggerCrossfade() {
+            if (!overlay) return;
+            
+            // Cancelamos el temporizador por si fue accionado por un clic rápido
+            if (timerToken) clearTimeout(timerToken);
+
+            // Desvanecer cartel de bienvenida
+            overlay.style.opacity = '0';
+            
+            // Aparecer el contenido web principal a la par
+            mainContent.style.opacity = '1';
+
+            // Remover el cartel por completo del DOM tras finalizar la transición (600ms)
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 600);
+        }
+
+        // Evento A: Interrupción inmediata por clic del usuario
+        overlay.addEventListener('click', triggerCrossfade);
+
+        // Evento B: Transición automática tras el ciclo completo de 5 segundos
+        // 4400ms de espera estática + 600ms de transición = 5000ms exactos de visualización
+        timerToken = setTimeout(triggerCrossfade, 4400);
+    </script>
+
+</body>
+</html>
