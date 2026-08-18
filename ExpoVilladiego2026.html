@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ExpoVilladiego 2026 — Proyectos destacados de la edición actual del IES Virgen de Villadiego.">
+    <title>ExpoVilladiego 2026 - Edición Actual</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        /* ---------- Header ---------- */
+        header {
+            text-align: center;
+            padding: 2.5rem 1.5rem 2rem;
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 60%, #3b82f6 100%);
+            color: #fff;
+            border-radius: 0 0 14px 14px;
+            box-shadow: 0 8px 24px rgba(0,0,0,.12);
+        }
+        header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -.02em;
+            margin-bottom: .25rem;
+            color: #fff;
+        }
+
+        /* ---------- Back button ---------- */
+        .nav-back-wrapper {
+            text-align: center;
+            margin: 1.25rem 0 0;
+        }
+        .nav-back {
+            display: inline-flex;
+            align-items: center;
+            gap: .35rem;
+            padding: .45rem 1rem;
+            background: #e2e8f0;
+            color: #334155;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: .85rem;
+            transition: background .2s ease, color .2s ease;
+        }
+        .nav-back:hover {
+            background: #cbd5e1;
+            color: #1e293b;
+        }
+
+        /* ---------- Main content ---------- */
+        .main-container {
+            max-width: 1100px;
+            margin: 1rem auto;
+            padding: 0 1rem;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border-left: 5px solid #3182ce;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 60px;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+        .card a {
+            text-decoration: none;
+            color: #2d3748;
+            font-weight: 600;
+            font-size: 1.1em;
+            line-height: 1.4;
+        }
+        .card a:hover {
+            color: #3182ce;
+            text-decoration: underline;
+        }
+
+        /* ---------- Footer ---------- */
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            background: #1e293b;
+            color: #e2e8f0;
+            border-radius: 14px 14px 0 0;
+            font-size: .85rem;
+            margin-top: 2rem;
+        }
+
+        /* ---------- Responsive grid ---------- */
+        @media (min-width: 480px) {
+            .grid-container { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (min-width: 768px) {
+            .grid-container { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (min-width: 1100px) {
+            .grid-container { grid-template-columns: repeat(4, 1fr); }
+        }
+        @media (max-width: 479px) {
+            header { padding: 1.8rem 1rem 1.5rem; }
+            header h1 { font-size: 1.6rem; }
+            .grid-container { gap: 14px; }
+            .card { padding: 14px 12px; font-size: .95rem; }
+            .nav-back { font-size: .8rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>ExpoVilladiego 2026</h1>
+    </header>
+
+    <div class="nav-back-wrapper">
+        <a href="index.html" class="nav-back">← Volver</a>
+    </div>
+
+    <div class="main-container">
+        <div class="grid-container">
+            <div class="card"><a href="2026/2026CasaDomotica.html" target="_blank" rel="noopener">CASA DOMÓTICA</a></div>
+            <div class="card"><a href="2026/2026MarcandoEstilo.html" target="_blank" rel="noopener">MARCANDO ESTILO</a></div>
+            <div class="card"><a href="2026/2026TeAdivinoTuCumple.html" target="_blank" rel="noopener">TE ADIVINO TU CUMPLE</a></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 IES Virgen de Villadiego, Peñaflor (Sevilla) — Edición actual de la muestra tecnológica</p>
+    </footer>
+</body>
+</html>
